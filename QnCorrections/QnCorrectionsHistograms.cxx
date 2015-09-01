@@ -609,7 +609,6 @@ Bool_t QnCorrectionsHistograms::ConnectU2nQnCalibrationHistograms(TList* list, Q
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) {
       SetU2nHistogram( ih, 0, (THnF*)((THn*)  GetHistogram(list, "Qvec"+det, Form("cosnphi_%s_h%d", det.Data(), ih*2))));//->Clone(Form("_hCor_%s_u2nX_%s_h%d", det.Data(), ih*2)));
       SetU2nHistogram( ih, 1, (THnF*)((THn*)  GetHistogram(list, "Qvec"+det, Form("sinnphi_%s_h%d", det.Data(), ih*2))));//->Clone(Form("_hCor_%s_u2nY_%s_h%d", det.Data(), ih*2)));
-      cout<<U2nHistogram(ih,0)<<endl;
   }
 
   

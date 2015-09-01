@@ -58,6 +58,22 @@ class QnCorrectionsConfiguration : public TObject {
 //TODO Extend QA of the DataContainer variables before and after cuts
   void SetTracking(Bool_t set=kTRUE)                        {fIsTracking         =set;}  // obsolete?
 
+
+
+  // INTERNAL FRAMEWORK FUNCTIONS
+  void SetLocalIndex(Int_t index)                           { fLocalIndex      = index;}
+  void SetGlobalIndex(Int_t index)                          { fGlobalIndex     = index;}
+  //void SetQnConfigurationCorrelationIndices(Int_t detA, Int_t detB)     {fQnConfigurationCorrelationIndices[0]=detA;fQnConfigurationCorrelationIndices[1]=detB;}
+  void SetQnConfigurationCorrelationIndex(Int_t det, Int_t cor)         {fQnConfigurationCorrelationIndices[det]=cor;}
+  void SetDetectorId(UShort_t detectorType)                 { fDetectorType    = detectorType;} // SetDetectorId-> SetDetectorId
+  void SetFillHistogram(Int_t step, Bool_t b=kTRUE)   {fFillHistogramMap[step]=b;}
+  void SetApplyCorrection(Int_t step, Bool_t b=kTRUE) {fApplyCorrectionMap[step]=b;}
+  void SetMinimumHarmonic(Int_t har)                  {fMinimumHarmonic=har;}
+
+
+
+
+
   //void SetPassNumbers();
   //void SetPassCorrections(Int_t pass, QnCorrectionsSteps::CorrectionSteps flag) { fCorrectionPasses[(Int_t) flag]=pass;};
   //void DisableCorrection(QnCorrectionsSteps::CorrectionSteps flag) { fCorrectionPasses[(Int_t) flag]=-1;};
@@ -147,17 +163,8 @@ class QnCorrectionsConfiguration : public TObject {
  private:
 
   // setters for framework
-  void SetLocalIndex(Int_t index)                           { fLocalIndex      = index;}
-  void SetGlobalIndex(Int_t index)                          { fGlobalIndex     = index;}
   void SetCalibrationStep(Int_t index)                      { fCalibrationStep = index;}
-  //void SetQnConfigurationCorrelationIndices(Int_t detA, Int_t detB)     {fQnConfigurationCorrelationIndices[0]=detA;fQnConfigurationCorrelationIndices[1]=detB;}
-  void SetQnConfigurationCorrelationIndex(Int_t det, Int_t cor)         {fQnConfigurationCorrelationIndices[det]=cor;}
-  void SetDetectorId(UShort_t detectorType)                 { fDetectorType    = detectorType;} // SetDetectorId-> SetDetectorId
   
-  void SetFillHistogram(Int_t step, Bool_t b=kTRUE)   {fFillHistogramMap[step]=b;}
-  void SetApplyCorrection(Int_t step, Bool_t b=kTRUE) {fApplyCorrectionMap[step]=b;}
-  void SetMinimumHarmonic(Int_t har)                  {fMinimumHarmonic=har;}
-
   void SetMaps(QnCorrectionsSteps::CorrectionSteps step, Bool_t b=kTRUE) {fRequestedCorrectionMap[(Int_t) step]=b;fRequestedHistogramMap[(Int_t) step]=b;fApplyCorrectionMap[(Int_t) step]=b;fFillHistogramMap[(Int_t) step]=b;};
 
   Int_t  fQnConfigurationCorrelationIndices[3];

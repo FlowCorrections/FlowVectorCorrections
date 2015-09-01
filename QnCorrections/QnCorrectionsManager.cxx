@@ -36,6 +36,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace std;
+
 ClassImp(QnCorrectionsManager)
 
 
