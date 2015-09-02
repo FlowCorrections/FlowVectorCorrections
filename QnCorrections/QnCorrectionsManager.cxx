@@ -35,7 +35,6 @@
 #include <TArrayS.h>
 #include <iostream>
 #include <iomanip>
-
 using namespace std;
 
 ClassImp(QnCorrectionsManager)
@@ -150,7 +149,7 @@ void QnCorrectionsManager::Process() {
 
   if(fSetFillTreeQnVectors) fTreeQnVectors->Fill();
 
-  ClearEvent();
+//   ClearEvent();
 
   fProcessedFirstEvent=kTRUE;
 
@@ -191,7 +190,7 @@ void QnCorrectionsManager::ApplyQnCorrections() {
 
 
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
 
 
@@ -259,7 +258,7 @@ void QnCorrectionsManager::FillHistograms() {
 
   QnCorrectionsConfiguration* QnConf;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
     if(fSetFillHistogramsQnCorrections){
       if(QnConf->IsFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)||QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)){
@@ -364,7 +363,7 @@ void QnCorrectionsManager::WriteQnVectorsToList() {
 
   QnCorrectionsConfiguration* QnConf=0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
     TClonesArray* qvec = CorrectedQnVector(iconf);
     if(qvec) {
@@ -403,7 +402,7 @@ void QnCorrectionsManager::Initialize() {
     detStrCor1 = QnConf->QnConfigurationCorrelationName(0);
     detStrCor2 = QnConf->QnConfigurationCorrelationName(1);
     detStrCor3 = QnConf->QnConfigurationCorrelationName(2);
-    QnCorrectionsConfiguration* QnConf2 = 0x0;
+    QnConf2 = 0x0;
     for(Int_t iconf2=0; iconf2<fNumberOfQnConfigurations; iconf2++){
       QnConf2 = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf2);
       if(!QnConf2) continue;
@@ -414,7 +413,7 @@ void QnCorrectionsManager::Initialize() {
   }
 
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
     //QnConf->SetCalibrationStep(QnConf->GetCorrectionStep(fCorrectionStep));
     fInputHistograms[iconf]  = new QnCorrectionsHistograms();
@@ -441,7 +440,7 @@ void QnCorrectionsManager::Initialize() {
 
     TClonesArray* QvecList[50];
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-      QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+      QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
       if(!QnConf) continue;
       QvecList[QnConf->GlobalIndex()]  = CorrectedQnVector(iconf);
       QvecList[QnConf->GlobalIndex()]->SetName(QnConf->QnConfigurationName());
@@ -462,10 +461,7 @@ void QnCorrectionsManager::AddDataVector( Int_t detectorId, Double_t phi, Double
   // Add datavector to TClonesArray of DataVectors and set its bits
   //
 
-
-
-  //cout<<fDetectorIdMap[detectorId]<<"  "<<detectorId<<endl;
-  //detectorId=fDetectorIdMap[detectorId]-1;
+  detectorId=fDetectorIdMap[detectorId]-1;
   Bool_t keepData=kTRUE;
   Bool_t useForQn;
 
@@ -510,7 +506,7 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
   //  if(QnConf->GetCorrectionStep(fCorrectionStep)<1) return kFALSE;
   //  if(!QnConf->doChannelEqualization()) return kFALSE;
   //}
-
+    
   QnCorrectionsQnVector* QnVector = static_cast<QnCorrectionsQnVector*>(fCorrectedQvectors[QnConf->GlobalIndex()][(Int_t) useEqualizedWeights]->At(0));
   fLastStep[QnConf->GlobalIndex()]=(Int_t) useEqualizedWeights;
 
@@ -520,7 +516,6 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
 
   if(EqualizationMethod==-1) QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector);
   else                       QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector, EqualizationMethod);
-
 
   if(QnVector->N()==0) {               // If detector is empty
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kUndefined);
@@ -885,8 +880,6 @@ void QnCorrectionsManager::FillHistogramsQnCorrelationsQA(QnCorrectionsConfigura
     //Qvecs[0] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(iconf,  QnConf[0]->GetCorrectionStep(istep))->At(0));
     //Qvecs[1] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(index1, QnConf[1]->GetCorrectionStep(istep))->At(0));
     //Qvecs[2] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(index2, QnConf[2]->GetCorrectionStep(istep))->At(0));
-
-    //std::cout<<Qvectors[0]->Qx(2)<<std::endl;
 
     for(Int_t icomb=0; icomb<3; ++icomb){ 
       for(Int_t iaxis=0; iaxis<dim; iaxis++){
@@ -2054,7 +2047,7 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kDataVectorEqualization)) if(fCorrectionStep<QnCorrectionsSteps::kDataVectorEqualization) fCorrectionStep=(Int_t) QnCorrectionsSteps::kDataVectorEqualization;
     if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRecentering))            if(fCorrectionStep<QnCorrectionsSteps::kRecentering           ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kRecentering;
     if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kAlignment))              if(fCorrectionStep<QnCorrectionsSteps::kAlignment             ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kAlignment;
@@ -2069,7 +2062,7 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
 
   TString label="allRuns";
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
     if(QnConf->CorrectWithEventLabel()) label=fLabel;
 
@@ -2255,7 +2248,7 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
 
     THashList* detector = new THashList();
@@ -2354,7 +2347,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
 
 
@@ -2366,7 +2359,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
     detectorM->SetOwner();
     detectorC->SetOwner();
 
-    Int_t istep=0;
+//     Int_t istep=0;
     for(Int_t istep=0; istep<=fCorrectionStep; istep++){
       if(istep>0&&!QnConf->IsApplyCorrection(istep)) continue;
       
@@ -2445,8 +2438,10 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 //_______________________________________________________________________________
 void QnCorrectionsManager::AddQnConfiguration(QnCorrectionsConfiguration* QnConf, Int_t type)
 {
+    
   AddDetectorId(type);
   Int_t detId=fDetectorIdMap[type]-1;
+  
   QnConf->SetDetectorId( (UShort_t) detId);
   TClonesArray& eparr = *(fQnCorrectionsConfigurations[ detId]);
   eparr[fNumberOfQnConfigurationsForDetector[ detId]]=QnConf;
@@ -2467,7 +2462,7 @@ QnCorrectionsConfiguration* QnCorrectionsManager::GetQnConfiguration(TString nam
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-    QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
+    QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
     if(name.EqualTo(QnConf->QnConfigurationName())) return QnConf;
   }

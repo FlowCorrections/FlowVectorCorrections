@@ -92,7 +92,6 @@ void QnCorrectionsDataVector::FillQvector(TClonesArray* dataVectorArray, Int_t e
        weight==-1 ? w=dataVector->Weight() : w=dataVector->Weight(weight);
       
       if(w>1E-6) q->Add(dataVector->Phi(), w );
-      //std::cout<<idata<<"  "<<dataVector->Id()<<"  "<<dataVector->Weight()<<"  "<<dataVector->Weight(ep,weight)<<"  "<<dataVector->Phi()<<"  "<<ep<<"  "<<weight<<"  "<<q->Qx(2)<<std::endl;
   
   }
 
@@ -116,7 +115,6 @@ void QnCorrectionsDataVector::FillQvector(TClonesArray* dataVectorArray, QnCorre
        weight==-1 ? w=dataVector->Weight() : w=dataVector->Weight(weight);
       
        q->Add(dataVector->Phi(), w );
-      //std::cout<<idata<<"  "<<dataVector->Id()<<"  "<<dataVector->Weight()<<"  "<<dataVector->Weight(ep,weight)<<"  "<<dataVector->Phi()<<"  "<<ep<<"  "<<weight<<"  "<<q->Qx(2)<<std::endl;
   
   }
 

@@ -30,7 +30,7 @@
 #include <TList.h>
 #include <TProfile.h>
 #include <iostream>
-
+using namespace std;
 
 ClassImp(QnCorrectionsHistograms)
 
@@ -372,9 +372,6 @@ void QnCorrectionsHistograms::CreateMultiplicityHistograms(QnCorrectionsConfigur
   const Int_t* var = binning->Var();
   TAxis * binLimits =  binning->Axes();
 
-
-  //for(Int_t idim=0; idim<(dim-1); idim++) std::cout<<"in function?  "<<idim<<"  "<<QnConf->EqualizationBinning()->AxisLabel(idim)<<"  "<<binning->AxisLabel(idim)<<std::endl;
-
   for(Int_t idim=0; idim<(dim-1); idim++) title+=";"+binning->AxisLabel(idim);
     title+=";channel number;";
 
@@ -432,7 +429,7 @@ void QnCorrectionsHistograms::CreateEventHistograms(QnCorrectionsConfiguration* 
  
   TString title;
   for(Int_t idim=0; idim<(dim-1); idim++){
-    TString title=QnConf->EqualizationBinning()->AxisLabel(0);
+    title=QnConf->EqualizationBinning()->AxisLabel(0);
     fEventHistograms[idim]=new TH1F(Form("EventVar%dDistrubution",idim),title,1000,QnConf->EqualizationBinning()->GetLowEdge(idim), QnConf->EqualizationBinning()->GetUpEdge(idim));
     fEventHistograms[idim]->SetDirectory(0);
   }
@@ -609,6 +606,7 @@ Bool_t QnCorrectionsHistograms::ConnectU2nQnCalibrationHistograms(TList* list, Q
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) {
       SetU2nHistogram( ih, 0, (THnF*)((THn*)  GetHistogram(list, "Qvec"+det, Form("cosnphi_%s_h%d", det.Data(), ih*2))));//->Clone(Form("_hCor_%s_u2nX_%s_h%d", det.Data(), ih*2)));
       SetU2nHistogram( ih, 1, (THnF*)((THn*)  GetHistogram(list, "Qvec"+det, Form("sinnphi_%s_h%d", det.Data(), ih*2))));//->Clone(Form("_hCor_%s_u2nY_%s_h%d", det.Data(), ih*2)));
+      cout<<U2nHistogram(ih,0)<<endl;
   }
 
   

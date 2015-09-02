@@ -63,7 +63,7 @@ class QnCorrectionsManager : public TObject {
   TClonesArray* GetDataVectors(Int_t det)                {return (det>-1&&det<fNumberOfDetectors ? fDataVectors[det] : 0x0);}
   TClonesArray* GetConfDataVectors(Int_t det)            {return fConfDataVectors[det];}
 
-  TClonesArray* CorrectedQnVector(Int_t conf, Int_t step=-1)   {return (step==-1 ? fCorrectedQvectors[conf][fLastStep[conf]] : fCorrectedQvectors[conf][step]) ;}
+  TClonesArray* CorrectedQnVector(Int_t conf, Int_t step=-1){ return (step==-1 ? fCorrectedQvectors[conf][fLastStep[conf]] : fCorrectedQvectors[conf][step]); }
 
   TTree* GetTreeQnVectors()                 {return fTreeQnVectors;}    
   TList* GetListQnVectors()                 {WriteQnVectorsToList();  return fListQnVectors;}
@@ -89,6 +89,7 @@ class QnCorrectionsManager : public TObject {
   //void 2nTwistQvec(Float_t* values, Int_t corpar);
   //void 2nRescalingQvec(Float_t* values, Int_t corpar);
   //void U2nTwistAndRescalingQvec(Float_t* values, Int_t corpar);
+  void ClearEvent();
 
 
  private:
@@ -125,7 +126,6 @@ class QnCorrectionsManager : public TObject {
   void CallStepTwistAndRescaleQnVector(QnCorrectionsConfiguration* QnConf);
   void RotateQvec(QnCorrectionsConfiguration* QnConf);
 
-  void ClearEvent();
 
   void WriteCalibrationHistogramsToList();
   void WriteQaHistogramsToList();

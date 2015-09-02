@@ -60,12 +60,10 @@ inline Bool_t QnCorrectionsCuts::IsSelected(Float_t* values) const {
 
     if(Min(icut)>-999.5&&Min(icut)<-998.5){
       Int_t flag=(Int_t) (values[(Int_t) (Type(icut)+Max(icut))]);
-      //cout<<flag<<"  "<<Type(icut)<<"  "<<Max(icut)<<"  "<<values[(Int_t) (Type(icut)+Max(icut))]<<"  "<<Type(icut)<<"  "<<Max(icut)<<endl;
       if(!ExcludeRange(icut)&&flag) return kFALSE;
       if(ExcludeRange(icut)&&flag==0) return kFALSE;
     }
     else if(!ExcludeRange(icut)){
-      //cout<<values[Type(icut)]<<"  "<<Min(icut)<<"  "<<values[Type(icut)]<<"  "<<Max(icut)<<endl;
       if(values[Type(icut)]<=Min(icut)) return kFALSE;
       if(values[Type(icut)]>=Max(icut)) return kFALSE;
     }

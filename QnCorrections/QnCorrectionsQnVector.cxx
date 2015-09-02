@@ -52,7 +52,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() :
 
 
 //_______________________________________________________________________________
-QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nHarmonics) :
+QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nHarmonics1) :
   //fQvecX(),
   //fQvecY(),
   fQvectorX(0x0),
@@ -66,9 +66,9 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nHarmonics) :
   // Constructor
   //
 
-  fQvectorX = TArrayF(nHarmonics);
-  fQvectorY = TArrayF(nHarmonics);
-  fEventPlaneStatus = TArrayC(nHarmonics);
+  fQvectorX = TArrayF(nHarmonics1);
+  fQvectorY = TArrayF(nHarmonics1);
+  fEventPlaneStatus = TArrayC(nHarmonics1);
         
 
 }

@@ -225,7 +225,6 @@ inline void QnCorrectionsQnVector::Add(Double_t phi, Double_t w)
     fQvectorY[ih-1]+=w*TMath::Sin(ih*phi);
   }
 
-
 }
 
 
