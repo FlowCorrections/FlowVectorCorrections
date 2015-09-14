@@ -1,13 +1,12 @@
 #ifndef QNCORRECTIONS_CONSTANTS_H
 #define QNCORRECTIONS_CONSTANTS_H
-/* Copyright(c) 1998-2015, ALICE Experiment at CERN, All rights reserved. *
-* See cxx source for full Copyright notice */
-
+/************************************************************************** 
+ * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>    * 
+ * See cxx source for full Copyright notice                               * 
+ *************************************************************************/ 
+ 
  
 #include<Rtypes.h>
-
-
-
 
 
 class QnCorrectionsConstants {

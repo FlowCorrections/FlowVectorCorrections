@@ -1,25 +1,30 @@
-/************************************************************************** 
- * Copyright(c) 1998-2015, ALICE Experiment at CERN, All rights reserved. *
- *                                                                        *
- * Author: The ALICE Off-line Project.                                    *
- * Contributors are mentioned in the code where appropriate.              *
- *                                                                        *
- * Permission to use, copy, modify and distribute this software and its   *
- * documentation strictly for non-commercial purposes is hereby granted   *
- * without fee, provided that the above copyright notice appears in all   *
- * copies and that both the copyright notice and this permission notice   *
- * appear in the supporting documentation. The authors make no claims     *
- * about the suitability of this software for any purpose. It is          *
- * provided "as is" without express or implied warranty.                  *
- **************************************************************************/
- 
- /* 
- Contact:
- Jaap Onderwaater, GSI, jacobus.onderwaater@cern.ch 
- Ilya Selyuzhenkov, GSI, ilya.selyuzhenkov@gmail.com
-*/
-
- 
+/************************************************************************************************* 
+ * Authors:                                                                                       * 
+ * Jaap Onderwaater, GSI, jacobus.onderwaater@cern.ch                                             * 
+ * Ilya Selyuzhenkov, GSI, ilya.selyuzhenkov@gmail.com                                            * 
+ * Contributors are mentioned in the code where appropriate.                                      * 
+ *                                                                                                * 
+ * This file is part of FlowVectorCorrections, a software package that corrects Q-vector          * 
+ * measurements for effects of nonuniform detector acceptance. The corrections in this package    * 
+ * are based on publication:                                                                      * 
+ *                                                                                                * 
+ *  [1] "Effects of non-uniform acceptance in anisotropic flow measurements"                      * 
+ *  Ilya Selyuzhenkov and Sergei Voloshin                                                         * 
+ *  Phys. Rev. C 77, 034904 (2008)                                                                * 
+ *                                                                                                * 
+ * The procedure proposed in [1] is extended with the following steps:                            * 
+ * (*) alignment correction between subevents                                                     * 
+ * (*) possibility to extract the twist and rescaling corrections                                 * 
+ *      for the case of three detector subevents                                                  * 
+ *      (currently limited to the case of two “hit-only” and one “tracking” detectors)            * 
+ * (*) (optional) channel equalization                                                            * 
+ * (*) flow vector width equalization                                                             * 
+ *                                                                                                * 
+ * FlowVectorCorrections is distributed under the terms of the GNU General Public License (GPL)   * 
+ * (https://en.wikipedia.org/wiki/GNU_General_Public_License)                                     * 
+ * either version 3 of the License, or (at your option) any later version.                        * 
+ **************************************************************************************************/ 
+  
 
 #include "QnCorrectionsDataVector.h"
 #include "QnCorrectionsQnVector.h"

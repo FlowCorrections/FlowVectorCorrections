@@ -1,8 +1,10 @@
 #ifndef QNCORRECTIONS_CONFIGURATION_H
 #define QNCORRECTIONS_CONFIGURATION_H
-/* Copyright(c) 1998-2015, ALICE Experiment at CERN, All rights reserved. *
-* See cxx source for full Copyright notice */
-
+/************************************************************************** 
+ * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>    * 
+ * See cxx source for full Copyright notice                               * 
+ *************************************************************************/ 
+ 
  
 
 #include <iostream>
