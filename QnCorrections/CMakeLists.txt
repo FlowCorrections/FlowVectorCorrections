@@ -35,7 +35,7 @@ QnCorrectionsQnVector.cxx
 QnCorrectionsSteps.cxx
 )
 
-ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF PWGPPevcharQnLinkDef.h)
+ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)
 
 
 #---Create a shared library with generated dictionary
