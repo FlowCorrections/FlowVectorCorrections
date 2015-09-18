@@ -1,9 +1,14 @@
 #ifndef QNCORRECTIONS_CONFIGURATION_H
 #define QNCORRECTIONS_CONFIGURATION_H
-/************************************************************************** 
- * Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>    * 
- * See cxx source for full Copyright notice                               * 
- *************************************************************************/ 
+/***************************************************************************
+ * Package:       FlowVectorCorrections                                    *
+ * Authors:       Jaap Onderwaater, GSI, jacobus.onderwaater@cern.ch       *
+ *                Ilya Selyuzhenkov, GSI, ilya.selyuzhenkov@gmail.com      *
+ *                Contributors are mentioned in the code where appropriate.*
+ * Development:   2012-2015                                                *
+ * See cxx source for GPL licence et. al.                                  *
+ ***************************************************************************/
+ 
  
  
 
