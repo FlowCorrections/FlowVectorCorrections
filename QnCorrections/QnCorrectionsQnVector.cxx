@@ -44,6 +44,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() :
   fQvectorX(0x0),
   fQvectorY(0x0),
   fBin(-1),
+  fQvectorNormalization(3),
   fSumW(0.0),
   fN(0),
   fEventPlaneStatus()
@@ -68,6 +69,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nHarmonics1) :
   fQvectorX(0x0),
   fQvectorY(0x0),
   fBin(-1),
+  fQvectorNormalization(3),
   fSumW(0.0),
   fN(0),
   fEventPlaneStatus()
@@ -105,6 +107,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &c) :
   fSumW=c.SumOfWeights();
   fN=c.N();
   fBin=c.Bin();
+  fQvectorNormalization=c.QvectorNormalization();
   fQvectorX=TArrayF(c.Qx());
   fQvectorY=TArrayF(c.Qy());
   fEventPlaneStatus=TArrayC(c.GetEventPlaneStatus());

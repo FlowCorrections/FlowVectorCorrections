@@ -31,7 +31,6 @@ class QnCorrectionsQnVector : public TObject {
         
   QnCorrectionsQnVector();
   QnCorrectionsQnVector(Int_t nHarmonics);
-  QnCorrectionsQnVector(const QnCorrectionsQnVector &c);
   ~QnCorrectionsQnVector();
 
   enum EventPlaneStatus {
@@ -55,8 +54,9 @@ class QnCorrectionsQnVector : public TObject {
   void SetEventPlaneStatus(Int_t harmonic, EventPlaneStatus status)   {fEventPlaneStatus[harmonic-1] |= (1<<status);}
   void SetEventPlaneStatus(Int_t harmonic, Int_t status)   {fEventPlaneStatus[harmonic-1] |= (1<<status);}
   void UnsetEventPlaneStatus(Int_t harmonic, EventPlaneStatus status) {fEventPlaneStatus[harmonic-1] |= (0<<status);}
+  void SetQvectorNormalization(UChar_t n) {fQvectorNormalization=n;}
 
-  //  if(harmonic>0 && harmonic<=fgkEPMaxHarmonics) 
+  //  if(harmonic>0 && harmonic<=fgkEPMaxHarmonics) {
   //    fEventPlaneStatus[harmonic-fgkEPMinHarmonics] |= (1<<status);
   //}
   //void UnsetEventPlaneStatus(Int_t harmonic, EventPlaneStatus status) { 
@@ -93,10 +93,11 @@ class QnCorrectionsQnVector : public TObject {
   Char_t GetEventPlaneStatus(Int_t h) const {return fEventPlaneStatus[h-1];} 
   TArrayC GetEventPlaneStatus() const {return fEventPlaneStatus;} 
   Bool_t  CheckEventPlaneStatus(Int_t h, EventPlaneStatus flag) const;
-  Bool_t  CheckEventPlaneStatus(Int_t h, Int_t) const;
+  Bool_t  CheckEventPlaneStatus(Int_t h, Int_t i) const;
   Float_t SumOfWeights()   const {return fSumW;}
   Int_t    N()             const {return fN;}
   Double_t EventPlane(Int_t h) const;
+  UChar_t QvectorNormalization() const {return fQvectorNormalization;}
 
 
 
@@ -107,11 +108,13 @@ class QnCorrectionsQnVector : public TObject {
   TArrayF fQvectorY;     // Qy vector components for n harmonics
   TArrayC fEventPlaneStatus;  // Bit maps for the event plane status (1 char per detector and per harmonic)
   Short_t fBin;
+  UChar_t fQvectorNormalization; //  0: Q/sqrt(M)  ,  1: Q/M  , 2:  Q/|Q|,   3: Q 
   //UChar_t fEventPlaneStatus[QnCorrectionsConstants::nHarmonics];  // Bit maps for the event plane status (1 char per detector and per harmonic)
   Float_t fSumW;                     // Sum of weights
   Int_t   fN;                        // Number of elements (tracks or sectors)
 
      
+  QnCorrectionsQnVector(const QnCorrectionsQnVector &c);
   QnCorrectionsQnVector& operator= (const QnCorrectionsQnVector &c);
 
 

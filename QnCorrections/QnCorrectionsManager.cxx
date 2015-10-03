@@ -57,6 +57,7 @@ ClassImp(QnCorrectionsManager)
     fDataVectors(),
     fConfDataVectors(),
     fNumberOfQnConfigurations(0),
+    fNumberOfDetectors(0),
     fCorrectionStep(0),
     fPassesRequired(0),
     fNumberOfQnConfigurationsForDetector(),
@@ -158,7 +159,12 @@ void QnCorrectionsManager::Process() {
 
   FillHistograms();
 
-  if(fSetFillTreeQnVectors) fTreeQnVectors->Fill();
+  if(fSetFillTreeQnVectors){
+    for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
+      fQvecOutputList[iconf]=((QnCorrectionsQnVector*) CorrectedQnVector(iconf)->At(0));
+    }
+    fTreeQnVectors->Fill();
+  }
 
 //   ClearEvent();
 
@@ -449,13 +455,15 @@ void QnCorrectionsManager::Initialize() {
     fTreeQnVectors = new TTree("Qvectors","Qvector values");
     fTreeQnVectors->SetDirectory(0);
 
-    TClonesArray* QvecList[50];
+    QnCorrectionsQnVector* treevectors[50];
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
       QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
       if(!QnConf) continue;
-      QvecList[QnConf->GlobalIndex()]  = CorrectedQnVector(iconf);
-      QvecList[QnConf->GlobalIndex()]->SetName(QnConf->QnConfigurationName());
-      fTreeQnVectors->Branch(QnConf->QnConfigurationName(),&QvecList[QnConf->GlobalIndex()],256000,1);
+      //fQvecOutputList[QnConf->GlobalIndex()]->At(0)  = new QnCorrectionsQnVector(); //CorrectedQnVector(iconf,istep);
+      //fQvecOutputList[QnConf->GlobalIndex()]->SetName(QnConf->QnConfigurationName());
+      //fTreeQnVectors->Branch(Form("%s_%d",QnConf->QnConfigurationName().Data(),istep),&fQvecOutputList[QnConf->GlobalIndex()],256000,1);
+      fQvecOutputList[iconf]=new QnCorrectionsQnVector();
+      fTreeQnVectors->Branch(QnConf->QnConfigurationName(),&fQvecOutputList[iconf],256000,1);
     }
 
   }
@@ -540,11 +548,9 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
   }
 
 
-
-
-  if(QnConf->GetQnNormalizationMethod()==0)        QnVector->SetQoverSquareRootOfM();
-  else if(QnConf->GetQnNormalizationMethod()==1)   QnVector->SetQoverM();
-  else if(QnConf->GetQnNormalizationMethod()==2)   QnVector->Normalize();
+  if(QnConf->GetQnNormalizationMethod()==0)        {QnVector->SetQoverSquareRootOfM();QnVector->SetQvectorNormalization(0);}
+  else if(QnConf->GetQnNormalizationMethod()==1)   {QnVector->SetQoverM();QnVector->SetQvectorNormalization(1);}
+  else if(QnConf->GetQnNormalizationMethod()==2)   {QnVector->Normalize();QnVector->SetQvectorNormalization(2);}
 
   return kTRUE;
 
@@ -931,7 +937,6 @@ void QnCorrectionsManager::FillHistogramsMeanQ(QnCorrectionsConfiguration* QnCon
   Bool_t once=kTRUE;
 
   for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){
-
 
     if(Qvec->CheckEventPlaneStatus(ih, step)){
       fOutputHistograms[iconf]->CalibrationHistogramQ(step,ih,0)->AddBinContent(bin,Qvec->Qx(ih));
@@ -2071,10 +2076,10 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
   fPassesRequired=fCorrectionStep;
 
 
-  TString label="allRuns";
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
+    TString label="allRuns";
     if(QnConf->CorrectWithEventLabel()) label=fLabel;
 
     TList* list = GetInputListWithLabel(label);
@@ -2248,13 +2253,13 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
   //
 
 
-  THashList* dataByRun = new THashList();
-  THashList* dataAllRuns = new THashList();
+  TList* dataByRun = new TList();
+  //TList* dataAllRuns = new TList();
   dataByRun->SetName(fLabel);
-  dataAllRuns->SetName("allRuns");
+  //dataAllRuns->SetName("allRuns");
 
   dataByRun->SetOwner();
-  dataAllRuns->SetOwner();
+  //dataAllRuns->SetOwner();
 
 
   QnCorrectionsConfiguration* QnConf = 0x0;
@@ -2262,9 +2267,9 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
 
-    THashList* detector = new THashList();
-    THashList* detectorM = new THashList();
-    THashList* detectorC = new THashList();
+    TList* detector = new TList();
+    TList* detectorM = new TList();
+    TList* detectorC = new TList();
 
     detector->SetOwner();
     detectorM->SetOwner();
@@ -2288,8 +2293,10 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
     if(QnConf->IsFillHistogram(QnCorrectionsSteps::kTwist)&&QnConf->GetTwistAndRescalingMethod()==0)  detector->Add(fOutputHistograms[iconf]->U2nHistogramE());
 
     detector->SetName(Form("Qvec%s",QnConf->QnConfigurationName().Data()));
-    dataByRun->Add(detector);
-    dataAllRuns->Add(detector);
+    if(detector->GetEntries()!=0){
+      dataByRun->Add(detector);
+      //dataAllRuns->Add(detector);
+    }
 
 
     if(QnConf->IsFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)){
@@ -2301,8 +2308,10 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
         if(fOutputHistograms[iconf]->GroupEqualizationHistogramE(is)) detectorM->Add(fOutputHistograms[iconf]->GroupEqualizationHistogramE(is));
       }
       detectorM->SetName(Form("Mult%s",QnConf->QnConfigurationName().Data()));
-      dataByRun->Add(detectorM);
-      dataAllRuns->Add(detectorM);
+      if(detectorM->GetEntries()!=0){
+        dataByRun->Add(detectorM);
+        //dataAllRuns->Add(detectorM);
+      }
     }
 
     
@@ -2312,7 +2321,7 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
       if(fOutputHistograms[iconf]->GetRotationHistogramE(0)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogramE(0));
       detectorC->SetName(Form("Correlations%s",QnConf->QnConfigurationName().Data()));
       dataByRun->Add(detectorC);
-      dataAllRuns->Add(detectorC);
+      //dataAllRuns->Add(detectorC);
     }
 
 
@@ -2332,7 +2341,7 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
   }
 
   fListOutputHistogramsQnCorrections->Add(dataByRun);
-  fListOutputHistogramsQnCorrections->Add(dataAllRuns);
+  //fListOutputHistogramsQnCorrections->Add(dataAllRuns);
 
 }
 
@@ -2347,14 +2356,14 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
   // Finish Task 
   //
 
-  THashList* dataByRunQA = new THashList();
-  THashList* dataAllRunsQA = new THashList();
+  TList* dataByRunQA = new TList();
+  //TList* dataAllRunsQA = new TList();
   dataByRunQA->SetName(fLabel);
-  dataAllRunsQA->SetName("allRuns");
+  //dataAllRunsQA->SetName("allRuns");
 
 
   dataByRunQA->SetOwner();
-  dataAllRunsQA->SetOwner();
+  //dataAllRunsQA->SetOwner();
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
@@ -2362,9 +2371,9 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
     if(!QnConf) continue;
 
 
-    THashList* detector = new THashList();
-    THashList* detectorM = new THashList();
-    THashList* detectorC = new THashList();
+    TList* detector = new TList();
+    TList* detectorM = new TList();
+    TList* detectorC = new TList();
 
     detector->SetOwner();
     detectorM->SetOwner();
@@ -2392,14 +2401,14 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 
     detector->SetName(Form("Qvec%s",QnConf->QnConfigurationName().Data()));
     dataByRunQA->Add(detector);
-    dataAllRunsQA->Add(detector);
+    //dataAllRunsQA->Add(detector);
 
 
 
 
 
-    THashList* detectorMqa = new THashList();
-    THashList* detectorCqa = new THashList();
+    TList* detectorMqa = new TList();
+    TList* detectorCqa = new TList();
 
     detectorMqa->SetOwner();
     detectorCqa->SetOwner();
@@ -2411,7 +2420,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
       }
       detectorMqa->SetName(Form("Mult%s",QnConf->QnConfigurationName().Data()));
       dataByRunQA->Add(detectorMqa);
-      dataAllRunsQA->Add(detectorMqa);
+      //dataAllRunsQA->Add(detectorMqa);
     }
 
     
@@ -2420,7 +2429,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
       if(fOutputHistograms[iconf]->GetRotationHistogramE(1)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogramE(1));
       detectorC->SetName(Form("Correlations%s",QnConf->QnConfigurationName().Data()));
       dataByRunQA->Add(detectorC);
-      dataAllRunsQA->Add(detectorC);
+      //dataAllRunsQA->Add(detectorC);
     }
 
 
@@ -2442,7 +2451,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 
 
   fListHistogramsQA->Add(dataByRunQA);
-  fListHistogramsQA->Add(dataAllRunsQA);
+  //fListHistogramsQA->Add(dataAllRunsQA);
 
 }
 
@@ -2450,7 +2459,7 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 void QnCorrectionsManager::AddQnConfiguration(QnCorrectionsConfiguration* QnConf, Int_t type)
 {
     
-  AddDetectorId(type);
+  AddDetectorType(type);
   Int_t detId=fDetectorIdMap[type]-1;
   
   QnConf->SetDetectorId( (UShort_t) detId);

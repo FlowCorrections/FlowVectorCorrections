@@ -58,6 +58,7 @@ class QnCorrectionsManager : public TObject {
   void SetDataContainer(Int_t var, Float_t val) {fDataContainer[var]=val;}; //set event and track/hit variables
   
   Int_t GetNumberOfQnConfigurations()    const  {return fNumberOfQnConfigurations;}
+  Int_t GetNumberOfDetectors()           const  {return fNumberOfDetectors;}
   
   Bool_t ShouldFillTreeQnVectors()              {return fSetFillTreeQnVectors;}   
   Bool_t ShouldFillHistogramsQA()            {return fSetFillHistogramsQA;}   
@@ -96,6 +97,7 @@ class QnCorrectionsManager : public TObject {
   //void 2nTwistQvec(Float_t* values, Int_t corpar);
   //void 2nRescalingQvec(Float_t* values, Int_t corpar);
   //void U2nTwistAndRescalingQvec(Float_t* values, Int_t corpar);
+  Int_t GetDetectorId(Int_t type)             { return fDetectorIdMap[type]-1;}
   void ClearEvent();
 
 
@@ -114,7 +116,7 @@ class QnCorrectionsManager : public TObject {
   void FillHistogramsQnAlignment(QnCorrectionsConfiguration* QnConf);
   void FillHistogramsQnAlignmentQA(QnCorrectionsConfiguration* QnConf);
 
-  void AddDetectorId(Int_t id)                         { if(fDetectorIdMap[id]==0) fDetectorIdMap[id] = ++fNdetectors;};
+  void AddDetectorType(Int_t type)                     { if(fDetectorIdMap[type]==0) fDetectorIdMap[type] = ++fNdetectors;};
   void ApplyQnCorrections();
   void SetCorrectionStep(Int_t step) {fCorrectionStep=step;};
   Int_t GetCorrectionStep()          const  {return fCorrectionStep;}
@@ -166,6 +168,8 @@ class QnCorrectionsManager : public TObject {
   Float_t fDataContainer[QnCorrectionsConstants::nDataContainerVariables];
   TString fLabel; // events can be characterised with a label, corrections are applied with events from this label (for example label=<run number>)
   Bool_t fProcessedFirstEvent;
+
+  QnCorrectionsQnVector* fQvecOutputList[QnCorrectionsConstants::nQnConfigurations];
 
   Bool_t fSetFillTreeQnVectors;                                                                              // whether to create, fill and write Qn vectors to tree
   Bool_t fSetFillHistogramsQA;                                                                              // whether to create, fill and write QA histograms to list
