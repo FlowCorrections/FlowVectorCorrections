@@ -6,7 +6,14 @@
 inputfolder=$1
 outputfolder=$2
 
-rsync -av $1/ $2
+if [ $# -lt 1 ]; then
+  inputfolder=../QnCorrections
+fi
+if [ $# -lt 2 ]; then
+  outputfolder=AliQnCorrections
+fi
+
+rsync -av $inputfolder/ $outputfolder
 
 listclasses="Manager Axes DataVector QnVector Cuts Steps Histograms Configuration Constants"
 
