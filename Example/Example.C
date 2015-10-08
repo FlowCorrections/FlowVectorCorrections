@@ -217,6 +217,7 @@ void Finish(QnCorrectionsManager* QnMan){
 
 void Loop(QnCorrectionsManager* QnMan){
 
+  QnMan->Clear();
 
   // Set event data
   QnMan->GetDataContainer()[kCentrality]=gRandom->Rndm()*100;
@@ -265,6 +266,7 @@ void Loop(QnCorrectionsManager* QnMan){
 
 
   QnMan->Process();
+
 
 }
 

@@ -529,12 +529,9 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
   QnCorrectionsQnVector* QnVector = static_cast<QnCorrectionsQnVector*>(fCorrectedQvectors[QnConf->GlobalIndex()][(Int_t) useEqualizedWeights]->At(0));
   fLastStep[QnConf->GlobalIndex()]=(Int_t) useEqualizedWeights;
 
-  Int_t EqualizationMethod=-1;
-  if(useEqualizedWeights) EqualizationMethod=QnConf->GetDataVectorEqualizationMethod();
 
-
-  if(EqualizationMethod==-1) QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector);
-  else                       QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector, EqualizationMethod);
+  if(!useEqualizedWeights)   QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector);
+  else                       QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector, QnConf->GetDataVectorEqualizationMethod());
 
   if(QnVector->N()==0) {               // If detector is empty
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kUndefined);
@@ -542,7 +539,7 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
   }
   else{
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){
-      if(EqualizationMethod==-1) QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kPass0);
+      if(!useEqualizedWeights)   QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kPass0);
       else                       QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kDataVectorEqualization);
     }
   }
