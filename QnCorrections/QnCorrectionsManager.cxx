@@ -43,7 +43,7 @@
 #include <THashList.h>
 #include <TClonesArray.h>
 #include <TRandom3.h>
-#include <TArrayS.h>
+//#include <TArrayS.h>
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -51,69 +51,181 @@ using namespace std;
 ClassImp(QnCorrectionsManager)
 
 
-  //_______________________________________________________________________________
-  QnCorrectionsManager::QnCorrectionsManager() :
-    fDataContainer(),
-    fDataVectors(),
-    fConfDataVectors(),
-    fNumberOfQnConfigurations(0),
-    fNumberOfDetectors(0),
-    fCorrectionStep(0),
-    fPassesRequired(0),
-    fNumberOfQnConfigurationsForDetector(),
-    fNdetectors(0),
-    fCorrectedQvectors(),
-    fListInputHistogramsQnCorrections(0x0),
-    fLabel(""),
-    fProcessedFirstEvent(kFALSE),
-    fListQnVectors(0x0),
-    fSetFillTreeQnVectors(kFALSE),
-    fSetFillHistogramsQA(kFALSE),
-    fSetFillHistogramsQnCorrections(kFALSE),
-    fTreeQnVectors(0x0),
-    fInputHistograms(),
-    fOutputHistograms(),
-    fListOutputHistogramsQnCorrections(),
-    fListHistogramsQA(),
-    fLastStep(),
-    fOutputHistogramsQnCorrectionsFile(0x0),
-    fHistogramsQAFile(0x0),
-    fTreeQnVectorsFile(0x0)
+//_______________________________________________________________________________
+QnCorrectionsManager::QnCorrectionsManager() :
+  TObject(),
+  fDataVectors(),
+  fConfDataVectors(),
+  fQnCorrectionsConfigurations(),
+  fCorrectedQvectors(),
+  fLastStep(),
+  fInputHistograms(),
+  fOutputHistograms(),
+  //fDetectorIdMap(0x0),
+  fNumberOfQnConfigurations(0),
+  fNumberOfDetectors(0),
+  fNumberOfQnConfigurationsForDetector(),
+  fNdetectors(0),
+  fIndex(),
+  fCorrectionStep(0),
+  fPassesRequired(0),
+  fCalibrateByRun(kFALSE),
+  fListInputHistogramsQnCorrections(0x0),
+  fDataContainer(),
+  fLabel(""),
+  fProcessedFirstEvent(kFALSE),
+  fQvecOutputList(),
+  fSetFillTreeQnVectors(kFALSE),
+  fSetFillHistogramsQA(kFALSE),
+  fSetFillHistogramsQnCorrections(kFALSE),
+  fListQnVectors(0x0),
+  fTreeQnVectors(0x0),
+  fListOutputHistogramsQnCorrections(0x0),
+  fListHistogramsQA(0x0),
+  fOutputHistogramsQnCorrectionsFile(0x0),
+  fHistogramsQAFile(0x0),
+  fTreeQnVectorsFile(0x0)
 {
   //
   // default constructor
   //
 
   for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fNumberOfQnConfigurationsForDetector[i]=0;
-
   for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fDataVectors[i] = new TClonesArray("QnCorrectionsDataVector", 100000);
   for(Int_t i=0; i<QnCorrectionsConstants::nQnConfigurations; ++i) fConfDataVectors[i] = new TClonesArray("QnCorrectionsDataVector", 100000);
   for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fQnCorrectionsConfigurations[i] = new TClonesArray("QnCorrectionsConfiguration", QnCorrectionsConstants::nQnConfigurations);
 
 
   for(Int_t iconf=0; iconf<QnCorrectionsConstants::nQnConfigurations; ++iconf){ 
-    //fQvectors[iconf] = new TClonesArray("QnCorrectionsQnVector", 100000);
-    //TClonesArray * arrayQvectors = new TClonesArray("TClonesArray", QnCorrectionsConstants::nQnConfigurations);
-    //arrayQvectors->SetName(Form("QnCorrectionsQnVector%d", iconf));
-    //fQvectors[iconf]->Add(arrayQvectors);
     fInputHistograms[iconf]=0x0;
-    fInputHistograms[iconf]=0x0;
+    fOutputHistograms[iconf]=0x0;
     fLastStep[iconf]=0;
+    fIndex[iconf][0]=0x0;
+    fIndex[iconf][1]=0x0;
   }
 
   for(Int_t i=0; i<QnCorrectionsConstants::nDataContainerVariables; i++) fDataContainer[i]=-999.;
 
   fListOutputHistogramsQnCorrections   = new TList();
-  fListHistogramsQA = new TList();
-
   fListOutputHistogramsQnCorrections->SetName("CalibrationHistograms");
+  fListHistogramsQA = new TList();
+  fListHistogramsQA->SetName("CalibrationHistogramsQA");
+
   fListOutputHistogramsQnCorrections->SetOwner();
-  fListHistogramsQA->SetName("CalibrationQA");
   fListHistogramsQA->SetOwner();
 
   fListQnVectors = new TList();
 
 }
+
+
+
+//_______________________________________________________________________________
+QnCorrectionsManager::QnCorrectionsManager(const QnCorrectionsManager &c) :
+  TObject(),
+  fDetectorIdMap(c.fDetectorIdMap),
+  fNumberOfQnConfigurations(c.fNumberOfQnConfigurations),
+  fNumberOfDetectors(c.fNumberOfDetectors),
+  fNdetectors(c.fNdetectors),
+  fCorrectionStep(c.fCorrectionStep),
+  fPassesRequired(c.fPassesRequired),
+  fCalibrateByRun(c.fCalibrateByRun),
+  fListInputHistogramsQnCorrections(c.fListInputHistogramsQnCorrections),
+  fLabel(c.fLabel),
+  fProcessedFirstEvent(c.fProcessedFirstEvent),
+  fSetFillTreeQnVectors(c.fSetFillTreeQnVectors),
+  fSetFillHistogramsQA(c.fSetFillHistogramsQA),
+  fSetFillHistogramsQnCorrections(c.fSetFillHistogramsQnCorrections),
+  fListQnVectors(c.fListQnVectors),
+  fTreeQnVectors(c.fTreeQnVectors),
+  fListOutputHistogramsQnCorrections(c.fListOutputHistogramsQnCorrections),
+  fListHistogramsQA(c.fListHistogramsQA),
+  fOutputHistogramsQnCorrectionsFile(c.fOutputHistogramsQnCorrectionsFile),
+  fHistogramsQAFile(c.fHistogramsQAFile),
+  fTreeQnVectorsFile(c.fTreeQnVectorsFile)
+{
+  //
+  // copy constructor
+  //
+
+  for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fNumberOfQnConfigurationsForDetector[i]=c.fNumberOfQnConfigurationsForDetector[i];
+  for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fDataVectors[i] = c.fDataVectors[i];
+  for(Int_t i=0; i<QnCorrectionsConstants::nQnConfigurations; ++i) fConfDataVectors[i] = c.fConfDataVectors[i] ;
+  for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fQnCorrectionsConfigurations[i] = c.fQnCorrectionsConfigurations[i];
+
+
+  for(Int_t iconf=0; iconf<QnCorrectionsConstants::nQnConfigurations; ++iconf){ 
+    fInputHistograms[iconf]=c.fInputHistograms[iconf];
+    fOutputHistograms[iconf]=c.fOutputHistograms[iconf];
+    fLastStep[iconf]=c.fLastStep[iconf];
+    fIndex[iconf][0]=c.fIndex[iconf][0];
+    fIndex[iconf][1]=c.fIndex[iconf][1];
+  }
+
+  for(Int_t i=0; i<QnCorrectionsConstants::nDataContainerVariables; i++){
+    fDataContainer[i]= c.fDataContainer[i];
+  }
+
+}
+
+
+
+
+//_______________________________________________________________________________
+QnCorrectionsManager & QnCorrectionsManager::operator=(const QnCorrectionsManager &c) {
+  if (this == &c) return *this;
+  else {
+    fDetectorIdMap=c.fDetectorIdMap;
+    fNumberOfQnConfigurations=c.fNumberOfQnConfigurations;
+    fNumberOfDetectors=c.fNumberOfDetectors;
+    fNdetectors=c.fNdetectors;
+    fCorrectionStep=c.fCorrectionStep;
+    fPassesRequired=c.fPassesRequired;
+    fCalibrateByRun=c.fCalibrateByRun;
+    fListInputHistogramsQnCorrections=c.fListInputHistogramsQnCorrections;
+    fLabel=c.fLabel;
+    fProcessedFirstEvent=c.fProcessedFirstEvent;
+    fSetFillTreeQnVectors=c.fSetFillTreeQnVectors;
+    fSetFillHistogramsQA=c.fSetFillHistogramsQA;
+    fSetFillHistogramsQnCorrections=c.fSetFillHistogramsQnCorrections;
+    fListQnVectors=c.fListQnVectors;
+    fTreeQnVectors=c.fTreeQnVectors;
+    fListOutputHistogramsQnCorrections=c.fListOutputHistogramsQnCorrections;
+    fListHistogramsQA=c.fListHistogramsQA;
+    fOutputHistogramsQnCorrectionsFile=c.fOutputHistogramsQnCorrectionsFile;
+    fHistogramsQAFile=c.fHistogramsQAFile;
+    fTreeQnVectorsFile=c.fTreeQnVectorsFile;
+
+    for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fNumberOfQnConfigurationsForDetector[i]=c.fNumberOfQnConfigurationsForDetector[i];
+    for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fDataVectors[i] = c.fDataVectors[i];
+    for(Int_t i=0; i<QnCorrectionsConstants::nQnConfigurations; ++i) fConfDataVectors[i] = c.fConfDataVectors[i] ;
+    for(Int_t i=0; i<QnCorrectionsConstants::nDataVectors; ++i) fQnCorrectionsConfigurations[i] = c.fQnCorrectionsConfigurations[i];
+
+
+    for(Int_t iconf=0; iconf<QnCorrectionsConstants::nQnConfigurations; ++iconf){ 
+      fInputHistograms[iconf]=c.fInputHistograms[iconf];
+      fOutputHistograms[iconf]=c.fOutputHistograms[iconf];
+      fLastStep[iconf]=c.fLastStep[iconf];
+      fIndex[iconf][0]=c.fIndex[iconf][0];
+      fIndex[iconf][1]=c.fIndex[iconf][1];
+    }
+
+    for(Int_t i=0; i<QnCorrectionsConstants::nDataContainerVariables; i++){
+      fDataContainer[i]= c.fDataContainer[i];
+    }
+
+      return *this;
+  }
+    
+}
+
+
+
+
+
+
+
+
 
 
 //____________________________________________________________________________
@@ -212,61 +324,19 @@ void QnCorrectionsManager::ApplyQnCorrections() {
 
 
     BuildQnVectors(QnConf, kFALSE);
-    if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)) {CallStepEqualizeDataVectorWeights(QnConf);BuildQnVectors(QnConf, kTRUE);}
+    if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) {CallStepEqualizeDataVectorWeights(QnConf);BuildQnVectors(QnConf, kTRUE);}
     
-    if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kRecentering))             CallStepRecenterQnVector(QnConf);
+    if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kRecentering))             CallStepRecenterQnVector(QnConf);
     
-    if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kAlignment))               RotateQvec(QnConf);
+    if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kAlignment))               RotateQvec(QnConf);
 
-    if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kTwist))                   CallStepTwistAndRescaleQnVector(QnConf);
+    if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kTwist))                   CallStepTwistAndRescaleQnVector(QnConf);
 
 
 
   }
 }
 
-
-//    if(IsFillHistogram(QnCorrectionsSteps::kRecentering)){
-//
-//      QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization) BuildQnVectors(QnConf, kTRUE);
-//      else BuildQnVectors(QnConf, kFALSE);
-//
-//    }
-//
-//    Int_t prevStep=-1;
-//    for(Int_t istep=0; istep<QnCorrectionsSteps::kNcorrectionSteps; istep++) {
-//      if(QnConf->GetCorrectionStep(istep)==prevStep) continue;
-//      if(QnConf->GetCorrectionPass(istep)>fCorrectionStep) break;
-//      
-//
-//
-//
-//      // apply corrections
-//      switch (QnConf->GetCorrectionStep(istep))
-//      {
-//        case QnCorrectionsSteps::kPass0:
-//           if(QnConf->doChannelEqualization()&&!fSetFillHistogramsQA) break;
-//           BuildQnVectors(QnConf, kFALSE);             // Get Q vectors with raw detector information
-//           break;
-//
-//        case QnCorrectionsSteps::kDataVectorEqualization:
-//           CallStepEqualizeDataVectorWeights(QnConf);
-//           BuildQnVectors(QnConf, kTRUE);              // Get Q vectors with equalized detector information
-//           break;
-//
-//        case QnCorrectionsSteps::kRecentering:
-//           CallStepRecenterQnVector(QnConf);
-//           break;
-//      }
-//
-//
-//
-//      prevStep=QnConf->GetCorrectionStep(istep);
-//    }
-//
-//  }
-//
-//}
 
 
 
@@ -278,96 +348,21 @@ void QnCorrectionsManager::FillHistograms() {
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
     if(fSetFillHistogramsQnCorrections){
-      if(QnConf->IsFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)||QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)){
+      if(QnConf->IsFillHistogram(QnCorrectionsConstants::kDataVectorEqualization)||QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)){
         FillHistogramsWeights(QnConf);
-        if(QnConf->IsFillHistogram(QnCorrectionsSteps::kRecentering))    {FillHistogramsMeanQ(QnConf, (Int_t) QnCorrectionsSteps::kDataVectorEqualization);}
+        if(QnConf->IsFillHistogram(QnCorrectionsConstants::kRecentering))    {FillHistogramsMeanQ(QnConf, (Int_t) QnCorrectionsConstants::kDataVectorEqualization);}
       }
-      if(QnConf->IsFillHistogram(QnCorrectionsSteps::kRecentering))      FillHistogramsMeanQ(QnConf, (Int_t) QnCorrectionsSteps::kPass0); 
-      if(QnConf->IsFillHistogram(QnCorrectionsSteps::kAlignment))        FillHistogramsQnAlignment(QnConf); 
-      if(QnConf->IsFillHistogram(QnCorrectionsSteps::kTwist))            FillHistogramsU2n(QnConf); 
+      if(QnConf->IsFillHistogram(QnCorrectionsConstants::kRecentering))      FillHistogramsMeanQ(QnConf, (Int_t) QnCorrectionsConstants::kPass0); 
+      if(QnConf->IsFillHistogram(QnCorrectionsConstants::kAlignment))        FillHistogramsQnAlignment(QnConf); 
+      if(QnConf->IsFillHistogram(QnCorrectionsConstants::kTwist))            FillHistogramsU2n(QnConf); 
     }
-
-    // fill correction histograms 
-
-    //Int_t prevStep=-1;
-    //for(Int_t istep=0; istep<fCorrectionStep; istep++) {
-
-    //  if(fSetFillHistogramsQnCorrections){
-    //    switch (istep+1)
-    //    {
-    //      case QnCorrectionsSteps::kDataVectorEqualization:
-    //        if(QnConf->doChannelEqualization()) FillHistogramsWeights(QnConf) ;
-    //        break;
-    //         
-    //      case QnCorrectionsSteps::kRecentering:
-    //        if(QnConf->doRecentering()) FillHistogramsMeanQ(QnConf, ( QnConf->doChannelEqualization() ? (Int_t) QnCorrectionsSteps::kDataVectorEqualization : (Int_t) QnCorrectionsSteps::kPass0));
-    //        if(QnConf->GetTwistAndRescalingMethod()==2) FillHistogramsQnCorrelations(QnConf);
-    //        break;
-
-    //    }
-    //  }
-    //}
-
-
-    //  if(doChannelEqualization) FillHistogramsWeights(QnConf) ;
-    //  FillHistogramsMeanQ(QnConf, ( QnConf->doChannelEqualization() ? (Int_t) QnCorrectionsSteps::kDataVectorEqualization : (Int_t) QnCorrectionsSteps::kPass0));
-    //  if(QnConf->GetTwistAndRescalingMethod()==2) FillHistogramsQnCorrelations(QnConf);
-
-
-
-
-
-
-
-      //if(QnConf->GetCorrectionStep(istep)==prevStep) continue;
-      //if(QnConf->GetCorrectionPass(istep+1)>(fCorrectionStep+1)) break;
-
-    //  if(fSetFillHistogramsQnCorrections){
-    //    switch (QnConf->GetCorrectionStep(istep+1))
-    //    {
-    //      case QnCorrectionsSteps::kDataVectorEqualization:
-    //        FillHistogramsWeights(QnConf) ;
-    //        break;
-    //         
-    //      case QnCorrectionsSteps::kRecentering:
-    //        FillHistogramsMeanQ(QnConf, ( QnConf->doChannelEqualization() ? (Int_t) QnCorrectionsSteps::kDataVectorEqualization : (Int_t) QnCorrectionsSteps::kPass0));
-    //        break;
-
-    //      case QnCorrectionsSteps::kTwist:
-    //        if(QnConf->GetTwistAndRescalingMethod()==2) FillHistogramsQnCorrelations(QnConf);
-    //    }
-    //  }
-    //  prevStep=QnConf->GetCorrectionStep(istep);
-    //}
-
-
-
-    // Fill Qn correction histograms
-    
-    
-    //  if(fSetFillHistogramsQnCorrections){
-
-    //if(QnConf->GetCorrectionStep(fCorrectionStep)>=((Int_t)QnCorrectionsSteps::kRecentering)||
-    //  (QnConf->GetCorrectionStep(fCorrectionStep+1)>=((Int_t)QnCorrectionsSteps::kRecentering)))
-    //                                                                                          FillHistogramsMeanQ(QnConf, ( QnConf->doChannelEqualization() ? (Int_t) QnCorrectionsSteps::kDataVectorEqualization : (Int_t) QnCorrectionsSteps::kPass0));
-
-    //if(QnConf->doChannelEqualization())                                                       FillHistogramsWeights(QnConf) ;
-
-    //if(QnConf->GetTwistAndRescalingMethod()==2)
-    //  if(QnConf->GetCorrectionStep(fCorrectionStep)>=((Int_t)QnCorrectionsSteps::kTwist)||
-    //    (QnConf->GetCorrectionStep(fCorrectionStep+1)>=((Int_t)QnCorrectionsSteps::kTwist)))
-    //                                                                                          FillHistogramsQnCorrelations(QnConf);
-
-    //if(QnConf->GetTwistAndRescalingMethod()==0)                                                    FillHistogramsU2n(QnConf);
-
-    //}
 
     // Fill QA correction histograms
 
     if(fSetFillHistogramsQA){
                                                                                               //FillHistogramsQnCorrelationsQA(QnConf);
                                                                                               FillHistogramsMeanQ_QA(QnConf);
-       if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kAlignment))                          FillHistogramsQnAlignmentQA(QnConf); 
+       if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kAlignment))                          FillHistogramsQnAlignmentQA(QnConf); 
     }
 
   }
@@ -436,7 +431,7 @@ void QnCorrectionsManager::Initialize() {
     fInputHistograms[iconf]  = new QnCorrectionsHistograms();
     fOutputHistograms[iconf] = new QnCorrectionsHistograms();
     fOutputHistograms[iconf]->CreateCalibrationHistograms(QnConf,fCorrectionStep);
-    for(Int_t istep=0; istep<QnCorrectionsSteps::kNcorrectionSteps; istep++)
+    for(Int_t istep=0; istep<QnCorrectionsConstants::kNcorrectionSteps; istep++)
       {fCorrectedQvectors[iconf][istep] = new TClonesArray("QnCorrectionsQnVector", 10);
        TClonesArray& arr = *(fCorrectedQvectors[iconf][istep]);
        if(istep>1) continue;
@@ -534,13 +529,13 @@ Bool_t QnCorrectionsManager::BuildQnVectors(QnCorrectionsConfiguration* QnConf, 
   else                       QnCorrectionsDataVector::FillQvector(fConfDataVectors[QnConf->GlobalIndex()], QnVector, QnConf->GetDataVectorEqualizationMethod());
 
   if(QnVector->N()==0) {               // If detector is empty
-    for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kUndefined);
+    for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) QnVector->SetEventPlaneStatus(ih, QnCorrectionsConstants::kUndefined);
     return kTRUE;
   }
   else{
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){
-      if(!useEqualizedWeights)   QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kPass0);
-      else                       QnVector->SetEventPlaneStatus(ih, QnCorrectionsSteps::kDataVectorEqualization);
+      if(!useEqualizedWeights)   QnVector->SetEventPlaneStatus(ih, QnCorrectionsConstants::kPass0);
+      else                       QnVector->SetEventPlaneStatus(ih, QnCorrectionsConstants::kDataVectorEqualization);
     }
   }
 
@@ -591,7 +586,7 @@ Bool_t QnCorrectionsManager::CallStepRecenterQnVector(QnCorrectionsConfiguration
   //if( QnConf->GetCorrectionStep(fCorrectionStep)<2||!QnConf->doRecentering()) return kFALSE;
 
   useStep=0;
-  if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)) useStep=1;
+  if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) useStep=1;
 
   QnCorrectionsAxes* EPbinning =  QnConf->GetRecenteringAxes();
 
@@ -607,7 +602,7 @@ Bool_t QnCorrectionsManager::CallStepRecenterQnVector(QnCorrectionsConfiguration
   if(useStep==0) QvectorIn=static_cast<QnCorrectionsQnVector*>(fCorrectedQvectors[QnConf->GlobalIndex()][0]->At(0));
   else           QvectorIn=static_cast<QnCorrectionsQnVector*>(fCorrectedQvectors[QnConf->GlobalIndex()][1]->At(0));
 
-  TClonesArray& arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsSteps::kRecentering]);
+  TClonesArray& arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kRecentering]);
   QnCorrectionsQnVector* QvectorOut = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
 
   //QnCorrectionsQnVector* QvectorOut=static_cast<QnCorrectionsQnVector*>(fCorrectedQvectors[QnConf->GlobalIndex()][2]->At(0));
@@ -663,7 +658,7 @@ void QnCorrectionsManager::RotateQvec(QnCorrectionsConfiguration* QnConf) {
     Double_t enumer2 = eXX*eXX+eYY*eYY;
 
     QnCorrectionsQnVector* QvectorIn= static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(iconf)->At(0));
-    TClonesArray &arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsSteps::kAlignment]);
+    TClonesArray &arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kAlignment]);
     QnCorrectionsQnVector* QvectorRotated = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
 
     if(TMath::Sqrt((XY-YX)*(XY-YX)/edenom2)<2.) return;
@@ -688,7 +683,7 @@ void QnCorrectionsManager::RotateQvec(QnCorrectionsConfiguration* QnConf) {
         QvectorRotated->SetQy(ih,Qy*TMath::Cos(((Double_t) ih)*dphi)-Qx*TMath::Sin(((Double_t) ih)*dphi));
 
 
-        QvectorRotated->SetEventPlaneStatus(ih, QnCorrectionsSteps::kAlignment);
+        QvectorRotated->SetEventPlaneStatus(ih, QnCorrectionsConstants::kAlignment);
     }
 
   return;
@@ -731,7 +726,7 @@ void QnCorrectionsManager::FillHistogramsWeights(QnCorrectionsConfiguration* QnC
     fOutputHistograms[globalIndex]->EqualizationHistogramM(0)->Fill(fillValues,dataVector->Weight());
     fOutputHistograms[globalIndex]->EqualizationHistogramE(0)->Fill(fillValues,1.);
     if(!fSetFillHistogramsQA) continue;
-    if(!QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)) continue;
+    if(!QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) continue;
     fOutputHistograms[globalIndex]->EqualizationHistogramM(1)->Fill(fillValues,dataVector->Weight(0));
     fOutputHistograms[globalIndex]->EqualizationHistogramE(1)->Fill(fillValues,1.);
     fOutputHistograms[globalIndex]->EqualizationHistogramM(2)->Fill(fillValues,dataVector->Weight(1));
@@ -797,7 +792,7 @@ void QnCorrectionsManager::FillHistogramsQnAlignmentQA(QnCorrectionsConfiguratio
   for(Int_t iav=0; iav<dim; iav++) fillValues[iav] = fDataContainer[var[iav]];
 
 
-  Qvecs[0] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(iconf,QnCorrectionsSteps::kAlignment)->At(0));
+  Qvecs[0] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(iconf,QnCorrectionsConstants::kAlignment)->At(0));
   Qvecs[1] = static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(QnConf->QnConfigurationCorrelationIndex(2))->At(0));
 
 
@@ -963,7 +958,7 @@ void QnCorrectionsManager::FillHistogramsMeanQ_QA(QnCorrectionsConfiguration* Qn
   Int_t bin=fOutputHistograms[iconf]->CalibrationHistogramE(0)->GetBin(fillValues);
 
   for(Int_t istep=0; istep<=fCorrectionStep; istep++){
-    if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)) {if(istep==1) continue;}
+    if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) {if(istep==1) continue;}
     else if(istep==0) continue;
 
     QnCorrectionsQnVector* Qvec=static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(iconf,istep)->At(0));
@@ -1689,13 +1684,13 @@ void QnCorrectionsManager::CallStepTwistAndRescaleQnVector(QnCorrectionsConfigur
   for(Int_t iav=0; iav<dim; iav++) fillValues[iav] = fDataContainer[var[iav]];
 
   Int_t lastStep=0;
-  if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization)) lastStep=QnCorrectionsSteps::kDataVectorEqualization;
-  if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kRecentering))            lastStep=QnCorrectionsSteps::kRecentering;
+  if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) lastStep=QnCorrectionsConstants::kDataVectorEqualization;
+  if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kRecentering))            lastStep=QnCorrectionsConstants::kRecentering;
   
   QnCorrectionsQnVector* QvectorIn= static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(QnConf->GlobalIndex())->At(0));
-  TClonesArray& arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsSteps::kTwist]);
+  TClonesArray& arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kTwist]);
   QnCorrectionsQnVector* QvectorTwist   = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
-  arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsSteps::kRescaling]);
+  arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kRescaling]);
   QnCorrectionsQnVector* QvectorRescale = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
 
   Double_t cos2n, sin2n, Lp, Ln, Ap, An, Qx, Qy, QxTwist, QyTwist, QxRescaling, QyRescaling, nentries;
@@ -1727,22 +1722,22 @@ void QnCorrectionsManager::CallStepTwistAndRescaleQnVector(QnCorrectionsConfigur
       Qy = QvectorIn->Qy(ih);
       QxTwist = Qx;
       QyTwist = Qy;
-      if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kTwist)){
+      if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kTwist)){
         QxTwist = (Qx-Ln*Qy)/(1-Ln*Lp);
         QyTwist = (Qy-Lp*Qx)/(1-Ln*Lp);
         QvectorTwist->SetQx( ih, QxTwist);
         QvectorTwist->SetQy( ih, QyTwist);
-        QvectorTwist->SetEventPlaneStatus(ih, QnCorrectionsSteps::kTwist);
-        QvectorRescale->SetEventPlaneStatus(ih, QnCorrectionsSteps::kTwist);
+        QvectorTwist->SetEventPlaneStatus(ih, QnCorrectionsConstants::kTwist);
+        QvectorRescale->SetEventPlaneStatus(ih, QnCorrectionsConstants::kTwist);
       }
       
 
-      if(QnConf->IsApplyCorrection(QnCorrectionsSteps::kRescaling)){
+      if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kRescaling)){
         QxRescaling = QxTwist / Ap;
         QyRescaling = QyTwist / An;
         QvectorRescale->SetQx( ih, QxRescaling);
         QvectorRescale->SetQy( ih, QyRescaling);
-        QvectorRescale->SetEventPlaneStatus(ih, QnCorrectionsSteps::kRescaling);
+        QvectorRescale->SetEventPlaneStatus(ih, QnCorrectionsConstants::kRescaling);
       }
 
       //cout<<"Twist "<<QnConf->QnConfigurationName()<<endl;
@@ -2028,12 +2023,12 @@ void QnCorrectionsManager::CallStepRescaleQnVector(Int_t u2npar) {
 //}
 
 //__________________________________________________________________
-void QnCorrectionsManager::DisableFillHistograms(QnCorrectionsSteps::CorrectionSteps step){
+void QnCorrectionsManager::DisableFillHistograms(QnCorrectionsConstants::CorrectionSteps step){
 
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
-      for(Int_t istep=(Int_t) step; istep<QnCorrectionsSteps::kNcorrectionSteps; istep++){
+      for(Int_t istep=(Int_t) step; istep<QnCorrectionsConstants::kNcorrectionSteps; istep++){
         QnConf->SetFillHistogram(istep,kFALSE);
       }
 
@@ -2042,7 +2037,7 @@ void QnCorrectionsManager::DisableFillHistograms(QnCorrectionsSteps::CorrectionS
 }
 
 //__________________________________________________________________
-void QnCorrectionsManager::DisableCorrections(QnCorrectionsSteps::CorrectionSteps step){
+void QnCorrectionsManager::DisableCorrections(QnCorrectionsConstants::CorrectionSteps step){
 
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
@@ -2061,12 +2056,12 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kDataVectorEqualization)) if(fCorrectionStep<QnCorrectionsSteps::kDataVectorEqualization) fCorrectionStep=(Int_t) QnCorrectionsSteps::kDataVectorEqualization;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRecentering))            if(fCorrectionStep<QnCorrectionsSteps::kRecentering           ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kRecentering;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kAlignment))              if(fCorrectionStep<QnCorrectionsSteps::kAlignment             ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kAlignment;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kDataVectorEqualization)) if(fCorrectionStep<QnCorrectionsConstants::kDataVectorEqualization) fCorrectionStep=(Int_t) QnCorrectionsConstants::kDataVectorEqualization;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kRecentering))            if(fCorrectionStep<QnCorrectionsConstants::kRecentering           ) fCorrectionStep=(Int_t) QnCorrectionsConstants::kRecentering;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kAlignment))              if(fCorrectionStep<QnCorrectionsConstants::kAlignment             ) fCorrectionStep=(Int_t) QnCorrectionsConstants::kAlignment;
     if(QnConf->GetTwistAndRescalingMethod()==2){                                                                                                   
-      if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kTwist))                if(fCorrectionStep<QnCorrectionsSteps::kTwist                 ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kTwist;
-      if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRescaling))            if(fCorrectionStep<QnCorrectionsSteps::kRescaling             ) fCorrectionStep=(Int_t) QnCorrectionsSteps::kRescaling;
+      if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kTwist))                if(fCorrectionStep<QnCorrectionsConstants::kTwist                 ) fCorrectionStep=(Int_t) QnCorrectionsConstants::kTwist;
+      if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kRescaling))            if(fCorrectionStep<QnCorrectionsConstants::kRescaling             ) fCorrectionStep=(Int_t) QnCorrectionsConstants::kRescaling;
     }
   }
 
@@ -2076,9 +2071,10 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
 
-    TString label="allRuns";
+    TString label="allData";
     if(QnConf->CorrectWithEventLabel()) label=fLabel;
 
+    fListInputHistogramsQnCorrections->Print();
     TList* list = GetInputListWithLabel(label);
 
     //if(!list) return;
@@ -2086,41 +2082,41 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
 
     Int_t step;
 
-    step=(Int_t)QnCorrectionsSteps::kDataVectorEqualization;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kDataVectorEqualization)){
+    step=(Int_t)QnCorrectionsConstants::kDataVectorEqualization;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kDataVectorEqualization)){
       if(!fInputHistograms[iconf]->ConnectMultiplicityHistograms(list,QnConf)){
-        DisableCorrections(QnCorrectionsSteps::kDataVectorEqualization);
+        DisableCorrections(QnCorrectionsConstants::kDataVectorEqualization);
         fCorrectionStep=step-1;
-        if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRecentering)) DisableFillHistograms(QnCorrectionsSteps::kRecentering);
+        if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kRecentering)) DisableFillHistograms(QnCorrectionsConstants::kRecentering);
       }
     };
 
-    step=(Int_t)QnCorrectionsSteps::kRecentering;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRecentering)){
+    step=(Int_t)QnCorrectionsConstants::kRecentering;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kRecentering)){
       if(!fInputHistograms[iconf]->ConnectMeanQnCalibrationHistograms(list,QnConf)){
-         DisableCorrections(QnCorrectionsSteps::kRecentering);
-         DisableFillHistograms(QnCorrectionsSteps::kAlignment);
-         DisableFillHistograms(QnCorrectionsSteps::kTwist);
-         DisableFillHistograms(QnCorrectionsSteps::kRescaling);
+         DisableCorrections(QnCorrectionsConstants::kRecentering);
+         DisableFillHistograms(QnCorrectionsConstants::kAlignment);
+         DisableFillHistograms(QnCorrectionsConstants::kTwist);
+         DisableFillHistograms(QnCorrectionsConstants::kRescaling);
          if(fCorrectionStep>=step) fCorrectionStep=step-1;
       }
     };
 
-    step=(Int_t)QnCorrectionsSteps::kTwist;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kTwist)){
+    step=(Int_t)QnCorrectionsConstants::kTwist;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kTwist)){
       if(QnConf->GetTwistAndRescalingMethod()==0){
         if(!fInputHistograms[iconf]->ConnectU2nQnCalibrationHistograms(list,QnConf)){
-          DisableCorrections(QnCorrectionsSteps::kTwist);
+          DisableCorrections(QnCorrectionsConstants::kTwist);
           if(fCorrectionStep>=step) fCorrectionStep=step-1;
         }
       }
     };
 
     
-    step=(Int_t)QnCorrectionsSteps::kAlignment;
-    if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kAlignment)){
+    step=(Int_t)QnCorrectionsConstants::kAlignment;
+    if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kAlignment)){
         if(!fInputHistograms[iconf]->ConnectRotationQnCalibrationHistograms(list,QnConf)){
-          DisableCorrections(QnCorrectionsSteps::kAlignment);
+          DisableCorrections(QnCorrectionsConstants::kAlignment);
           if(fCorrectionStep>=step) fCorrectionStep=step-1;
         }
     };
@@ -2142,10 +2138,10 @@ void QnCorrectionsManager::PrintFrameworkInformation(){
 	const int widthBar = 3;
 
   Bool_t forCorrection=kTRUE;
-  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, Form("FLOW VECTOR FRAMEWORK - PASS %d/%d", fCorrectionStep, fPassesRequired), QnCorrectionsSteps::kNothing, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, " ", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "--FLOW VECTORS--", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, Form("FLOW VECTOR FRAMEWORK - PASS %d/%d", fCorrectionStep, fPassesRequired), QnCorrectionsConstants::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, " ", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "--FLOW VECTORS--", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
     
   cout<<setw(widthEntry)<<" "<<setw(widthBar)<<"|";
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
@@ -2154,38 +2150,38 @@ void QnCorrectionsManager::PrintFrameworkInformation(){
   }
   cout<<endl;
 
-  PrintFrameworkInformationLine(!forCorrection, "CORRECTIONS", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "Equalization", QnCorrectionsSteps::kDataVectorEqualization, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "Recentering", QnCorrectionsSteps::kRecentering, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "Alignment", QnCorrectionsSteps::kAlignment, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "Twist", QnCorrectionsSteps::kTwist, widthEntry, widthBar);
-  PrintFrameworkInformationLine(forCorrection, "Rescaling", QnCorrectionsSteps::kRescaling, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "FILL HISTS", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "Equalization", QnCorrectionsSteps::kDataVectorEqualization, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "Recentering", QnCorrectionsSteps::kRecentering, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "Alignment", QnCorrectionsSteps::kAlignment, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "Twist", QnCorrectionsSteps::kTwist, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "Rescaling", QnCorrectionsSteps::kRescaling, widthEntry, widthBar);
-  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "CORRECTIONS", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "Equalization", QnCorrectionsConstants::kDataVectorEqualization, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "Recentering", QnCorrectionsConstants::kRecentering, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "Alignment", QnCorrectionsConstants::kAlignment, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "Twist", QnCorrectionsConstants::kTwist, widthEntry, widthBar);
+  PrintFrameworkInformationLine(forCorrection, "Rescaling", QnCorrectionsConstants::kRescaling, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "FILL HISTS", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "Equalization", QnCorrectionsConstants::kDataVectorEqualization, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "Recentering", QnCorrectionsConstants::kRecentering, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "Alignment", QnCorrectionsConstants::kAlignment, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "Twist", QnCorrectionsConstants::kTwist, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "Rescaling", QnCorrectionsConstants::kRescaling, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
       
   cout<<setw(widthEntry)<<"Legend "<<setw(widthBar)<<"|";
   cout<<setw(widthEntry)<<"x: this pass"<<setw(widthBar)<<" ";
   cout<<setw(widthEntry)<<"0: future pass"<<setw(widthBar)<<" ";
   cout<<setw(widthEntry)<<"-: N/A"<<setw(widthBar)<<"|"<<endl;
 
-  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsSteps::kNothing, widthEntry, widthBar);
+  PrintFrameworkInformationLine(!forCorrection, "----------------", QnCorrectionsConstants::kNothing, widthEntry, widthBar);
 
 
 }
 
 //__________________________________________________________________
-void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TString correctionname, QnCorrectionsSteps::CorrectionSteps stepflag, Int_t widthEntry, Int_t widthBar){
+void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TString correctionname, QnCorrectionsConstants::CorrectionSteps stepflag, Int_t widthEntry, Int_t widthBar){
 
 
 
 
 
-  if(HistOrCor&&stepflag!=QnCorrectionsSteps::kNothing){
+  if(HistOrCor&&stepflag!=QnCorrectionsConstants::kNothing){
     cout<<setw(widthEntry)<<correctionname<<setw(widthBar)<<"|";
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
       QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
@@ -2198,7 +2194,7 @@ void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TStrin
 
 
   
-  if(!HistOrCor&&stepflag!=QnCorrectionsSteps::kNothing){
+  if(!HistOrCor&&stepflag!=QnCorrectionsConstants::kNothing){
     cout<<setw(widthEntry)<<correctionname<<setw(widthBar)<<"|";
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
       QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
@@ -2211,7 +2207,7 @@ void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TStrin
 
   
   
-  if(HistOrCor&&stepflag==QnCorrectionsSteps::kNothing){
+  if(HistOrCor&&stepflag==QnCorrectionsConstants::kNothing){
     cout<<setw(widthEntry)<<" "<<setw(widthBar)<<"|";
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations/2; iconf++){
       cout<<setw(widthEntry)<<" ";
@@ -2225,7 +2221,7 @@ void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TStrin
 
 
     
-  if(!HistOrCor&&stepflag==QnCorrectionsSteps::kNothing){
+  if(!HistOrCor&&stepflag==QnCorrectionsConstants::kNothing){
     cout<<setw(widthEntry)<<correctionname<<setw(widthBar)<<"-";
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
       QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
@@ -2251,13 +2247,8 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
 
 
   TList* dataByRun = new TList();
-  //TList* dataAllRuns = new TList();
+  //TList* dataByRun = fListOutputHistogramsQnCorrections;//new TList();
   dataByRun->SetName(fLabel);
-  //dataAllRuns->SetName("allRuns");
-
-  dataByRun->SetOwner();
-  //dataAllRuns->SetOwner();
-
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
@@ -2268,17 +2259,13 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
     TList* detectorM = new TList();
     TList* detectorC = new TList();
 
-    detector->SetOwner();
-    detectorM->SetOwner();
-    detectorC->SetOwner();
-
-      if(QnConf->IsFillHistogram(QnCorrectionsSteps::kRecentering)){
+      if(QnConf->IsFillHistogram(QnCorrectionsConstants::kRecentering)){
       for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) {
         for(Int_t ic=0; ic<2; ++ic){
-          detector->Add(fOutputHistograms[iconf]->CalibrationHistogramQ( (QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization) ? 1 : 0) ,ih,ic));
+          detector->Add(fOutputHistograms[iconf]->CalibrationHistogramQ( (QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization) ? 1 : 0) ,ih,ic));
         }
       }
-      detector->Add(fOutputHistograms[iconf]->CalibrationHistogramE((QnConf->IsApplyCorrection(QnCorrectionsSteps::kDataVectorEqualization) ? 1 : 0) ));
+      detector->Add(fOutputHistograms[iconf]->CalibrationHistogramE((QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization) ? 1 : 0) ));
     }
 
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){
@@ -2287,16 +2274,15 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
         detector->Add(fOutputHistograms[iconf]->U2nHistogram(ih,1));
       }
     }
-    if(QnConf->IsFillHistogram(QnCorrectionsSteps::kTwist)&&QnConf->GetTwistAndRescalingMethod()==0)  detector->Add(fOutputHistograms[iconf]->U2nHistogramE());
+    if(QnConf->IsFillHistogram(QnCorrectionsConstants::kTwist)&&QnConf->GetTwistAndRescalingMethod()==0)  detector->Add(fOutputHistograms[iconf]->U2nHistogramE());
 
     detector->SetName(Form("Qvec%s",QnConf->QnConfigurationName().Data()));
     if(detector->GetEntries()!=0){
       dataByRun->Add(detector);
-      //dataAllRuns->Add(detector);
     }
 
 
-    if(QnConf->IsFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)){
+    if(QnConf->IsFillHistogram(QnCorrectionsConstants::kDataVectorEqualization)){
       //for(Int_t idim=0; idim<10; idim++) if(fOutputHistograms[iconf]->EventHistogram(idim)) detectorM->Add(fOutputHistograms[iconf]->EventHistogram(idim));
       for(Int_t is=0; is<1; ++is){
         if(fOutputHistograms[iconf]->EqualizationHistogramM(is)) detectorM->Add(fOutputHistograms[iconf]->EqualizationHistogramM(is));
@@ -2307,18 +2293,16 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
       detectorM->SetName(Form("Mult%s",QnConf->QnConfigurationName().Data()));
       if(detectorM->GetEntries()!=0){
         dataByRun->Add(detectorM);
-        //dataAllRuns->Add(detectorM);
       }
     }
 
     
 
-    if(QnConf->IsFillHistogram(QnCorrectionsSteps::kAlignment)){
+    if(QnConf->IsFillHistogram(QnCorrectionsConstants::kAlignment)){
       for(Int_t is=0; is<4; ++is) if(fOutputHistograms[iconf]->GetRotationHistogram(0,is)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogram(0,is));
       if(fOutputHistograms[iconf]->GetRotationHistogramE(0)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogramE(0));
       detectorC->SetName(Form("Correlations%s",QnConf->QnConfigurationName().Data()));
       dataByRun->Add(detectorC);
-      //dataAllRuns->Add(detectorC);
     }
 
 
@@ -2338,6 +2322,16 @@ void QnCorrectionsManager::WriteCalibrationHistogramsToList()
   }
 
   fListOutputHistogramsQnCorrections->Add(dataByRun);
+  if(!(fLabel.EqualTo("allData"))){
+    TList* listall = new TList();
+    listall->SetName("allData");
+    for(Int_t i=0; i<dataByRun->GetEntries(); i++){
+      TList* l = (TList*) dataByRun->At(i);
+      listall->Add(l);
+    }
+    fListOutputHistogramsQnCorrections->Add(listall);
+  }
+
   //fListOutputHistogramsQnCorrections->Add(dataAllRuns);
 
 }
@@ -2354,13 +2348,8 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
   //
 
   TList* dataByRunQA = new TList();
-  //TList* dataAllRunsQA = new TList();
   dataByRunQA->SetName(fLabel);
-  //dataAllRunsQA->SetName("allRuns");
 
-
-  dataByRunQA->SetOwner();
-  //dataAllRunsQA->SetOwner();
 
   QnCorrectionsConfiguration* QnConf = 0x0;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
@@ -2398,10 +2387,6 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
 
     detector->SetName(Form("Qvec%s",QnConf->QnConfigurationName().Data()));
     dataByRunQA->Add(detector);
-    //dataAllRunsQA->Add(detector);
-
-
-
 
 
     TList* detectorMqa = new TList();
@@ -2410,29 +2395,27 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
     detectorMqa->SetOwner();
     detectorCqa->SetOwner();
 
-    if(QnConf->IsFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)){
+    if(QnConf->IsFillHistogram(QnCorrectionsConstants::kDataVectorEqualization)){
       for(Int_t is=0; is<3; ++is){
         if(fOutputHistograms[iconf]->EqualizationHistogramM(is)&&is!=0) detectorMqa->Add(fOutputHistograms[iconf]->EqualizationHistogramM(is));
         if(fOutputHistograms[iconf]->EqualizationHistogramE(is)&&is!=0) detectorMqa->Add(fOutputHistograms[iconf]->EqualizationHistogramE(is));
       }
       detectorMqa->SetName(Form("Mult%s",QnConf->QnConfigurationName().Data()));
       dataByRunQA->Add(detectorMqa);
-      //dataAllRunsQA->Add(detectorMqa);
     }
 
     
-    if(QnConf->IsFillHistogram(QnCorrectionsSteps::kAlignment)){
+    if(QnConf->IsFillHistogram(QnCorrectionsConstants::kAlignment)){
       for(Int_t is=0; is<4; ++is) if(fOutputHistograms[iconf]->GetRotationHistogram(1,is)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogram(1,is));
       if(fOutputHistograms[iconf]->GetRotationHistogramE(1)) detectorC->Add(fOutputHistograms[iconf]->GetRotationHistogramE(1));
       detectorC->SetName(Form("Correlations%s",QnConf->QnConfigurationName().Data()));
       dataByRunQA->Add(detectorC);
-      //dataAllRunsQA->Add(detectorC);
     }
 
 
 
 
-    //for(Int_t istep=0; istep<=QnCorrectionsSteps::kNcorrectionSteps; istep++){
+    //for(Int_t istep=0; istep<=QnCorrectionsConstants::kNcorrectionSteps; istep++){
     //  for(Int_t icomb=0; icomb<3; ++icomb){ 
     //    for(Int_t icomp=0; icomp<4; ++icomp){ 
     //      for(Int_t iaxis=0; iaxis<=QnConf->CalibrationBinning()->Dim(); ++iaxis){ 
@@ -2444,11 +2427,19 @@ void QnCorrectionsManager::WriteQaHistogramsToList()
     //dataByRunQA->Add(detectorCqa);
     //dataAllRunsQA->Add(detectorCqa);
 
+  fListHistogramsQA->Add(dataByRunQA);
+  if(!(fLabel.EqualTo("allData"))){
+    TList* listall = new TList();
+    listall->SetName("allData");
+    for(Int_t i=0; i<dataByRunQA->GetEntries(); i++){
+      TList* l = (TList*) dataByRunQA->At(i);
+      listall->Add(l);
+    }
+    fListHistogramsQA->Add(listall);
+  }
   }
 
 
-  fListHistogramsQA->Add(dataByRunQA);
-  //fListHistogramsQA->Add(dataAllRunsQA);
 
 }
 
@@ -2466,7 +2457,7 @@ void QnCorrectionsManager::AddQnConfiguration(QnCorrectionsConfiguration* QnConf
   fIndex[fNumberOfQnConfigurations][1] = fNumberOfQnConfigurationsForDetector[ detId];
   QnConf->SetLocalIndex(fNumberOfQnConfigurationsForDetector[detId]);
   QnConf->SetGlobalIndex(fNumberOfQnConfigurations);
-  if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kAlignment)) if(QnConf->MinimumHarmonic()>QnConf->AlignmentHarmonic()) QnConf->SetMinimumHarmonic(QnConf->AlignmentHarmonic());
+  if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kAlignment)) if(QnConf->MinimumHarmonic()>QnConf->AlignmentHarmonic()) QnConf->SetMinimumHarmonic(QnConf->AlignmentHarmonic());
   //QnConf->SetPassNumbers();
   fNumberOfQnConfigurationsForDetector[detId]++;
   fNumberOfQnConfigurations++;
@@ -2499,11 +2490,13 @@ void QnCorrectionsManager::WriteOutputToFile()
 {
   if(fOutputHistogramsQnCorrectionsFile&&fSetFillHistogramsQnCorrections){
     fOutputHistogramsQnCorrectionsFile->cd();
-    GetListOutputHistogramsQnCorrections()->Write(fListOutputHistogramsQnCorrections->GetName(),TObject::kSingleKey);
+    fListOutputHistogramsQnCorrections->Write(fListOutputHistogramsQnCorrections->GetName(),TObject::kSingleKey);
+    //fListOutputHistogramsQnCorrections->Write(fLabel,TObject::kSingleKey);
+    //if(!(fLabel.EqualTo("allData"))) fListOutputHistogramsQnCorrections->Write("allData",TObject::kSingleKey);
   }
   if(fHistogramsQAFile&&fSetFillHistogramsQA){
     fHistogramsQAFile->cd();
-    GetListHistogramsQA()->Write(fListHistogramsQA->GetName(),TObject::kSingleKey);
+    fListHistogramsQA->Write(fListHistogramsQA->GetName(),TObject::kSingleKey);
   }
   if(fTreeQnVectorsFile&&fSetFillTreeQnVectors){
     fTreeQnVectorsFile->cd();

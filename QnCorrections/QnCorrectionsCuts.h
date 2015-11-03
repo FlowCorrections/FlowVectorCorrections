@@ -11,6 +11,7 @@
  
  
 
+#include <TNamed.h>
 #include <TClonesArray.h>
 #include <TBits.h>
 #include <TMath.h>
@@ -21,17 +22,19 @@
 
 
 //_____________________________________________________________________
-class QnCorrectionsCuts : public TObject {
+class QnCorrectionsCuts : public TNamed {
 
  public:
   QnCorrectionsCuts();
+  QnCorrectionsCuts(const Char_t* name);
+  QnCorrectionsCuts(const QnCorrectionsCuts &c);
   ~QnCorrectionsCuts();
     
   // setters
   void AddCut(Int_t type, Float_t min, Float_t max, Bool_t excludeRange=kFALSE) {fCuts[fNcuts][0]= type; fCuts[fNcuts][1]=min; fCuts[fNcuts][2]=max; fCuts[fNcuts][3]= (excludeRange ? 1.0 : 0.0); fNcuts++;}
   void AddFlag(Int_t type, Int_t flag, Bool_t accept) {fCuts[fNcuts][0]= type; fCuts[fNcuts][1]=-999.0; fCuts[fNcuts][2]=flag; fCuts[fNcuts][3]= (accept ? 1.0 : 0.0); fNcuts++;}
   void CopyCuts(QnCorrectionsCuts* cuts);
-  void SetName(TString name) {fName=name;}
+  //void SetName(TString name) {fCutsName=name;}
 
   // getters
   Int_t Type(Int_t cut) const {return ((Int_t) (fCuts[cut][0]+10e-6));}
@@ -40,14 +43,14 @@ class QnCorrectionsCuts : public TObject {
   Bool_t ExcludeRange(Int_t cut) const {return (fCuts[cut][3]<0.5 ? kFALSE : kTRUE);}
   Int_t Ncuts() const {return fNcuts;}
   Bool_t  IsSelected(Float_t* values) const;
-  TString GetCutsName() const {return fName;}
+  //TString GetCutsName() const {return fCutsName;}
 
   
  private:
 
   Float_t fCuts[QnCorrectionsConstants::nCuts][4];
   Int_t fNcuts;
-  TString fName;
+  //TString fCutsName;
 
 
   ClassDef(QnCorrectionsCuts, 1);

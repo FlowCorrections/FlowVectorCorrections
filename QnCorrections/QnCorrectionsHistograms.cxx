@@ -252,7 +252,7 @@ TObject* QnCorrectionsHistograms::GetHistogram(TList* list, const Char_t* listna
 //_______________________________________________________________________________
 void QnCorrectionsHistograms::CreateQvectorHistograms(QnCorrectionsConfiguration* QnConf){
   
-  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsSteps::kRecentering)) return;
+  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsConstants::kRecentering)) return;
 
   TString title="";
 
@@ -260,7 +260,7 @@ void QnCorrectionsHistograms::CreateQvectorHistograms(QnCorrectionsConfiguration
 
   for(Int_t idim=0; idim<binning->Dim(); idim++) title+=+";"+binning->AxisLabel(idim);
 
-  for(Int_t is=0; is<QnCorrectionsSteps::kNcorrectionSteps; ++is){
+  for(Int_t is=0; is<QnCorrectionsConstants::kNcorrectionSteps; ++is){
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){ 
        fCalibrationHistogramsQ[is][ih-1][0] =   CreateHistogram( Form("QvecX_%s_h%d_%s", QnConf->QnConfigurationName().Data(), ih, fStages[is].Data()), Form("QvecX h%d %s ", ih, title.Data()), binning);
        fCalibrationHistogramsQ[is][ih-1][1] =   CreateHistogram( Form("QvecY_%s_h%d_%s", QnConf->QnConfigurationName().Data(), ih, fStages[is].Data()), Form("QvecY h%d %s ", ih, title.Data()), binning);
@@ -271,7 +271,7 @@ void QnCorrectionsHistograms::CreateQvectorHistograms(QnCorrectionsConfiguration
 
 
 
-  if(QnConf->IsRequestedCorrection(QnCorrectionsSteps::kTwist)||QnConf->IsRequestedCorrection(QnCorrectionsSteps::kRescaling)){
+  if(QnConf->IsRequestedCorrection(QnCorrectionsConstants::kTwist)||QnConf->IsRequestedCorrection(QnCorrectionsConstants::kRescaling)){
   binning = QnConf->GetTwistAndRescalingAxes();
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih){ 
        fU2nHistograms[ih-1][0] =   CreateHistogram( Form("cosnphi_%s_h%d", QnConf->QnConfigurationName().Data(), ih*2), Form("#LTcos(%d#phi)#GT %s ", ih*2, title.Data()), binning);
@@ -296,8 +296,8 @@ void QnCorrectionsHistograms::CreateCorrelationHistograms(QnCorrectionsConfigura
 
   if(QnConf->QnConfigurationCorrelationIndex(0)==-1||QnConf->QnConfigurationCorrelationIndex(0)==-1) return;
   if(QnConf->GetTwistAndRescalingMethod()!=2) return;
-  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsSteps::kTwist)) return;
-  //if(QnConf->GetCorrectionStep(currentManagerStep+1)<((Int_t)QnCorrectionsSteps::kTwist)) return;
+  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsConstants::kTwist)) return;
+  //if(QnConf->GetCorrectionStep(currentManagerStep+1)<((Int_t)QnCorrectionsConstants::kTwist)) return;
 
   TString components[4] = {"XX","XY","YX","YY"};
   TString detectors[3] = {"","",""};
@@ -376,7 +376,7 @@ void QnCorrectionsHistograms::CreateMultiplicityHistograms(QnCorrectionsConfigur
   TString title="";
   TString det=QnConf->QnConfigurationName();
 
-  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsSteps::kDataVectorEqualization)) return;
+  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsConstants::kDataVectorEqualization)) return;
 
   QnCorrectionsAxes* binning = QnConf->EqualizationBinning();
   Int_t dim = binning->Dim();
@@ -404,7 +404,7 @@ void QnCorrectionsHistograms::CreateMultiplicityHistograms(QnCorrectionsConfigur
 void QnCorrectionsHistograms::CreateRotationHistograms(QnCorrectionsConfiguration* QnConf){
 
 
-  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsSteps::kAlignment)) return;
+  if(!QnConf->IsRequestedFillHistogram(QnCorrectionsConstants::kAlignment)) return;
 
   TString title="";
   TString det=QnConf->QnConfigurationName();
@@ -559,10 +559,12 @@ Bool_t QnCorrectionsHistograms::ConnectMultiplicityHistograms(TList* list, QnCor
 
   if(!fEqualizationHistogramsM[0]) return kFALSE;
 
-  CreateGroupMultiplicityHistograms(list,QnConf);
-
   SetEqualizationHistogramM(  DivideTHnF(fEqualizationHistogramsM[0],fEqualizationHistogramsE[0]),0);
-  SetGroupEqualizationHistogramM(  DivideTHnF(fGroupEqualizationHistogramsM[0],fGroupEqualizationHistogramsE[0]),0);
+ 
+  if(QnConf->ChannelGroups()){
+    CreateGroupMultiplicityHistograms(list,QnConf);
+    SetGroupEqualizationHistogramM(  DivideTHnF(fGroupEqualizationHistogramsM[0],fGroupEqualizationHistogramsE[0]),0);
+  }
 
   return kTRUE;
 

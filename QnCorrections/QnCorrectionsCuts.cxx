@@ -44,10 +44,9 @@ ClassImp(QnCorrectionsCuts)
 
 //_______________________________________________________________________________
 QnCorrectionsCuts::QnCorrectionsCuts() :
-  TObject(),
+  TNamed(),
   fCuts(),
-  fNcuts(0),
-  fName("")
+  fNcuts(0)
 {   
   //
   // Constructor
@@ -57,6 +56,41 @@ QnCorrectionsCuts::QnCorrectionsCuts() :
     for(Int_t j=0; j<4; ++j){
       fCuts[i][j]=0.0;
     }
+}
+
+
+
+//_______________________________________________________________________________
+QnCorrectionsCuts::QnCorrectionsCuts(const Char_t* name) :
+  TNamed(),
+  fCuts(),
+  fNcuts(0)
+{   
+  //
+  // Constructor
+  //
+
+  fName=name;
+  for(Int_t i=0; i<QnCorrectionsConstants::nCuts; ++i)
+    for(Int_t j=0; j<4; ++j){
+      fCuts[i][j]=0.0;
+    }
+}
+
+
+
+//____________________________________________________________________________
+QnCorrectionsCuts::QnCorrectionsCuts(const QnCorrectionsCuts &c) :  TNamed(){
+  // Copy constructor
+
+  for(Int_t i=0; i<QnCorrectionsConstants::nCuts; ++i){
+    fCuts[i][0] = c.Type(i);
+    fCuts[i][1] = c.Min(i);
+    fCuts[i][2] = c.Max(i);
+    fCuts[i][3] = c.ExcludeRange(i);
+  }
+  fNcuts = c.Ncuts();
+
 }
 
 

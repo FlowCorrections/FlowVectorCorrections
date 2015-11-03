@@ -29,18 +29,18 @@ class QnCorrectionsSteps  {
   ~QnCorrectionsSteps();
 
 
-  enum CorrectionSteps {
-    kNothing=-1,
-    kPass0,
-    kDataVectorEqualization,
-    kRecentering,
-    kAlignment,
-    kTwist,
-    kRescaling,
-    kNcorrectionSteps,
-    kUndefined,
-    kCopy
-  };
+  //enum CorrectionSteps {
+  //  kNothing=-1,
+  //  kPass0,
+  //  kDataVectorEqualization,
+  //  kRecentering,
+  //  kAlignment,
+  //  kTwist,
+  //  kRescaling,
+  //  kNcorrectionSteps,
+  //  kUndefined,
+  //  kCopy
+  //};
 
 
  //static void BuildQnVectors(QnCorrectionsQnVector* QvectorOut, TClonesArray* dataVectorArray, Int_t QnConfIndex, Int_t minHar, Int_t maxHar, Int_t EqualizationMethod=-1);

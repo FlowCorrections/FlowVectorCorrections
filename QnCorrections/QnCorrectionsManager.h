@@ -15,6 +15,8 @@
 #include <TTree.h>
 #include <TClonesArray.h>
 #include <TFile.h>
+#include <TDirectoryFile.h>
+#include <TKey.h>
 #include <TList.h>
 #include <iostream>
 #include <THn.h>
@@ -35,6 +37,8 @@ class QnCorrectionsManager : public TObject {
  public:
 
   QnCorrectionsManager();
+  QnCorrectionsManager(const QnCorrectionsManager &c);
+  QnCorrectionsManager & operator=(const QnCorrectionsManager &c);
   ~QnCorrectionsManager();
 
   void Process();
@@ -46,7 +50,9 @@ class QnCorrectionsManager : public TObject {
   void SetTreeQnVectorsFile(TFile* file)                 {fTreeQnVectorsFile=file;}
   //TODO add SetQAFile(), add fQAFile variable
 
-  void SetCalibrationFile(TFile* inputFile)         {if(inputFile) fListInputHistogramsQnCorrections = (TList*) inputFile->Get("CalibrationHistograms");} //TODO make "CalibrationHistograms" name customizable
+  Bool_t SetCalibrationFile(TFile* inputFile)         {if(inputFile) if(inputFile->GetListOfKeys()->GetEntries()>0) fListInputHistogramsQnCorrections = (TList*)((TKey*)inputFile->GetListOfKeys()->At(0))->ReadObj(); return (fListInputHistogramsQnCorrections ? kTRUE : kFALSE);} //TODO make "CalibrationHistograms" name customizable
+  //void SetCalibrationFile(TFile* inputFile)         {if(inputFile) fListInputHistogramsQnCorrections = (TList*) inputFile->Get("CalibrationHistograms");} //TODO make "CalibrationHistograms" name customizable
+  //void SetCalibrationFile(TFile* inputFile)         { fListInputHistogramsQnCorrections = inputFile;} //TODO make "CalibrationHistograms" name customizable
   void SetCalibrationFileDirectoryName(TString label) {fLabel=label;};
   void SetFillTreeQnVectors(Bool_t b=kTRUE)             {fSetFillTreeQnVectors 	          = b;}
   void SetFillHistogramsQA(Bool_t b=kTRUE)             {fSetFillHistogramsQA             = b;}
@@ -81,7 +87,7 @@ class QnCorrectionsManager : public TObject {
   Float_t* GetDataContainer() {return fDataContainer;}; //event and track/hit variables overwritten for each track/hit and event
 
   void PrintFrameworkInformation();
-  void PrintFrameworkInformationLine(Bool_t HistOrCor,TString correctionname, QnCorrectionsSteps::CorrectionSteps stepflag, Int_t widthEntry, Int_t widthBar);
+  void PrintFrameworkInformationLine(Bool_t HistOrCor,TString correctionname, QnCorrectionsConstants::CorrectionSteps stepflag, Int_t widthEntry, Int_t widthBar);
 
 
   //void BuildQnVectors(Bool_t useEqualizedWeights=kFALSE);
@@ -99,11 +105,13 @@ class QnCorrectionsManager : public TObject {
   //void U2nTwistAndRescalingQvec(Float_t* values, Int_t corpar);
   Int_t GetDetectorId(Int_t type)             { return fDetectorIdMap[type]-1;}
   void ClearEvent();
+  TList* GetInputListWithLabel(TString label)   {return (fListInputHistogramsQnCorrections ? (TList*) fListInputHistogramsQnCorrections->FindObject(label) : 0x0);}
 
+  TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
 
  private:
 
-  TList* GetInputListWithLabel(TString label)   {return (fListInputHistogramsQnCorrections ? (TList*) fListInputHistogramsQnCorrections->FindObject(label) : 0x0);}
+  //TList* GetInputListWithLabel(TString label)   {return (fListInputHistogramsQnCorrections ? (TList*) fListInputHistogramsQnCorrections->Get(label) : 0x0);}
 
   void FillHistograms();
   void FillHistogramsMeanQ(QnCorrectionsConfiguration* QnConf, Int_t step);
@@ -123,8 +131,8 @@ class QnCorrectionsManager : public TObject {
 
   void InitializeCalibrationHistograms(); // TODO: call from Process(), need to add bool which is FALSE after the first time it is called
 
-  void DisableFillHistograms(QnCorrectionsSteps::CorrectionSteps step);
-  void DisableCorrections(QnCorrectionsSteps::CorrectionSteps step);
+  void DisableFillHistograms(QnCorrectionsConstants::CorrectionSteps step);
+  void DisableCorrections(QnCorrectionsConstants::CorrectionSteps step);
 
   //TODO Move/copy here the code from QnCorrectionsSteps and remove function QnCorrectionsSteps::BuildQnVectors
   Bool_t BuildQnVectors(QnCorrectionsConfiguration* QnConf, Bool_t useEqualizedWeights);
@@ -164,7 +172,8 @@ class QnCorrectionsManager : public TObject {
   Int_t fCorrectionStep;
   Int_t fPassesRequired;
   Bool_t fCalibrateByRun;
-  TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
+  //TList* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
+  //TDirectoryFile* fListInputHistogramsQnCorrections;          //! List of input histograms for corrections
   Float_t fDataContainer[QnCorrectionsConstants::nDataContainerVariables];
   TString fLabel; // events can be characterised with a label, corrections are applied with events from this label (for example label=<run number>)
   Bool_t fProcessedFirstEvent;

@@ -18,6 +18,8 @@
 #include <TObject.h>
 #include <iostream>
 
+#include "QnCorrectionsConstants.h"
+
 //const Int_t fgkEPMinHarmonics = 1;
 //const Int_t fgkEPMaxHarmonics = 6;
 //const Int_t QnCorrectionsConstants::nHarmonics = 10;
@@ -32,6 +34,7 @@ class QnCorrectionsQnVector : public TObject {
   QnCorrectionsQnVector();
   QnCorrectionsQnVector(Int_t nHarmonics);
   ~QnCorrectionsQnVector();
+  QnCorrectionsQnVector(const QnCorrectionsQnVector &c);
 
   enum EventPlaneStatus {
     kRaw=0,
@@ -114,7 +117,6 @@ class QnCorrectionsQnVector : public TObject {
   Int_t   fN;                        // Number of elements (tracks or sectors)
 
      
-  QnCorrectionsQnVector(const QnCorrectionsQnVector &c);
   QnCorrectionsQnVector& operator= (const QnCorrectionsQnVector &c);
 
 
@@ -130,7 +132,7 @@ inline Bool_t QnCorrectionsQnVector::CheckEventPlaneStatus(Int_t h, EventPlaneSt
   // Check the status of the event plane for a given detector and harmonic
   //
   //if(h<fgkEPMinHarmonics || h>fgkEPMaxHarmonics) return kFALSE;
-  return (flag<kNMaxFlowFlags ? (fEventPlaneStatus[h-1]&(1<<flag)) : kFALSE);
+  return (flag<(QnCorrectionsConstants::kUndefined+1) ? (fEventPlaneStatus[h-1]&(1<<flag)) : kFALSE);
 }
 
 
@@ -141,7 +143,7 @@ inline Bool_t QnCorrectionsQnVector::CheckEventPlaneStatus(Int_t h, Int_t flag) 
   // Check the status of the event plane for a given detector and harmonic
   //
   //if(h<fgkEPMinHarmonics || h>fgkEPMaxHarmonics) return kFALSE;
-  return (flag<kNMaxFlowFlags ? (fEventPlaneStatus[h-1]&(1<<flag)) : kFALSE);
+  return (flag<(QnCorrectionsConstants::kUndefined+1) ? (fEventPlaneStatus[h-1]&(1<<flag)) : kFALSE);
 }
 
 

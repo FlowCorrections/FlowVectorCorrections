@@ -29,6 +29,20 @@ class QnCorrectionsConstants {
   };
 
 
+  enum CorrectionSteps {
+    kNothing=-1,
+    kPass0,
+    kDataVectorEqualization,
+    kRecentering,
+    kAlignment,
+    kTwist,
+    kRescaling,
+    kNcorrectionSteps,
+    kUndefined,
+    kCopy
+  };
+
+
   ClassDef(QnCorrectionsConstants, 1);
 
 };

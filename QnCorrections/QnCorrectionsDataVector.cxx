@@ -124,7 +124,7 @@ void QnCorrectionsDataVector::FillQvector(TClonesArray* dataVectorArray, QnCorre
       //if(!dataVectors) continue;
        weight==-1 ? w=dataVector->Weight() : w=dataVector->Weight(weight);
       
-       q->Add(dataVector->Phi(), w );
+       if(w>1E-6) q->Add(dataVector->Phi(), w );
   
   }
 

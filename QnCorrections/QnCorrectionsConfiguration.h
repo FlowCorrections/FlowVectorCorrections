@@ -29,17 +29,17 @@ class QnCorrectionsConfiguration : public TObject {
  public:
   QnCorrectionsConfiguration();
   QnCorrectionsConfiguration(const QnCorrectionsConfiguration &c);
-  QnCorrectionsConfiguration & operator=(QnCorrectionsConfiguration const &c){return *this; } // dummy to remove compiler warning
+  QnCorrectionsConfiguration & operator=(const QnCorrectionsConfiguration &c);
   ~QnCorrectionsConfiguration();
     
 
   // setters for users
-  //void SetCorrectionSteps(QnCorrectionsSteps::CorrectionSteps flag1, QnCorrectionsSteps::CorrectionSteps flag2=QnCorrectionsSteps::kCopy, QnCorrectionsSteps::CorrectionSteps flag3=QnCorrectionsSteps::kCopy, QnCorrectionsSteps::CorrectionSteps flag4=QnCorrectionsSteps::kCopy, QnCorrectionsSteps::CorrectionSteps flag5=QnCorrectionsSteps::kCopy, QnCorrectionsSteps::CorrectionSteps flag6=QnCorrectionsSteps::kCopy); // which correction has to be applied at which step
-  void SetQnCorrectionDataVectorEqualization(Bool_t set=kTRUE) {SetMaps(QnCorrectionsSteps::kDataVectorEqualization,set);}
-  void SetQnCorrectionRecentering(Bool_t set=kTRUE) {SetMaps(QnCorrectionsSteps::kRecentering,set);}
-  void SetQnCorrectionTwist(Bool_t set=kTRUE) {SetMaps(QnCorrectionsSteps::kTwist,set);}
-  void SetQnCorrectionRescaling(Bool_t set=kTRUE) {SetMaps(QnCorrectionsSteps::kRescaling,set);}
-  void SetQnCorrectionAlignment(Bool_t set=kTRUE) {SetMaps(QnCorrectionsSteps::kAlignment,set);}
+  //void SetCorrectionSteps(QnCorrectionsSteps::CorrectionSteps flag1, QnCorrectionsSteps::CorrectionSteps flag2=QnCorrectionsConstants::kCopy, QnCorrectionsSteps::CorrectionSteps flag3=QnCorrectionsConstants::kCopy, QnCorrectionsSteps::CorrectionSteps flag4=QnCorrectionsConstants::kCopy, QnCorrectionsSteps::CorrectionSteps flag5=QnCorrectionsConstants::kCopy, QnCorrectionsSteps::CorrectionSteps flag6=QnCorrectionsConstants::kCopy); // which correction has to be applied at which step
+  void SetQnCorrectionDataVectorEqualization(Bool_t set=kTRUE) {SetMaps(QnCorrectionsConstants::kDataVectorEqualization,set);}
+  void SetQnCorrectionRecentering(Bool_t set=kTRUE) {SetMaps(QnCorrectionsConstants::kRecentering,set);}
+  void SetQnCorrectionTwist(Bool_t set=kTRUE) {SetMaps(QnCorrectionsConstants::kTwist,set);}
+  void SetQnCorrectionRescaling(Bool_t set=kTRUE) {SetMaps(QnCorrectionsConstants::kRescaling,set);}
+  void SetQnCorrectionAlignment(Bool_t set=kTRUE) {SetMaps(QnCorrectionsConstants::kAlignment,set);}
 
   void SetQnNormalization(UShort_t QnNormalization)      {  fQnNormalization     = QnNormalization;}
   void SetDataVectorEqualizationMethod(Float_t equalizationMethod)    {  fEqualizationMethod    = equalizationMethod;}
@@ -172,7 +172,7 @@ class QnCorrectionsConfiguration : public TObject {
   // setters for framework
   void SetCalibrationStep(Int_t index)                      { fCalibrationStep = index;}
   
-  void SetMaps(QnCorrectionsSteps::CorrectionSteps step, Bool_t b=kTRUE) {fRequestedCorrectionMap[(Int_t) step]=b;fRequestedHistogramMap[(Int_t) step]=b;fApplyCorrectionMap[(Int_t) step]=b;fFillHistogramMap[(Int_t) step]=b;};
+  void SetMaps(QnCorrectionsConstants::CorrectionSteps step, Bool_t b=kTRUE) {fRequestedCorrectionMap[(Int_t) step]=b;fRequestedHistogramMap[(Int_t) step]=b;fApplyCorrectionMap[(Int_t) step]=b;fFillHistogramMap[(Int_t) step]=b;};
 
   Int_t  fQnConfigurationCorrelationIndices[3];
 

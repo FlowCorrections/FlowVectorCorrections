@@ -133,10 +133,11 @@ void QnCorrectionsSteps::CalibrateDataVector(TClonesArray* dataVectorArray, QnCo
     bin=inputHistos->EqualizationHistogramM(0)->GetBin(fillValues);
 
     //cout<<"check"<<endl;
-    fillValues[dim-1] = QnConf->ChannelGroup(dataVector->Id());
-    binGroup=inputHistos->GroupEqualizationHistogramM(0)->GetBin(fillValues);
-
-    if(QnConf->ChannelGroups()) groupWeight  = inputHistos->GroupEqualizationHistogramM(0)->GetBinContent(binGroup);
+    if(QnConf->ChannelGroups()){
+      fillValues[dim-1] = QnConf->ChannelGroup(dataVector->Id());
+      binGroup=inputHistos->GroupEqualizationHistogramM(0)->GetBin(fillValues);
+      groupWeight  = inputHistos->GroupEqualizationHistogramM(0)->GetBinContent(binGroup);
+    }
     //cout<<dataVector->Id()<<"  "<<fillValues[dim-1]<<"  "<<groupWeight<<endl;
     //groupWeight=1.0;
     average  = inputHistos->EqualizationHistogramM(0)->GetBinContent(bin);
@@ -171,15 +172,15 @@ void QnCorrectionsSteps::RecenterQvec(QnCorrectionsQnVector* QvectorIn, QnCorrec
 
       for(Int_t ih=minHar; ih<= maxHar; ++ih) {
 
-        if(QvectorIn->CheckEventPlaneStatus(ih,QnCorrectionsSteps::kUndefined)) continue;
+        if(QvectorIn->CheckEventPlaneStatus(ih,QnCorrectionsConstants::kUndefined)) continue;
 
         QvectorOut->SetQx( ih, 
             QvectorIn->Qx(ih) - inputHistos->CalibrationHistogramQ(useStep,ih,0)->GetBinContent(bin)/axentries);
         QvectorOut->SetQy( ih,  
             QvectorIn->Qy(ih) - inputHistos->CalibrationHistogramQ(useStep,ih,1)->GetBinContent(bin)/axentries);
 
-        QvectorOut->SetEventPlaneStatus(ih, QnCorrectionsSteps::kRecentering);
-        if(axentries==1) QvectorOut->SetEventPlaneStatus(ih, QnCorrectionsSteps::kUndefined);   // With one event in the event class, Qvector becomes undefined after recentering
+        QvectorOut->SetEventPlaneStatus(ih, QnCorrectionsConstants::kRecentering);
+        if(axentries==1) QvectorOut->SetEventPlaneStatus(ih, QnCorrectionsConstants::kUndefined);   // With one event in the event class, Qvector becomes undefined after recentering
 
       }
 

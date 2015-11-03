@@ -118,27 +118,35 @@ QnCorrectionsConfiguration::~QnCorrectionsConfiguration()
 //_______________________________________________________________________________
 QnCorrectionsConfiguration::QnCorrectionsConfiguration(const QnCorrectionsConfiguration &c) :
   TObject(),
-  fQnNormalization(c.GetQnNormalizationMethod()),
-//   fEqualizationMethod(c.EqualizationMethod()),
-//   fTwistAndRescalingMethod(c.TwistAndRescalingMethod()),
-  fLocalIndex(c.LocalIndex()),
-  fGlobalIndex(c.GlobalIndex()),
-  fCalibrationStep(c.CalibrationStep()),
-  fDetectorType(c.DetectorType()),
-  fCalibrationDetectorNames(c.CalibrationDetectorName()),
-  fEqualizationDetectorNames(c.EqualizationDetectorName()),
-  fQnConfigurationName(c.QnConfigurationName()),
-  //fChannelEqualization(c.doChannelEqualization()),
-  //fRecenterQvec(c.doRecentering()),
-  //fRotateQvec(c.doRotation()),
-  //fTwistQvec(c.doTwist()),
-  //fScaleQvec(c.doScaling()),
-  fUseLabel(c.CorrectWithEventLabel()),
-  fChannelList(c.ChannelList()),
-  fChannelGroups(c.ChannelGroups()),
-  fCuts(c.Cuts()),
-  fDataVectorEqualizationAxes(c.EqualizationBinning()),
-  fCommonCorrectionAxes(c.CalibrationBinning())
+  fCuts(c.fCuts),
+  fQnNormalization(c.fQnNormalization),
+  fEqualizationMethod(c.fEqualizationMethod),
+  fTwistAndRescalingMethod(c.fTwistAndRescalingMethod),
+  fAlignmentHarmonic(c.fAlignmentHarmonic),
+  fLocalIndex(c.fLocalIndex),
+  fGlobalIndex(c.fGlobalIndex),
+  fCalibrationStep(c.fCalibrationStep),
+  fMinimumHarmonic(c.fMinimumHarmonic),
+  fMaximumHarmonic(c.fMaximumHarmonic),
+  fDetectorType(c.fDetectorType),
+  fChannelList(c.fChannelList),
+  fChannelGroups(c.fChannelGroups),
+  fCalibrationDetectorNames(c.fCalibrationDetectorNames),
+  fEqualizationDetectorNames(c.fEqualizationDetectorNames),
+  fAlignmentReferenceDetector(c.fAlignmentReferenceDetector),
+  fQnConfigurationName(c.fQnConfigurationName),
+  fCommonCorrectionAxes(c.fCommonCorrectionAxes),
+  fDataVectorEqualizationAxes(c.fDataVectorEqualizationAxes),
+  fRecenteringAxes(c.fRecenteringAxes),
+  fAlignmentAxes(c.fAlignmentAxes),
+  fTwistAndRescalingAxes(c.fTwistAndRescalingAxes),
+  fChannelEqualization(c.fChannelEqualization),
+  fRecenterQvec(c.fRecenterQvec),
+  fRotateQvec(c.fRotateQvec),
+  fTwistQvec(c.fTwistQvec),
+  fScaleQvec(c.fScaleQvec),
+  fIsTracking(c.fIsTracking),
+  fUseLabel(c.fUseLabel)
 {   
   //
   // Constructor
@@ -148,108 +156,66 @@ QnCorrectionsConfiguration::QnCorrectionsConfiguration(const QnCorrectionsConfig
   fQnConfigurationCorrelationIndices[0] = c.QnConfigurationCorrelationIndex(0);
   fQnConfigurationCorrelationIndices[1] = c.QnConfigurationCorrelationIndex(1);
 
+  for(Int_t is=0; is<QnCorrectionsConstants::nCorrectionSteps; is++) {
+    fRequestedCorrectionMap[is] = c.fRequestedCorrectionMap[is];
+    fRequestedHistogramMap[is]  = c.fRequestedHistogramMap[is] ;
+    fApplyCorrectionMap[is]     = c.fApplyCorrectionMap[is]    ;
+    fFillHistogramMap[is]       = c.fFillHistogramMap[is]      ;
+  }
 
 }
 
 
-////_______________________________________________________________________________
-//void QnCorrectionsConfiguration::SetCorrectionSteps(QnCorrectionsSteps::CorrectionSteps flag1, QnCorrectionsSteps::CorrectionSteps flag2, QnCorrectionsSteps::CorrectionSteps flag3, QnCorrectionsSteps::CorrectionSteps flag4, QnCorrectionsSteps::CorrectionSteps flag5, QnCorrectionsSteps::CorrectionSteps flag6){
-////
-//// fCorrectionMap[0] = (Int_t) QnCorrectionsSteps::kPass0;
-//// fCorrectionMap[1] = (Int_t) flag1;
-//// fCorrectionMap[2] = (Int_t) flag2;
-//// fCorrectionMap[3] = (Int_t) flag3;
-//// fCorrectionMap[4] = (Int_t) flag4;
-//// fCorrectionMap[5] = (Int_t) flag5;
-////
-////
-//// SetCorrectionFlag(flag1);
-//// SetCorrectionFlag(flag2);
-//// SetCorrectionFlag(flag3);
-//// SetCorrectionFlag(flag4);
-//// SetCorrectionFlag(flag5);
-//// SetCorrectionFlag(flag6);
-//
-// return;
-//
-//}
+//_______________________________________________________________________________
+QnCorrectionsConfiguration & QnCorrectionsConfiguration::operator=(const QnCorrectionsConfiguration &c) {
+  if (this == &c) return *this;
+  else {
+    fCuts=c.fCuts;
+    fQnNormalization=c.fQnNormalization;
+    fEqualizationMethod=c.fEqualizationMethod;
+    fTwistAndRescalingMethod=c.fTwistAndRescalingMethod;
+    fAlignmentHarmonic=c.fAlignmentHarmonic;
+    fLocalIndex=c.fLocalIndex;
+    fGlobalIndex=c.fGlobalIndex;
+    fCalibrationStep=c.fCalibrationStep;
+    fMinimumHarmonic=c.fMinimumHarmonic;
+    fMaximumHarmonic=c.fMaximumHarmonic;
+    fDetectorType=c.fDetectorType;
+    fChannelList=c.fChannelList;
+    fChannelGroups=c.fChannelGroups;
+    fCalibrationDetectorNames=c.fCalibrationDetectorNames;
+    fEqualizationDetectorNames=c.fEqualizationDetectorNames;
+    fAlignmentReferenceDetector=c.fAlignmentReferenceDetector;
+    fQnConfigurationName=c.fQnConfigurationName;
+    fCommonCorrectionAxes=c.fCommonCorrectionAxes;
+    fDataVectorEqualizationAxes=c.fDataVectorEqualizationAxes;
+    fRecenteringAxes=c.fRecenteringAxes;
+    fAlignmentAxes=c.fAlignmentAxes;
+    fTwistAndRescalingAxes=c.fTwistAndRescalingAxes;
+    fChannelEqualization=c.fChannelEqualization;
+    fRecenterQvec=c.fRecenterQvec;
+    fRotateQvec=c.fRotateQvec;
+    fTwistQvec=c.fTwistQvec;
+    fScaleQvec=c.fScaleQvec;
+    fIsTracking=c.fIsTracking;
+    fUseLabel=c.fUseLabel;
 
-////_______________________________________________________________________________
-//void QnCorrectionsConfiguration::SetPassNumbers(){
-//
-//   
-//  fCorrectionPasses[QnCorrectionsSteps::kPass0]            = 0 ;
-//  fCorrectionPasses[QnCorrectionsSteps::kDataVectorEqualization] = 1 ;
-//  fCorrectionPasses[QnCorrectionsSteps::kRecentering]      = 2 ;
-//  fCorrectionPasses[QnCorrectionsSteps::kAlignment]        = 3 ;
-//
-//  if(fTwistAndRescalingMethod==0) {
-//    fCorrectionPasses[QnCorrectionsSteps::kTwist]     = fCorrectionPasses[QnCorrectionsSteps::kRecentering];
-//    fCorrectionPasses[QnCorrectionsSteps::kRescaling] = fCorrectionPasses[QnCorrectionsSteps::kRecentering];
-//  }
-//  else {
-//    fCorrectionPasses[QnCorrectionsSteps::kTwist]     = 4 ;
-//    fCorrectionPasses[QnCorrectionsSteps::kRescaling] = fCorrectionPasses[QnCorrectionsSteps::kTwist];
-//  }
-//   
-//// Int_t passNumber=-1;
-//// for(Int_t i=0; i<QnCorrectionsSteps::kNcorrectionSteps; i++){
-////   
-////  switch (fCorrectionMap[i]){
-////    case QnCorrectionsSteps::kPass0:
-////      fCorrectionPasses[i]=++passNumber;
-////      break;
-////    case QnCorrectionsSteps::kDataVectorEqualization:
-////      fCorrectionPasses[i]=++passNumber;
-////      break;
-////    case QnCorrectionsSteps::kRecentering:
-////      fCorrectionPasses[i]=++passNumber;
-////      break;
-////    case QnCorrectionsSteps::kAlignment:
-////      fCorrectionPasses[i]=++passNumber;
-////      break;
-////    case QnCorrectionsSteps::kTwist:
-////      if(fTwistAndRescalingMethod==0) fCorrectionPasses[i]=passNumber;
-////      else fCorrectionPasses[i]=++passNumber;
-////      break;
-////    case QnCorrectionsSteps::kRescaling:
-////      if(!fTwistQvec&&fTwistAndRescalingMethod!=0) fCorrectionPasses[i]=++passNumber;
-////      else fCorrectionPasses[i]=passNumber;
-////      break;
-////  }
-////
-//// }
-// 
-//
-//
-//}
-//
-//
-//
-//
-//
-////_______________________________________________________________________________
-//void QnCorrectionsConfiguration::SetCorrectionFlag(QnCorrectionsSteps::CorrectionSteps flag){
-//
-//  switch (flag){
-//    case QnCorrectionsSteps::kDataVectorEqualization:
-//      fChannelEqualization=kTRUE;
-//      break;
-//    case QnCorrectionsSteps::kRecentering:
-//      fRecenterQvec=kTRUE;
-//      break;
-//    case QnCorrectionsSteps::kAlignment:
-//      fRotateQvec=kTRUE;
-//      break;
-//    case QnCorrectionsSteps::kTwist:
-//      fTwistQvec=kTRUE;
-//      break;
-//    case QnCorrectionsSteps::kRescaling:
-//      fScaleQvec=kTRUE;
-//      break;
-//  }
-//
-//}
+    fQnConfigurationCorrelationNames[0] = c.QnConfigurationCorrelationName(0);
+    fQnConfigurationCorrelationNames[1] = c.QnConfigurationCorrelationName(1);
+    fQnConfigurationCorrelationIndices[0] = c.QnConfigurationCorrelationIndex(0);
+    fQnConfigurationCorrelationIndices[1] = c.QnConfigurationCorrelationIndex(1);
+
+    for(Int_t is=0; is<QnCorrectionsConstants::nCorrectionSteps; is++) {
+      fRequestedCorrectionMap[is] = c.fRequestedCorrectionMap[is];
+      fRequestedHistogramMap[is]  = c.fRequestedHistogramMap[is] ;
+      fApplyCorrectionMap[is]     = c.fApplyCorrectionMap[is]    ;
+      fFillHistogramMap[is]       = c.fFillHistogramMap[is]      ;
+    }
+
+    return *this;
+  }
+    
+}
 
 //_______________________________________________________________________________
 Bool_t QnCorrectionsConfiguration::PassCuts(Float_t* values) {
