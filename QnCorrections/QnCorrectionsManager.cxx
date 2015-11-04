@@ -258,12 +258,28 @@ void QnCorrectionsManager::ClearEvent() {
   fListQnVectors->Clear();
 }
 
+//_____________________________________________________________________________
+//Bool_t QnCorrectionsManager::SetCalibrationFile(TFile* inputFile){
+//    if(inputFile){
+//      if(inputFile->GetListOfKeys()->GetEntries()>0){
+//        //fListInputHistogramsQnCorrections = (TList*)((TKey*)inputFile->GetListOfKeys()->At(0))->ReadObj(); return (fListInputHistogramsQnCorrections ? kTRUE : kFALSE);} //TODO make "CalibrationHistograms" name customizable
+//        TList* list = (TList*)((TKey*)inputFile->GetListOfKeys()->At(0))->ReadObj();
+//        if(list){
+//          for(Int_t i=0; i<list->GetEntries(); i++){
+//            fListInputHistogramsQnCorrections->Add(new TObject(*(list->At(i)));
+//          }
+//        }
+//      
+//      return (fListInputHistogramsQnCorrections ? kTRUE : kFALSE);} //TODO make "CalibrationHistograms" name customizable
+//    }
+//}
 
 //_____________________________________________________________________________
 void QnCorrectionsManager::Process() {
 
   if(!fProcessedFirstEvent){
-    Initialize();
+    //Initialize();
+    InitializeCalibrationHistograms();
     PrintFrameworkInformation();
   }
 
@@ -463,7 +479,7 @@ void QnCorrectionsManager::Initialize() {
 
   }
 
-  InitializeCalibrationHistograms();
+  //InitializeCalibrationHistograms();
 }
 
 
@@ -2074,8 +2090,10 @@ void QnCorrectionsManager::InitializeCalibrationHistograms(){
     TString label="allData";
     if(QnConf->CorrectWithEventLabel()) label=fLabel;
 
-    fListInputHistogramsQnCorrections->Print();
     TList* list = GetInputListWithLabel(label);
+
+    //cout<<"LIST "<<fListInputHistogramsQnCorrections->GetEntries()<<endl;
+
 
     //if(!list) return;
 
