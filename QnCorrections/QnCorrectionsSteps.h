@@ -25,8 +25,8 @@ class QnCorrectionsSteps  {
 
  public: 
 
-  QnCorrectionsSteps();
-  ~QnCorrectionsSteps();
+ QnCorrectionsSteps();
+ virtual ~QnCorrectionsSteps();
 
 
   //enum CorrectionSteps {
