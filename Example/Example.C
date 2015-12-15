@@ -205,7 +205,7 @@ void Setup(QnCorrectionsManager* QnMan){
   QnMan->SetCalibrationFileDirectoryName("Example");
 
 
-  
+  QnMan->Initialize();
 }
 
 void Finish(QnCorrectionsManager* QnMan){
@@ -217,7 +217,7 @@ void Finish(QnCorrectionsManager* QnMan){
 
 void Loop(QnCorrectionsManager* QnMan){
 
-  QnMan->Clear();
+  QnMan->ClearEvent();
 
   // Set event data
   QnMan->GetDataContainer()[kCentrality]=gRandom->Rndm()*100;

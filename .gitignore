@@ -1,1 +1,15 @@
+# interface to Aliroot framework
 aliroot/AliQnCorrections
+QnCorrectionsInterface
+
+# Eclipse project files
+.cproject
+.project
+
+# binary files
+*.d
+*.so
+*.root
+
+# log files
+*.log
