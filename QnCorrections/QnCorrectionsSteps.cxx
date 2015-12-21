@@ -106,7 +106,6 @@ void QnCorrectionsSteps::CalibrateDataVector(TClonesArray* dataVectorArray, QnCo
   //Int_t* var;
   //Int_t dim; 
   //Double_t fillValues[20];
-  Double_t groupWeights[20]={0.0};
   Double_t groupWeight=1.0;
   Int_t bin,binGroup;
 
@@ -767,11 +766,11 @@ void QnCorrectionsSteps::TwistQnVector() {
   //
 
 
-  Int_t bin=0;
-  //Int_t* var;
-  Int_t maxHarmonic;
+  // Int_t bin=0;
+  // Int_t* var;
+  // Int_t maxHarmonic;
   //Int_t dim; 
-  Double_t fillValues[20];
+  // Double_t fillValues[20];
 
 
  // QnCorrectionsConfiguration* QnConf = 0x0;
@@ -876,13 +875,13 @@ void QnCorrectionsSteps::RescaleQnVector(Int_t u2npar) {
   //
 
 
-  Int_t bin=0;
-  //Int_t* var;
-  Int_t maxHarmonic;
-  //Int_t dim; 
+  // Int_t bin=0;
+  // Int_t* var;
+  // Int_t maxHarmonic;
+  // Int_t dim;
 
 
-  Double_t fillValues[20];
+  // Double_t fillValues[20];
 
   //QnCorrectionsConfiguration* QnConf = 0x0;
   //for(Int_t iconf=0; iconf<NumberOfQnConfigurations(); iconf++){

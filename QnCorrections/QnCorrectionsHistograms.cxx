@@ -48,20 +48,22 @@ ClassImp(QnCorrectionsHistograms)
 //_______________________________________________________________________________
 QnCorrectionsHistograms::QnCorrectionsHistograms() :
   TObject(),
-  fEqualizationHistogramsM(),
-  fEqualizationHistogramsE(),
   fGroupEqualizationHistogramsM(),
   fGroupEqualizationHistogramsE(),
+  fEqualizationHistogramsM(),
+  fEqualizationHistogramsE(),
+  fRotationHistogram(),
+  fRotationHistogramE(),
+  fU2nHistogramsQA(),
+  fU2nHistogramsEQA(),
   fCalibrationHistogramsQ(),
   fCalibrationHistogramsE(),
   fCorrelationProfs(),
   fCorrelationEpProfs(),
   fU2nHistograms(),
   fU2nHistogramsE(0x0),
-  fStages(),
-  fEventHistograms()
-
-  //fEventPlaneDetectorId(),
+  fEventHistograms(),
+  fStages()
 {   
   //
   // Constructor
@@ -244,7 +246,12 @@ TObject* QnCorrectionsHistograms::GetHistogram(TList* list, const Char_t* listna
   // Retrieve a histogram from the list hlist
   //
   //
-  if(list->FindObject(listname)) return list->FindObject(listname)->FindObject(hname);
+  if(list->FindObject(listname)) {
+    return list->FindObject(listname)->FindObject(hname);
+  }
+  else {
+    return NULL;
+  }
 }
 
 
@@ -380,7 +387,6 @@ void QnCorrectionsHistograms::CreateMultiplicityHistograms(QnCorrectionsConfigur
 
   QnCorrectionsAxes* binning = QnConf->EqualizationBinning();
   Int_t dim = binning->Dim();
-  const Int_t* var = binning->Var();
   TAxis * binLimits =  binning->Axes();
 
   for(Int_t idim=0; idim<(dim-1); idim++) title+=";"+binning->AxisLabel(idim);
@@ -410,7 +416,6 @@ void QnCorrectionsHistograms::CreateRotationHistograms(QnCorrectionsConfiguratio
   TString det=QnConf->QnConfigurationName();
 
   QnCorrectionsAxes* binning = QnConf->GetAlignmentAxes();
-  const Int_t* var = binning->Var();
 
 
   for(Int_t idim=0; idim<binning->Dim(); idim++) title+=";"+binning->AxisLabel(idim);
@@ -436,7 +441,6 @@ void QnCorrectionsHistograms::CreateRotationHistograms(QnCorrectionsConfiguratio
 void QnCorrectionsHistograms::CreateEventHistograms(QnCorrectionsConfiguration* QnConf){
 
   const Int_t dim  = QnConf->EqualizationBinning()->Dim();
-  const Int_t* var = QnConf->EqualizationBinning()->Var();
  
   TString title;
   for(Int_t idim=0; idim<(dim-1); idim++){
@@ -509,7 +513,6 @@ void QnCorrectionsHistograms::CreateGroupMultiplicityHistograms(TList* list, QnC
 
   Double_t values[QnCorrectionsConstants::nHistogramDimensions]={0.0};
   Double_t m,nentries;
-  Int_t channel;
 
 
   // the following code loops over the bins in the multiplicity histograms and adds the bin content to the associated group multiplicity bin in the group multiplicity histograms

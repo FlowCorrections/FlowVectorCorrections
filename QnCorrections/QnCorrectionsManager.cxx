@@ -423,7 +423,6 @@ void QnCorrectionsManager::Initialize() {
   TString detStrCor1 = "";
   TString detStrCor2 = "";
   TString detStrCor3 = "";
-  Int_t cor1=-1, cor2=-1;
   for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
     QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
     if(!QnConf) continue;
@@ -466,7 +465,6 @@ void QnCorrectionsManager::Initialize() {
     fTreeQnVectors = new TTree("Qvectors","Qvector values");
     fTreeQnVectors->SetDirectory(0);
 
-    QnCorrectionsQnVector* treevectors[50];
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
       QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
       if(!QnConf) continue;
@@ -492,7 +490,6 @@ void QnCorrectionsManager::AddDataVector( Int_t detectorId, Double_t phi, Double
   //
 
   detectorId=fDetectorIdMap[detectorId]-1;
-  Bool_t keepData=kTRUE;
   Bool_t useForQn;
 
   QnCorrectionsConfiguration* QnConf;
@@ -677,13 +674,11 @@ void QnCorrectionsManager::RotateQvec(QnCorrectionsConfiguration* QnConf) {
 
     Double_t equot  = TMath::Sqrt(enumer2/(XX+YY)/(XX+YY)+edenom2/(XY-YX)/(XY-YX))*((XY-YX)/(XX+YY));
     Double_t edphi = equot/(1.+(XY-YX)/(XX+YY)*(XY-YX)/(XX+YY));
-    Double_t sigphi = TMath::Abs(dphi/edphi);
     //dphi=-dphi;
 
     //cout<<QnConf->QnConfigurationName()<<"  "<<dphi<<"  "<<edphi<<"  "<<sigphi<<"   "<<XX<<"  "<<XY<<"  "<<YX<<"  "<<YY<<endl;
 
-    Double_t Qx, Qy, Qmag, QxRotated, QyRotated;
-    Double_t x1yt,y1x2, x1x2, y1y2;
+    Double_t Qx, Qy;
 
     for(Int_t ih=QnConf->MinimumHarmonic(); ih<=QnConf->MaximumHarmonic(); ++ih) {
 
@@ -707,8 +702,6 @@ void QnCorrectionsManager::FillHistogramsWeights(QnCorrectionsConfiguration* QnC
 
 
   Double_t fillValues[20];
-  Int_t bin=-1;
-  Int_t binGroup=-1;
 
 
   TClonesArray* dataVectorArray = GetConfDataVectors(QnConf->GlobalIndex());
@@ -717,7 +710,6 @@ void QnCorrectionsManager::FillHistogramsWeights(QnCorrectionsConfiguration* QnC
   const Int_t  dim = QnConf->EqualizationBinning()->Dim();
   for(Int_t iav=0; iav<(dim-1); iav++) fillValues[iav] = fDataContainer[var[iav]];
 
-  Int_t localIndex=QnConf->LocalIndex();
   Int_t globalIndex=QnConf->GlobalIndex();
   QnCorrectionsDataVector* dataVector;
 
@@ -749,7 +741,6 @@ void QnCorrectionsManager::FillHistogramsWeights(QnCorrectionsConfiguration* QnC
 //______________________________________
 void QnCorrectionsManager::FillHistogramsQnAlignment(QnCorrectionsConfiguration* QnConf){
 
-  Float_t value;
   Int_t iconf=QnConf->GlobalIndex();
 
   QnCorrectionsQnVector* Qvecs[2];
@@ -790,7 +781,6 @@ void QnCorrectionsManager::FillHistogramsQnAlignment(QnCorrectionsConfiguration*
 //______________________________________
 void QnCorrectionsManager::FillHistogramsQnAlignmentQA(QnCorrectionsConfiguration* QnConf){
 
-  Float_t value;
   Int_t iconf=QnConf->GlobalIndex();
 
   QnCorrectionsQnVector* Qvecs[2];
@@ -1686,18 +1676,11 @@ void QnCorrectionsManager::CallStepTwistAndRescaleQnVector(QnCorrectionsConfigur
 
 
   Int_t bin=0;
-  //Int_t* var;
-  Int_t maxHarmonic;
-  //Int_t dim; 
   Double_t fillValues[20];
   const Int_t* var = QnConf->GetTwistAndRescalingAxes()->Var();
   const Int_t  dim = QnConf->GetTwistAndRescalingAxes()->Dim();
   for(Int_t iav=0; iav<dim; iav++) fillValues[iav] = fDataContainer[var[iav]];
 
-  Int_t lastStep=0;
-  if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kDataVectorEqualization)) lastStep=QnCorrectionsConstants::kDataVectorEqualization;
-  if(QnConf->IsApplyCorrection(QnCorrectionsConstants::kRecentering))            lastStep=QnCorrectionsConstants::kRecentering;
-  
   QnCorrectionsQnVector* QvectorIn= static_cast<QnCorrectionsQnVector*>(CorrectedQnVector(QnConf->GlobalIndex())->At(0));
   TClonesArray& arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kTwist]);
   QnCorrectionsQnVector* QvectorTwist   = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
@@ -1863,13 +1846,13 @@ void QnCorrectionsManager::CallStepRescaleQnVector(Int_t u2npar) {
   //
 
 
-  Int_t bin=0;
-  //Int_t* var;
-  Int_t maxHarmonic;
-  //Int_t dim; 
+  // Int_t bin=0;
+  // Int_t* var;
+  // Int_t maxHarmonic;
+  // Int_t dim;
 
 
-  Double_t fillValues[20];
+  // Double_t fillValues[20];
 
   //QnCorrectionsConfiguration* QnConf = 0x0;
   //for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
@@ -2145,8 +2128,6 @@ void QnCorrectionsManager::PrintFrameworkInformation(){
 
 
 
-  Int_t maxPasses=0;
-
 	const int widthEntry = 18;
 	const int widthBar = 3;
 
@@ -2237,7 +2218,6 @@ void QnCorrectionsManager::PrintFrameworkInformationLine(Bool_t HistOrCor,TStrin
   if(!HistOrCor&&stepflag==QnCorrectionsConstants::kNothing){
     cout<<setw(widthEntry)<<correctionname<<setw(widthBar)<<"-";
     for(Int_t iconf=0; iconf<fNumberOfQnConfigurations; iconf++){
-      QnCorrectionsConfiguration* QnConf = (QnCorrectionsConfiguration*) GetQnConfiguration(iconf);
         for(Int_t i=0; i<widthEntry; i++) cout<<"-";
         for(Int_t i=0; i<widthBar; i++) cout<<"-";
     }
