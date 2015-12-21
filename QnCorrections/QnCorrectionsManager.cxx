@@ -400,9 +400,9 @@ void QnCorrectionsManager::WriteQnVectorsToList() {
     }
     for(Int_t istep=0; istep<QnCorrectionsConstants::nCorrectionSteps; istep++) {
       TClonesArray* qvecAll = CorrectedQnVector(iconf,istep);
-      if(qvec) {
+      if(qvecAll) {
         qvecAll->SetName(Form("%s_%d",QnConf->QnConfigurationName().Data(),istep));
-        fListQnVectors->Add(qvec);
+        fListQnVectors->Add(qvecAll);
       }
 
     }
