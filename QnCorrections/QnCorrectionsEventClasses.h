@@ -9,11 +9,14 @@
  * Development:   2012-2016                                                *
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
-/// \class QnCorrectionEventClassVariable
+
+/// \brief Classes that model the event classes for the Q vector correction framework
+
+/// \class QnCorrectionsEventClassVariable
 /// \brief One variable used for defining an event class
 ///
-/// Class defining one variable and its associated binning allowing to
-/// using it for the definition of event classes within the Q vector
+/// Class defining one variable and its associated binning allowing
+/// its use for the definition of event classes within the Q vector
 /// correction framework.
 ///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
@@ -36,12 +39,6 @@ class QnCorrectionsEventClassVariable : public TObject {
   QnCorrectionsEventClassVariable(Int_t varId, const char *varname, Double_t binsArray[][2]);
   ~QnCorrectionsEventClassVariable();
 
-  // setters
-  void SetVariable(Int_t varId, const char *varname) { fVarId = varId; fLabel = varname; }
-  void SetBins(Int_t nbins, Double_t min, Double_t max);
-  void SetBins(Int_t nbins, Double_t *bins);
-  void SetLabel(const char *label) { fLabel = label; }
-
   // getters
   Int_t           GetVariableId() const { return fVarId; }
   const char *    GetVariableLabel() const { return (const char *) fLabel; }
@@ -58,10 +55,12 @@ class QnCorrectionsEventClassVariable : public TObject {
   Double_t     *fBins;    ///< Bin edges array for the variable when shown in a histogram
   TString       fLabel;   ///< Label to use in an axis that shows the variable
 
+/// \cond CLASSIMP
   ClassDef(QnCorrectionsEventClassVariable, 1);
+/// \endcond
 };
 
-/// \class QnCorrectionEventClassVariablesSet
+/// \class QnCorrectionsEventClassVariablesSet
 /// \brief The set of variables that define an event class
 ///
 /// Array of EventClassVariables that fully define the different
@@ -85,7 +84,9 @@ public:
 
   virtual QnCorrectionsEventClassVariable *At(Int_t i) const { return (QnCorrectionsEventClassVariable *) ((TObjArray *) this)->At(i); }
 
+/// \cond CLASSIMP
   ClassDef(QnCorrectionsEventClassVariablesSet, 1);
+/// \endcond
 };
 
 #endif

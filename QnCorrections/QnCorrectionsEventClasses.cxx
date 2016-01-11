@@ -39,8 +39,11 @@
 #include <Riostream.h>
 
 
+/// \cond CLASSIMP
 ClassImp(QnCorrectionsEventClassVariable)
+/// \endcond
 
+/// Default constructor
 QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable() :
 TObject(),
 fVarId(-1),
@@ -50,6 +53,7 @@ fLabel("") {
 
 }
 
+/// Copy constructor
 QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(const QnCorrectionsEventClassVariable &ecv) :
 TObject(ecv),
 fVarId(ecv.fVarId),
@@ -62,6 +66,16 @@ fLabel(ecv.fLabel) {
     fBins[i] = ecv.fBins[i];
 }
 
+/// Normal constructor
+///
+/// Allocates memory for the desired number of bins (plus one) and
+/// build their lower and upper edges values
+///
+/// \param varId variable unique identity
+/// \param varname variable name or label for a variable axis
+/// \param nbins number of bins
+/// \param min lower edge value for the first bin
+/// \param max upper edge value for the last bin
 QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, const char *varname, Int_t nbins, Double_t min, Double_t max) :
 TObject(),
 fVarId(varId),
@@ -78,6 +92,15 @@ fLabel(varname) {
   }
 }
 
+/// Normal constructor
+///
+/// Allocates memory for the desired number of bins (plus one) and
+/// copies their passed lower and upper edges values
+///
+/// \param varId variable unique identity
+/// \param varname variable name or label for a variable axis
+/// \param nbins number of bins
+/// \param bins array with bins lower edge value plus the upper of the last one
 QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, const char *varname, Int_t nbins, Double_t *bins) :
 TObject(),
 fVarId(varId),
@@ -91,6 +114,19 @@ fLabel(varname) {
   }
 }
 
+/// Backward compatible constructor
+///
+/// Allocates memory for the desired number of bins (plus one) and
+/// build their lower and upper edges values
+///
+/// The passed array structure contains an array of pairs where the 1st
+/// element of each pair is the lower edge of a coarse bin and the 2nd
+/// element is the number of fine bins inside the coarse bin. The 2nd
+/// element of the first pair is the total number of pairs
+///
+/// \param varId variable unique identity
+/// \param varname variable name or label for a variable axis
+/// \param binArray array with bin segments of different granularity
 QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, const char *varname, Double_t binArray[][2]) :
 TObject(),
 fVarId(varId),
@@ -122,6 +158,10 @@ fLabel(varname) {
   fBins[bin] = low;
 }
 
+
+/// Default destructor
+///
+/// Release heap memory if taken
 QnCorrectionsEventClassVariable::~QnCorrectionsEventClassVariable() {
 
   if (fBins != NULL) {
@@ -130,27 +170,7 @@ QnCorrectionsEventClassVariable::~QnCorrectionsEventClassVariable() {
   }
 }
 
-  // setters
-void QnCorrectionsEventClassVariable::SetBins(Int_t nbins, Double_t min, Double_t max) {
-
-  fNBins = nbins;
-  fBins = new Double_t[fNBins + 1];
-  Double_t low = min;
-  Double_t width = (max - min) / fNBins;
-  for (Int_t i = 0; i < fNBins + 1; i++) {
-    fBins[i] = low;
-    low += width;
-  }
-}
-
-void QnCorrectionsEventClassVariable::SetBins(Int_t nbins, Double_t *bins) {
-
-  fNBins = nbins;
-  fBins = new Double_t[fNBins + 1];
-  for (Int_t i = 0; i < fNBins + 1; i++) {
-    fBins[i] = bins[i];
-  }
-}
-
+/// \cond CLASSIMP
 ClassImp(QnCorrectionsEventClassVariablesSet)
+/// \endcond
 
