@@ -10,6 +10,7 @@
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
 
+/// \file QnCorrectionsEventClasses.h
 /// \brief Classes that model the event classes for the Q vector correction framework
 
 /// \class QnCorrectionsEventClassVariable
@@ -39,14 +40,21 @@ class QnCorrectionsEventClassVariable : public TObject {
   QnCorrectionsEventClassVariable(Int_t varId, const char *varname, Double_t binsArray[][2]);
   ~QnCorrectionsEventClassVariable();
 
-  // getters
+  /// Gets the variable unique Id
   Int_t           GetVariableId() const { return fVarId; }
+  /// Gets the variable name / label
   const char *    GetVariableLabel() const { return (const char *) fLabel; }
+  /// Gets the number of bins
   Int_t           GetNBins() const { return fNBins; }
+  /// Gets the actual bins edges array
   const Double_t *GetBins() const { return fBins; }
-  Double_t        GetBinEdge(Int_t bin) const { return fBins[bin]; }
+  /// Gets the lower edge for the passed bin number
+  /// \param bin bin number starting from one
+  Double_t        GetBinEdge(Int_t bin) const { return (((bin < 1) || (bin > fNBins)) ? 0.0 : fBins[bin-1]); }
 
+  /// Gets the lowest variable value considered
   Double_t        GetLowerEdge() {return fBins[0]; }
+  /// Gets the highest variabel value considered
   Double_t        GetUpperEdge() {return fBins[fNBins]; }
 
  private:
@@ -70,6 +78,17 @@ class QnCorrectionsEventClassVariable : public TObject {
 /// all Q vector corrections are performed according to the
 /// event class the involved event is allocated.
 ///
+/// Inherits all the methods of TObjArray specially the
+/// subscript [] operator and Add method that allows
+/// the array to expand.
+///
+/// The event class variables objects are not own by the array so,
+/// they are not destroyed when the the set is destroyed. This allows
+/// to create several sets with the same event class variables.
+/// Pay attention to this when you create your event class variables,
+/// they should live at least the same time you expect the sets to
+/// live.
+///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
@@ -78,10 +97,20 @@ class QnCorrectionsEventClassVariable : public TObject {
 
 class QnCorrectionsEventClassVariablesSet : public TObjArray {
 public:
+  /// Default constructor
   QnCorrectionsEventClassVariablesSet(const QnCorrectionsEventClassVariablesSet& a) : TObjArray(a) {}
-  QnCorrectionsEventClassVariablesSet(Int_t s = TCollection::kInitCapacity, Int_t lowerBound = 0) : TObjArray(s, lowerBound) {}
+  /// Normal constructor
+  /// \param n number of variables in the set
+  QnCorrectionsEventClassVariablesSet(Int_t n = TCollection::kInitCapacity) : TObjArray(n) {}
+  /// Copy constructor
+  /// \param cecvs the object instance to be copied
+  QnCorrectionsEventClassVariablesSet(QnCorrectionsEventClassVariablesSet &cecvs) : TObjArray(cecvs) {}
+  /// Default destructor
   virtual ~QnCorrectionsEventClassVariablesSet() {}
 
+  /// Access the event class variable at the passed position
+  /// \param i position in the array (starting at zero)
+  /// \return the event class variable object a position i
   virtual QnCorrectionsEventClassVariable *At(Int_t i) const { return (QnCorrectionsEventClassVariable *) ((TObjArray *) this)->At(i); }
 
 /// \cond CLASSIMP

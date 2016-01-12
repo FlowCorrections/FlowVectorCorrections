@@ -114,7 +114,7 @@ fLabel(varname) {
   }
 }
 
-/// Backward compatible constructor
+/// Backwards compatible constructor
 ///
 /// Allocates memory for the desired number of bins (plus one) and
 /// build their lower and upper edges values
