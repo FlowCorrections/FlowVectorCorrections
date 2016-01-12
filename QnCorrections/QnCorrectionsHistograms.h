@@ -1,6 +1,7 @@
 #ifndef QNCORRECTIONS_HISTOGRAMS_H
 #define QNCORRECTIONS_HISTOGRAMS_H
 
+/// \file QnCorrectionsHistograms.h
 /// \brief Classes that model the multidimensional profile histograms for the Q vector correction framework
 
 #include "THn.h"
@@ -26,6 +27,7 @@ public:
   QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
   virtual ~QnCorrectionsHistogramBase();
 
+
   virtual Int_t GetBin(Float_t *variableContainer) { return -1; }
   virtual Float_t GetBinContent(Int_t bin) { return 0.0; }
   virtual Float_t GetBinError(Int_t bin) {return 0.0; }
@@ -35,6 +37,7 @@ private:
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsHistogramBase, 1);
   /// \endcond
+  static const char *szEntriesHistoSuffix;
 };
 
 /// \class QnCorrectionsProfile

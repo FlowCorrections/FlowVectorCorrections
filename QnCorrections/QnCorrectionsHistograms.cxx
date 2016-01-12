@@ -1,6 +1,9 @@
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsHistograms.h"
 
+/// The suffix for the name of the entries histograms
+const char *QnCorrectionsHistogramBase::szEntriesHistoSuffix = "_entries";
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsHistogramBase);
 /// \endcond
@@ -61,11 +64,60 @@ QnCorrectionsProfile::QnCorrectionsProfile(const char *name, const char *title, 
 }
 
 /// Default destructor
+///
+/// Does nothing because none of the members are own at destruction time
 QnCorrectionsProfile::~QnCorrectionsProfile() {
 
 }
 
+/// Creates the support histograms for the profile function
+///
+/// Based in the event classes variables set in the parent class
+/// the values and entries multidimensional histograms are
+/// created.
+///
+/// Both histograms are added to the passed histogram list
+///
+/// \param histogramList list where the histograms have to be added
+///
 Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
+  /* let's build the histograms names and titles */
+  TString histoName = GetName();
+  TString histoTitle = GetTitle();
+  TString entriesHistoName = GetName() + szEntriesHistoSuffix;
+  TString entriesHistoTitle = GetTitle() + szEntriesHistoSuffix;
+
+  Int_t nVariables = fEventClassVariables.GetEntriesFast();
+
+  Double_t *minvals = new Double_t[nVariables];
+  Double_t *maxvals = new Double_t[nVariables];
+  Int_t *nbins = new Int_t[nVariables];
+  TString sVariableLabels = "";
+
+  /* get the multidimensional structure */
+  fEventClassVariables.GetMultidimensionalConfiguration(nbins,minvals,maxvals);
+
+  /* create the values and entries multidimensional histograms */
+  fValues = new THnF((const char *) histoName, (const char *) histoTitle,nVariables,nbins,minvals,maxvals);
+  fEntries = new THnF((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
+
+  /* now let's set the proper binning and label on each axis */
+  for (Int_t var = 0; var < nVariables; var++) {
+    fValues->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+    fEntries->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+    fValues->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetName());
+    fEntries->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetName());
+  }
+
+  fValues->Sumw2();
+
+  histogramList->Add(fValues);
+  histogramList->Add(fEntries);
+
+  delete [] minvals;
+  delete [] maxvals;
+  delete [] nbins;
+
   return kTRUE;
 }
 Bool_t QnCorrectionsProfile::AttachProfileHistograms(TList *histogramList) {
