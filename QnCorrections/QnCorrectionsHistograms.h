@@ -27,11 +27,51 @@ public:
   QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
   virtual ~QnCorrectionsHistogramBase();
 
-
+  /// Get the bin number for the current variable content
+  ///
+  /// The bin number identifies the event class the current
+  /// variable content points to.
+  ///
+  /// Default behavior. Base class should not be instantiated.
+  ///
+  /// \param variableContainer the current variables content addressed by var Id
+  /// \return the associated bin to the current variables content
   virtual Int_t GetBin(Float_t *variableContainer) { return -1; }
+
+  /// Get the bin content for the passed bin number
+  ///
+  /// The bin number identifies a desired event whose content is
+  /// requested
+  ///
+  /// Default behavior. Base class should not be instantiated.
+  ///
+  /// \param bin the interested bin number
+  /// \return the bin number content
   virtual Float_t GetBinContent(Int_t bin) { return 0.0; }
+
+  /// Get the bin content error for the passed bin number
+  ///
+  /// The bin number identifies a desired event whose content
+  /// error is requested
+  ///
+  /// Default behavior. Base class should not be instantiated.
+  ///
+  /// \param bin the interested bin number
+  /// \return the bin number content error
   virtual Float_t GetBinError(Int_t bin) {return 0.0; }
-  virtual void Fill(Float_t *varableContainer, Float_t weight, Int_t nEntries = 1) {}
+
+  /// Fills the histogram
+  ///
+  /// The involved bin is computed according to the current variables
+  /// content. The bin is then increased by the given weight and the
+  /// entries also increased properly.
+  ///
+  /// Default behavior. Base class should not be instantiated.
+  ///
+  /// \param variableContainer the current variables conten addressed by var Id
+  /// \param weight the increment in the bin content
+  /// \param nEntries the number of entries corresponding to the increment
+  virtual void Fill(Float_t *variableContainer, Float_t weight, Int_t nEntries = 1) {}
 private:
   QnCorrectionsEventClassVariablesSet fEventClassVariables;  ///< The variables set that determines the event classes
   /// \cond CLASSIMP
@@ -71,10 +111,43 @@ public:
   Bool_t CreateProfileHistograms(TList *histogramList);
   Bool_t AttachProfileHistograms(TList *histogramList);
 
+  /// Get the bin number for the current variable content
+  ///
+  /// The bin number identifies the event class the current
+  /// variable content points to.
+  ///
+  /// \param variableContainer the current variables content addressed by var Id
+  /// \return the associated bin to the current variables content
   Int_t GetBin(Float_t *variableContainer);
+
+  /// Get the bin content for the passed bin number
+  ///
+  /// The bin number identifies a desired event whose content is
+  /// requested
+  ///
+  /// \param bin the interested bin number
+  /// \return the bin number content
   Float_t GetBinContent(Int_t bin);
+
+  /// Get the bin content error for the passed bin number
+  ///
+  /// The bin number identifies a desired event whose content
+  /// error is requested
+  ///
+  /// \param bin the interested bin number
+  /// \return the bin number content error
   Float_t GetBinError(Int_t bin);
-  void Fill(Float_t *varableContainer, Float_t weight, Int_t nEntries = 1);
+
+  /// Fills the histogram
+  ///
+  /// The involved bin is computed according to the current variables
+  /// content. The bin is then increased by the given weight and the
+  /// entries also increased properly.
+  ///
+  /// \param variableContainer the current variables conten addressed by var Id
+  /// \param weight the increment in the bin content
+  /// \param nEntries the number of entries corresponding to the increment
+  void Fill(Float_t *variableContainer, Float_t weight, Int_t nEntries = 1);
 private:
   THnF *fValues;   ///< Cumulates values for each of the event classes
   THnI *fEntries;  ///< Cumulates the number on each of the event classes

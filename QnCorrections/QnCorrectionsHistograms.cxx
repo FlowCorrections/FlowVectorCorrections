@@ -79,7 +79,7 @@ QnCorrectionsProfile::~QnCorrectionsProfile() {
 /// Both histograms are added to the passed histogram list
 ///
 /// \param histogramList list where the histograms have to be added
-///
+/// \return true if properly created
 Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
   /* let's build the histograms names and titles */
   TString histoName = GetName();
@@ -120,7 +120,36 @@ Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
 
   return kTRUE;
 }
+
+/// Attaches existing histograms as the support histograms for the profile function
+///
+/// The histograms are located in the passed list and if found and whith th
+/// proper dimensions their references are stored in member variables.
+///
+/// \param histogramList list where the histograms have to be located
+/// \return true if properly attached else false
 Bool_t QnCorrectionsProfile::AttachProfileHistograms(TList *histogramList) {
+  /* let's build the histograms names */
+  TString histoName = GetName();
+  TString entriesHistoName = GetName() + szEntriesHistoSuffix;
+
+  /* initialize. Remember we don't own the histograms */
+  fEntries = fValues = NULL;
+
+  fEntries = histogramList->FindObject((const char*) entriesHistoName);
+  if (fEntries != NULL) {
+    fValues = histogramList->FindObject((const char *)histoName);
+    if (fValues == NULL)
+      return kFALSE;
+  }
+  else
+    return kFALSE;
+
+/* TODO: pending to decide whether we divide the histograms and modify the
+ * get content and get errors functions accordingly or we split the class
+ * in created histograms and attached histograms. So far we leave it as
+ * it is and we'll see the penalty for not having them divided.
+ */
   return kTRUE;
 }
 
