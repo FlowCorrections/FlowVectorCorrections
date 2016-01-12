@@ -113,6 +113,8 @@ public:
   /// \return the event class variable object a position i
   virtual QnCorrectionsEventClassVariable *At(Int_t i) const { return (QnCorrectionsEventClassVariable *) ((TObjArray *) this)->At(i); }
 
+  void GetMultidimensionalConfiguration(Int_t *nbins, Double_t *minvals, Double_t *maxvals);
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsEventClassVariablesSet, 1);
 /// \endcond

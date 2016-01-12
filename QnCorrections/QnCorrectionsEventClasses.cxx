@@ -174,3 +174,19 @@ QnCorrectionsEventClassVariable::~QnCorrectionsEventClassVariable() {
 ClassImp(QnCorrectionsEventClassVariablesSet)
 /// \endcond
 
+/// Gets the multidimensional configuration data
+///
+/// Fills the necessary information to construct a multidimensional
+/// histogram
+///
+/// \param nbins storage for the number of bins of each variable
+/// \param minvals storage for the lower values of each variable
+/// \param maxvals storage for the upper values of each variable
+void QnCorrectionsEventClassVariablesSet::GetMultidimensionalConfiguration(Int_t *nbins, Double_t *minvals, Double_t *maxvals) {
+  for (Int_t var = 0; var < GetEntriesFast(); var++) {
+    nbins[var] = At(var)->GetNBins();
+    minvals[var] = At(var)->GetLowerEdge();
+    maxvals[var] = At(var)->GetUpperEdge();
+  }
+}
+
