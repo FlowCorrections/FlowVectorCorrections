@@ -354,10 +354,10 @@ private:
   static const char *szEntriesHistoSuffix;              ///< The suffix for the name of the entries histograms
   static const char *szXComponentSuffix;                ///< The suffix for the name of X component histograms
   static const char *szYComponentSuffix;                ///< The suffix for the name of Y component histograms
-  static const char *szXXCorrelationComponentSufix;     ///< The suffix for the name of XX correlation component histograms
-  static const char *szXYCorrelationComponentSufix;     ///< The suffix for the name of XY correlation component histograms
-  static const char *szYXCorrelationComponentSufix;     ///< The suffix for the name of YX correlation component histograms
-  static const char *szYYCorrelationComponentSufix;     ///< The suffix for the name of YY correlation component histograms
+  static const char *szXXCorrelationComponentSuffix;     ///< The suffix for the name of XX correlation component histograms
+  static const char *szXYCorrelationComponentSuffix;     ///< The suffix for the name of XY correlation component histograms
+  static const char *szYXCorrelationComponentSuffix;     ///< The suffix for the name of YX correlation component histograms
+  static const char *szYYCorrelationComponentSuffix;     ///< The suffix for the name of YY correlation component histograms
   static const Int_t nMaxHarmonicNumberSupported;       ///< The maximum external harmonic number the framework support
   static const UInt_t harmonicNumberMask[];             ///< Mask for each external harmonic number
 };
@@ -522,13 +522,11 @@ public:
   QnCorrectionsCorrelationComponentsProfile(
       const char *name,
       const char *title,
-      QnCorrectionsEventClassVariablesSet &ecvs,
-      Int_t nNoOfHarmonics,
-      Int_t *harmonicMap = NULL);
+      QnCorrectionsEventClassVariablesSet &ecvs);
   virtual ~QnCorrectionsCorrelationComponentsProfile();
 
-  Bool_t CreateCorrelationsComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
-  virtual Bool_t AttachHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  virtual Bool_t AttachHistograms(TList *histogramList);
 
   virtual Int_t GetBin(Float_t *variableContainer);
   virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
@@ -550,6 +548,11 @@ private:
   THnF **fXYValues;  ///< XY component histogram for each requested harmonic
   THnF **fYXValues;  ///< YX component histogram for each requested harmonic
   THnF **fYYValues;  ///< YY component histogram for each requested harmonic
+  UInt_t fXXharmonicFillMask;  ///< keeps track of harmonic XX component filled values
+  UInt_t fXYharmonicFillMask;  ///< keeps track of harmonic XY component filled values
+  UInt_t fYXharmonicFillMask;  ///< keeps track of harmonic YX component filled values
+  UInt_t fYYharmonicFillMask;  ///< keeps track of harmonic YY component filled values
+  UInt_t fFullFilled;         ///< mask for the fully filled condition
   THnI  *fEntries;  ///< Cumulates the number on each of the event classes
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrelationComponentsProfile, 1);
