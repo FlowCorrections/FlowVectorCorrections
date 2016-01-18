@@ -29,6 +29,8 @@
  *                                                                                                *
  **************************************************************************************************/
  
+/// \file QnCorrectionsEventClasses.cxx
+/// \brief Implementation of QnCorrectionsEventClasses classes
  
   
 

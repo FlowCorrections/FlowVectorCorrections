@@ -38,7 +38,7 @@ public:
   /// Interface declaration function.
   /// Default behavior. Base class should not be instantiated.
   ///
-  /// \param variableContainer the current variables content addressed by var Id
+  /// \param histogramList list where the histograms have to be located
   /// \return the associated bin to the current variables content
   virtual Bool_t AttachHistograms(TList *histogramList) { return kFALSE; }
 
@@ -268,7 +268,7 @@ public:
   /// Interface declaration function.
   /// Default behavior. Base class should not be instantiated.
   ///
-  /// \param bin the interested bin number
+  /// \param harmonic the interested external harmonic number
   /// \param variableContainer the current variables content addressed by var Id
   /// \param weight the increment in the bin content
   virtual void FillX(Int_t harmonic, Float_t *variableContainer, Float_t weight) { }

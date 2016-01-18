@@ -1,3 +1,6 @@
+/// \file QnCorrectionsHistograms.cxx
+/// \brief Implementation of QnCorrectionsHistograms classes
+
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsLog.h"
@@ -620,7 +623,7 @@ Float_t QnCorrectionsComponentsProfile::GetYBinError(Int_t harmonic, Int_t bin) 
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
@@ -662,7 +665,7 @@ void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, Float_t *variableCont
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsComponentsProfile::FillY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
@@ -1252,7 +1255,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinError(Int_t harmonic,
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
@@ -1298,7 +1301,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
@@ -1344,7 +1347,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
@@ -1390,7 +1393,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *
 /// has been already filled. A check is done for detecting consecutive
 /// fills for certain harmonic without a previous entries update.
 ///
-/// \param bin the interested bin number
+/// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
 void QnCorrectionsCorrelationComponentsProfile::FillYY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
