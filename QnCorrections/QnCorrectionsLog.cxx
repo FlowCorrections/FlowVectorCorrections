@@ -1,7 +1,7 @@
 #include <TString.h>
 #include "QnCorrectionsLog.h"
 
-Int_t nLoggingLevel = kError;
+UInt_t nLoggingLevel = kError;
 
 void QnCorrectionsSetTracingLevel(UInt_t level) {
   if (level < kError)

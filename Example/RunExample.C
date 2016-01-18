@@ -14,10 +14,9 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   //
   TString debugString="+g";
 
-  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsEventClasses.cxx"+debugString               );//,debugString);//, "QnCorrections");
-
-  //gROOT->LoadMacro(location+"QnCorrectionsInterface/QnCorrectionsHistos.cxx"+debugString    );//,debugString);//, "QnCorrectionsInterface");
-  //gROOT->LoadMacro(location+"QnCorrectionsInterface/QnCorrectionsVarManager.cxx"+debugString);//,debugString);//, "QnCorrectionsInterface");
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsLog.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsEventClasses.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistograms.cxx"+debugString);
 
   gROOT->LoadMacro("Example.C"+debugString);
 

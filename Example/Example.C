@@ -8,6 +8,7 @@
 #include <TFile.h>
 
 #include "../QnCorrections/QnCorrectionsEventClasses.h"
+#include "../QnCorrections/QnCorrectionsHistograms.h"
 
 void Setup();
 void Loop();

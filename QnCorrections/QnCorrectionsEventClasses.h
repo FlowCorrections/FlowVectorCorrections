@@ -97,14 +97,12 @@ class QnCorrectionsEventClassVariable : public TObject {
 
 class QnCorrectionsEventClassVariablesSet : public TObjArray {
 public:
-  /// Default constructor
-  QnCorrectionsEventClassVariablesSet(const QnCorrectionsEventClassVariablesSet& a) : TObjArray(a) {}
   /// Normal constructor
   /// \param n number of variables in the set
   QnCorrectionsEventClassVariablesSet(Int_t n = TCollection::kInitCapacity) : TObjArray(n) {}
   /// Copy constructor
   /// \param cecvs the object instance to be copied
-  QnCorrectionsEventClassVariablesSet(QnCorrectionsEventClassVariablesSet &cecvs) : TObjArray(cecvs) {}
+  QnCorrectionsEventClassVariablesSet(const QnCorrectionsEventClassVariablesSet &cecvs) : TObjArray(cecvs) {}
   /// Default destructor
   virtual ~QnCorrectionsEventClassVariablesSet() {}
 

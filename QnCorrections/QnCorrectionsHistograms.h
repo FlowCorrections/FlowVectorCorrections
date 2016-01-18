@@ -343,7 +343,7 @@ public:
   /// \param weight the increment in the bin content
   virtual void FillYY(Int_t harmonic, Float_t *variableContainer, Float_t weight) { }
 
-private:
+protected:
   void FillBinAxesValues(Float_t *variableContainer);
 
   QnCorrectionsEventClassVariablesSet fEventClassVariables;  ///< The variables set that determines the event classes

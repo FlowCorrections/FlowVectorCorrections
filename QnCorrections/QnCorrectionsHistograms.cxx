@@ -1,6 +1,8 @@
 /// \file QnCorrectionsHistograms.cxx
 /// \brief Implementation of QnCorrectionsHistograms classes
 
+#include "TList.h"
+
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsLog.h"
@@ -103,8 +105,8 @@ Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
   /* let's build the histograms names and titles */
   TString histoName = GetName();
   TString histoTitle = GetTitle();
-  TString entriesHistoName = GetName() + szEntriesHistoSuffix;
-  TString entriesHistoTitle = GetTitle() + szEntriesHistoSuffix;
+  TString entriesHistoName = GetName(); entriesHistoName += szEntriesHistoSuffix;
+  TString entriesHistoTitle = GetTitle(); entriesHistoTitle += szEntriesHistoSuffix;
 
   Int_t nVariables = fEventClassVariables.GetEntriesFast();
 
@@ -117,7 +119,7 @@ Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
 
   /* create the values and entries multidimensional histograms */
   fValues = new THnF((const char *) histoName, (const char *) histoTitle,nVariables,nbins,minvals,maxvals);
-  fEntries = new THnF((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
+  fEntries = new THnI((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
 
   /* now let's set the proper binning and label on each axis */
   for (Int_t var = 0; var < nVariables; var++) {
@@ -149,14 +151,15 @@ Bool_t QnCorrectionsProfile::CreateProfileHistograms(TList *histogramList) {
 Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
   /* let's build the histograms names */
   TString histoName = GetName();
-  TString entriesHistoName = GetName() + szEntriesHistoSuffix;
+  TString entriesHistoName = GetName(); entriesHistoName += szEntriesHistoSuffix;
 
   /* initialize. Remember we don't own the histograms */
-  fEntries = fValues = NULL;
+  fEntries = NULL;
+  fValues = NULL;
 
-  fEntries = histogramList->FindObject((const char*) entriesHistoName);
+  fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
   if (fEntries != NULL) {
-    fValues = histogramList->FindObject((const char *)histoName);
+    fValues = (THnF *) histogramList->FindObject((const char *)histoName);
     if (fValues == NULL)
       return kFALSE;
   }
@@ -179,7 +182,7 @@ Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
 Int_t QnCorrectionsProfile::GetBin(Float_t *variableContainer) {
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
 
@@ -236,14 +239,14 @@ void QnCorrectionsProfile::Fill(Float_t *variableContainer, Float_t weight) {
   /* keep the total entries in fValues updated */
   Double_t nEntries = fValues->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fValues->Fill(fBinAxesValues, weight);
   fValues->SetEntries(nEntries + 1);
   fEntries->Fill(fBinAxesValues, 1.0);
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsComponentsProfile, 1);
+ClassImp(QnCorrectionsComponentsProfile);
 /// \endcond
 
 /// Default constructor
@@ -313,14 +316,20 @@ QnCorrectionsComponentsProfile::~QnCorrectionsComponentsProfile() {
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
 /// \return true if properly created
-Bool_t QnCorrectionsComponentsProfile::CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL) {
+Bool_t QnCorrectionsComponentsProfile::CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap) {
   /* let's build the histograms names and titles */
-  TString histoXName = GetName() + szXComponentSuffix;
-  TString histoYName = GetName() + szYComponentSuffix;
-  TString histoXTitle = GetTitle() + szXComponentSuffix;
-  TString histoYTitle = GetTitle() + szYComponentSuffix;
-  TString entriesHistoName= GetName() + szXComponentSuffix + szYComponentSuffix + szEntriesHistoSuffix;
-  TString entriesHistoTitle = GetTitle() + szXComponentSuffix + szYComponentSuffix + szEntriesHistoSuffix;
+  TString histoXName = GetName(); histoXName += szXComponentSuffix;
+  TString histoYName = GetName(); histoYName += szYComponentSuffix;
+  TString histoXTitle = GetTitle(); histoXTitle += szXComponentSuffix;
+  TString histoYTitle = GetTitle(); histoYTitle += szYComponentSuffix;
+  TString entriesHistoName = GetName();
+  entriesHistoName += szXComponentSuffix;
+  entriesHistoName += szYComponentSuffix;
+  entriesHistoName += szEntriesHistoSuffix;
+  TString entriesHistoTitle = GetTitle();
+  entriesHistoTitle += szXComponentSuffix;
+  entriesHistoTitle += szYComponentSuffix;
+  entriesHistoTitle += szEntriesHistoSuffix;
 
   /* check whether within the supported harmonic range */
   Int_t nHigherHarmonic = nNoOfHarmonics;
@@ -328,8 +337,8 @@ Bool_t QnCorrectionsComponentsProfile::CreateComponentsProfileHistograms(TList *
     nHigherHarmonic = harmonicMap[nNoOfHarmonics - 1];
   }
   if (nMaxHarmonicNumberSupported < nHigherHarmonic) {
-    QnCorrectionsFatal("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
-        nHigherHarmonic, nMaxHarmonicNumberSupported);
+    QnCorrectionsFatal(Form("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
+        nHigherHarmonic, nMaxHarmonicNumberSupported));
   }
 
   /* let's support the external harmonic number map */
@@ -404,7 +413,7 @@ Bool_t QnCorrectionsComponentsProfile::CreateComponentsProfileHistograms(TList *
   }
 
   /* create the entries multidimensional histogram */
-  fEntries = new THnF((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
+  fEntries = new THnI((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
 
   /* now let's set the proper binning and label on each entries histogram axis */
   for (Int_t var = 0; var < nVariables; var++) {
@@ -435,9 +444,12 @@ Bool_t QnCorrectionsComponentsProfile::CreateComponentsProfileHistograms(TList *
 /// \return true if properly attached else false
 Bool_t QnCorrectionsComponentsProfile::AttachHistograms(TList *histogramList) {
   /* let's build the histograms names */
-  TString histoXName = GetName() + szXComponentSuffix;
-  TString histoYName = GetName() + szYComponentSuffix;
-  TString entriesHistoName= GetName() + szXComponentSuffix + szYComponentSuffix + szEntriesHistoSuffix;
+  TString histoXName = GetName(); histoXName += szXComponentSuffix;
+  TString histoYName = GetName(); histoYName += szYComponentSuffix;
+  TString entriesHistoName = GetName();
+  entriesHistoName += szXComponentSuffix;
+  entriesHistoName += szYComponentSuffix;
+  entriesHistoName += szEntriesHistoSuffix;
 
   /* initialize. Remember we don't own the histograms */
   fEntries = NULL;
@@ -453,7 +465,7 @@ Bool_t QnCorrectionsComponentsProfile::AttachHistograms(TList *histogramList) {
   fYharmonicFillMask = 0x0000;
   fFullFilled = 0x0000;
 
-  fEntries = histogramList->FindObject((const char*) entriesHistoName);
+  fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
   if (fEntries != NULL) {
     /* allocate enough space for the supported harmonic numbers */
     fXValues = new THnF *[nMaxHarmonicNumberSupported + 1];
@@ -464,8 +476,8 @@ Bool_t QnCorrectionsComponentsProfile::AttachHistograms(TList *histogramList) {
     for (Int_t i = 0; i < nMaxHarmonicNumberSupported; i++) {
       currentHarmonic++;
 
-      fXValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoXName, currentHarmonic));
-      fYValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoYName, currentHarmonic));
+      fXValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoXName, currentHarmonic));
+      fYValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoYName, currentHarmonic));
 
       /* and update the fully filled condition whether applicable */
       if ((fXValues[currentHarmonic]  != NULL) && (fYValues[currentHarmonic] != NULL))
@@ -495,7 +507,7 @@ Bool_t QnCorrectionsComponentsProfile::AttachHistograms(TList *histogramList) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
 Int_t QnCorrectionsComponentsProfile::GetBin(Float_t *variableContainer) {
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
 
@@ -641,7 +653,7 @@ void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, Float_t *variableCont
   /* keep total entries in fValues updated */
   Double_t nEntries = fXValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fXValues[harmonic]->Fill(fBinAxesValues, weight);
   fXValues[harmonic]->SetEntries(nEntries + 1);
 
@@ -683,7 +695,7 @@ void QnCorrectionsComponentsProfile::FillY(Int_t harmonic, Float_t *variableCont
   /* keep total entries in fValues updated */
   Double_t nEntries = fYValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fYValues[harmonic]->Fill(fBinAxesValues, weight);
   fYValues[harmonic]->SetEntries(nEntries + 1);
 
@@ -700,7 +712,7 @@ void QnCorrectionsComponentsProfile::FillY(Int_t harmonic, Float_t *variableCont
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCorrelationComponentsProfile, 1);
+ClassImp(QnCorrectionsCorrelationComponentsProfile);
 /// \endcond
 
 /// Default constructor
@@ -783,20 +795,28 @@ QnCorrectionsCorrelationComponentsProfile::~QnCorrectionsCorrelationComponentsPr
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
 /// \return true if properly created
-Bool_t QnCorrectionsCorrelationComponentsProfile::CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL) {
+Bool_t QnCorrectionsCorrelationComponentsProfile::CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap) {
   /* let's build the histograms names and titles */
-  TString histoXXName = GetName() + szXXCorrelationComponentSuffix;
-  TString histoXYName = GetName() + szXYCorrelationComponentSuffix;
-  TString histoYXName = GetName() + szYXCorrelationComponentSuffix;
-  TString histoYYName = GetName() + szYYCorrelationComponentSuffix;
-  TString histoXXTitle = GetTitle() + szXXCorrelationComponentSuffix;
-  TString histoXYTitle = GetTitle() + szXYCorrelationComponentSuffix;
-  TString histoYXTitle = GetTitle() + szYXCorrelationComponentSuffix;
-  TString histoYYTitle = GetTitle() + szYYCorrelationComponentSuffix;
-  TString entriesHistoName = GetName() + szXXCorrelationComponentSuffix + szXYCorrelationComponentSuffix
-      + szYXCorrelationComponentSuffix + szYYCorrelationComponentSuffix + szEntriesHistoSuffix;
-  TString entriesHistoTitle = GetTitle() + szXXCorrelationComponentSuffix + szXYCorrelationComponentSuffix
-      + szYXCorrelationComponentSuffix + szYYCorrelationComponentSuffix + szEntriesHistoSuffix;
+  TString histoXXName = GetName(); histoXXName += szXXCorrelationComponentSuffix;
+  TString histoXYName = GetName(); histoXYName += szXYCorrelationComponentSuffix;
+  TString histoYXName = GetName(); histoYXName += szYXCorrelationComponentSuffix;
+  TString histoYYName = GetName(); histoYYName += szYYCorrelationComponentSuffix;
+  TString histoXXTitle = GetTitle(); histoXXTitle += szXXCorrelationComponentSuffix;
+  TString histoXYTitle = GetTitle(); histoXYTitle += szXYCorrelationComponentSuffix;
+  TString histoYXTitle = GetTitle(); histoYXTitle += szYXCorrelationComponentSuffix;
+  TString histoYYTitle = GetTitle(); histoYYTitle += szYYCorrelationComponentSuffix;
+  TString entriesHistoName = GetName();
+  entriesHistoName += szXXCorrelationComponentSuffix;
+  entriesHistoName += szXYCorrelationComponentSuffix;
+  entriesHistoName += szYXCorrelationComponentSuffix;
+  entriesHistoName += szYYCorrelationComponentSuffix;
+  entriesHistoName += szEntriesHistoSuffix;
+  TString entriesHistoTitle = GetTitle();
+  entriesHistoTitle += szXXCorrelationComponentSuffix;
+  entriesHistoTitle += szXYCorrelationComponentSuffix;
+  entriesHistoTitle += szYXCorrelationComponentSuffix;
+  entriesHistoTitle += szYYCorrelationComponentSuffix;
+  entriesHistoTitle += szEntriesHistoSuffix;
 
   /* check whether within the supported harmonic range */
   Int_t nHigherHarmonic = nNoOfHarmonics;
@@ -804,8 +824,8 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::CreateCorrelationComponentsPro
     nHigherHarmonic = harmonicMap[nNoOfHarmonics - 1];
   }
   if (nMaxHarmonicNumberSupported < nHigherHarmonic) {
-    QnCorrectionsFatal("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
-        nHigherHarmonic, nMaxHarmonicNumberSupported);
+    QnCorrectionsFatal(Form("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
+        nHigherHarmonic, nMaxHarmonicNumberSupported));
   }
 
   /* let's support the external harmonic number map */
@@ -902,7 +922,7 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::CreateCorrelationComponentsPro
   }
 
   /* create the entries multidimensional histogram */
-  fEntries = new THnF((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
+  fEntries = new THnI((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
 
   /* now let's set the proper binning and label on each entries histogram axis */
   for (Int_t var = 0; var < nVariables; var++) {
@@ -933,12 +953,16 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::CreateCorrelationComponentsPro
 /// \return true if properly attached else false
 Bool_t QnCorrectionsCorrelationComponentsProfile::AttachHistograms(TList *histogramList) {
   /* let's build the histograms names */
-  TString histoXXName = GetName() + szXXCorrelationComponentSuffix;
-  TString histoXYName = GetName() + szXYCorrelationComponentSuffix;
-  TString histoYXName = GetName() + szYXCorrelationComponentSuffix;
-  TString histoYYName = GetName() + szYYCorrelationComponentSuffix;
-  TString entriesHistoName = GetName() + szXXCorrelationComponentSuffix + szXYCorrelationComponentSuffix
-      + szYXCorrelationComponentSuffix + szYYCorrelationComponentSuffix + szEntriesHistoSuffix;
+  TString histoXXName = GetName(); histoXXName += szXXCorrelationComponentSuffix;
+  TString histoXYName = GetName(); histoXYName += szXYCorrelationComponentSuffix;
+  TString histoYXName = GetName(); histoYXName += szYXCorrelationComponentSuffix;
+  TString histoYYName = GetName(); histoYYName += szYYCorrelationComponentSuffix;
+  TString entriesHistoName = GetName();
+  entriesHistoName += szXXCorrelationComponentSuffix;
+  entriesHistoName += szXYCorrelationComponentSuffix;
+  entriesHistoName += szYXCorrelationComponentSuffix;
+  entriesHistoName += szYYCorrelationComponentSuffix;
+  entriesHistoName += szEntriesHistoSuffix;
 
   /* initialize. Remember we don't own the histograms */
   fEntries = NULL;
@@ -964,7 +988,7 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::AttachHistograms(TList *histog
   fYYharmonicFillMask = 0x0000;
   fFullFilled = 0x0000;
 
-  fEntries = histogramList->FindObject((const char*) entriesHistoName);
+  fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
   if (fEntries != NULL) {
     /* allocate enough space for the supported harmonic numbers */
     fXXValues = new THnF *[nMaxHarmonicNumberSupported + 1];
@@ -977,10 +1001,10 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::AttachHistograms(TList *histog
     for (Int_t i = 0; i < nMaxHarmonicNumberSupported; i++) {
       currentHarmonic++;
 
-      fXXValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoXXName, currentHarmonic));
-      fXYValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoXYName, currentHarmonic));
-      fYXValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoYXName, currentHarmonic));
-      fYYValues[currentHarmonic] = histogramList->FindObject(Form("%s_h%d", (const char *) histoYYName, currentHarmonic));
+      fXXValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoXXName, currentHarmonic));
+      fXYValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoXYName, currentHarmonic));
+      fYXValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoYXName, currentHarmonic));
+      fYYValues[currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoYYName, currentHarmonic));
 
       /* and update the fully filled condition whether applicable */
       if ((fXXValues[currentHarmonic]  != NULL) && (fXYValues[currentHarmonic] != NULL)
@@ -1011,7 +1035,7 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::AttachHistograms(TList *histog
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
 Int_t QnCorrectionsCorrelationComponentsProfile::GetBin(Float_t *variableContainer) {
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
 
@@ -1273,7 +1297,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *
   /* keep total entries in fValues updated */
   Double_t nEntries = fXXValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fXXValues[harmonic]->Fill(fBinAxesValues, weight);
   fXXValues[harmonic]->SetEntries(nEntries + 1);
 
@@ -1319,7 +1343,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *
   /* keep total entries in fValues updated */
   Double_t nEntries = fXYValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fXYValues[harmonic]->Fill(fBinAxesValues, weight);
   fXYValues[harmonic]->SetEntries(nEntries + 1);
 
@@ -1365,7 +1389,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *
   /* keep total entries in fValues updated */
   Double_t nEntries = fYXValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fYXValues[harmonic]->Fill(fBinAxesValues, weight);
   fYXValues[harmonic]->SetEntries(nEntries + 1);
 
@@ -1411,7 +1435,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillYY(Int_t harmonic, Float_t *
   /* keep total entries in fValues updated */
   Double_t nEntries = fYYValues[harmonic]->GetEntries();
 
-  FillBinAxesValues(variablecContainer);
+  FillBinAxesValues(variableContainer);
   fYYValues[harmonic]->Fill(fBinAxesValues, weight);
   fYYValues[harmonic]->SetEntries(nEntries + 1);
 
