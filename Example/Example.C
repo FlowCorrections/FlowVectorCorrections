@@ -1,3 +1,22 @@
+/// \file Example.C
+/// \brief The file where we test things
+///
+/// At the current level it incorporates the tests for the
+/// event class variables, for the event class variables set
+/// and for the corrections profile function.
+///
+/// For the last one, some indications are needed because the
+/// behavior is matched towards the TProfile objects, concretely,
+/// the TProfile2D. Our histograms store float quantities while
+/// TProfile2D stores double quantities, and, as you might perceive
+/// in the output, this makes some differences. Our profile function
+/// only provides acceptable bin content when the number of bin
+/// entries is higher than one, fact that you might perceive as well
+/// in the output. Based on the current framework implementation
+/// has been decided to keep the GetBinError providing the
+/// standard deviation of the bin entries that, as can be seen in the
+/// testing code, is not the default for TProfile objects.
+
 #include <TSystem.h>
 #include <TMath.h>
 #include <TROOT.h>
@@ -15,13 +34,14 @@ void Setup();
 void Loop();
 void Finish();
 
-
+/// the detectors we will use for our example
 enum Detectors{
   kDetector1,
   kDetector2,
   kDetector3
 };
 
+/// few variables to use with above detectors
 enum Variables{
   kCentrality,
   kVertexZ,
@@ -42,6 +62,10 @@ ofstream textChannelsEventFile;
 Int_t nEventNo;
 #endif
 
+/// The actual example code
+///
+/// We will use it as a kind of sandbox to incrementally test
+/// our functionality until its final shape.
 
 #ifdef MAKEEVENTTEXTOUTPUT
 void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_t bTextEventFile = kFALSE){
@@ -71,6 +95,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
 
 }
 
+/// The routine to initialize our test framework before the events loop
 void Setup(){
 
   //-----------------------------------------------------------
@@ -213,10 +238,12 @@ void Setup(){
   }
 }
 
+/// the clean up routine
 void Finish(){
 
 }
 
+/// the events loop
 void Loop(){
 
 #ifdef MAKEEVENTTEXTOUTPUT
