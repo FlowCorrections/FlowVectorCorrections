@@ -6,6 +6,7 @@
 #include <TObject.h>
 #include <TStopwatch.h>
 #include <TFile.h>
+#include <TProfile2D.h>
 
 #include "../QnCorrections/QnCorrectionsEventClasses.h"
 #include "../QnCorrections/QnCorrectionsHistograms.h"
@@ -25,10 +26,12 @@ enum Variables{
   kCentrality,
   kVertexZ,
   kCharge,
+  kPx,
+  kPy,
   kNVars
 };
   
-TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge"};
+TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
 
 #ifdef MAKEEVENTTEXTOUTPUT
 const char *sTrackEventFileName = "trackEventFile.txt";
@@ -121,12 +124,92 @@ void Setup(){
   printf("\n");
   /* direct access */
   for (Int_t ixvar = 0; ixvar < CorrEventClasses.GetEntriesFast(); ixvar++) {
-    nextVar = (QnCorrectionsEventClassVariable*) CorrEventClasses[ixvar];
-    printf("Variable id: %d\n  name: %s\n  bins: %f", nextVar->GetVariableId(), nextVar->GetVariableLabel(), nextVar->GetBinEdge(0));
-    for (Int_t bin = 1; bin < nextVar->GetNBins() + 1; bin++) {
-      printf(", %f", nextVar->GetBinEdge(bin));
+    printf("Variable id: %d\n  name: %s\n  bins: %f",
+        CorrEventClasses.At(ixvar)->GetVariableId(),
+        CorrEventClasses.At(ixvar)->GetVariableLabel(),
+        CorrEventClasses.At(ixvar)->GetBinEdge(0));
+    for (Int_t bin = 1; bin < CorrEventClasses.At(ixvar)->GetNBins() + 1; bin++) {
+      printf(", %f", CorrEventClasses.At(ixvar)->GetBinEdge(bin));
     }
     printf("\n");
+  }
+
+  // here starts something different --------------------------------------------------
+  //
+  //
+
+  /* let's test now the profile functions */
+  {
+    Int_t nBins = 40;
+    Double_t min = -4.0;
+    Double_t max = 4.0;
+    Double_t binwidth = (max - min) / nBins;
+    Double_t binmiddle[nBins]; for (Int_t bin = 0; bin < nBins; bin++) binmiddle[bin] = min + binwidth / 2 + bin * binwidth;
+
+    /* the ROOT 2D profile */
+    TProfile2D *hprof2d  = new TProfile2D("hprof2d","Profile of pz versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+
+    Float_t px, py, pz;
+    /* now let's build our event class variables */
+    Int_t nDimensions = 2;
+    QnCorrectionsEventClassVariablesSet evtClassSet = QnCorrectionsEventClassVariablesSet(nDimensions);
+    evtClassSet[0] = new QnCorrectionsEventClassVariable(kPx,VarNames[kPx],nBins,min,max);
+    evtClassSet[1] = new QnCorrectionsEventClassVariable(kPy,VarNames[kPy],nBins,min,max);
+
+    /* the variable container */
+    Float_t varContainer[kNVars];
+
+    /* and now our histogram */
+    QnCorrectionsProfile *myProfile = new QnCorrectionsProfile("QnCorrectionsProfile", "myProfile", evtClassSet);
+    /* and the list we need for create it */
+    TList *myList = new TList(); myList->SetOwner(kTRUE);
+    myProfile->CreateProfileHistograms(myList);
+    myList->Print();
+
+    /* taken from the TProfile2D description */
+    for ( Int_t i=0; i<25000; i++) {
+       gRandom->Rannor(px,py);
+       pz = px*px + py*py;
+       hprof2d->Fill(px,py,pz,1);
+
+       /* let's fill the variable container with the new sample */
+       varContainer[kPx] = px;
+       varContainer[kPy] = py;
+
+       /* and now fill our profile */
+       myProfile->Fill(varContainer, pz);
+    }
+    /* let's match both profile supports */
+    Double_t hprofileSum = 0.0;
+    Double_t myProfileSum = 0.0;
+    Double_t hprofileErrSum = 0.0;
+    Double_t myProfileErrSum = 0.0;
+    for (Int_t binpx = 0; binpx < nBins; binpx++) {
+      for (Int_t binpy = 0; binpy < nBins; binpy++) {
+        /* for the profile is easy */
+        Double_t hprofile2dBinContent = hprof2d->GetBinContent(hprof2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+        Double_t hprofile2dBinError =  hprof2d->GetBinError(hprof2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+        Int_t hprofile2dBinEntries = hprof2d->GetBinEntries(hprof2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+
+        /* for us we have to fill the variable container first */
+        varContainer[kPx] = binmiddle[binpx];
+        varContainer[kPy] = binmiddle[binpy];
+        Double_t myProfileBinContent = myProfile->GetBinContent(myProfile->GetBin(varContainer));
+        Double_t myProfileBinError = myProfile->GetBinError(myProfile->GetBin(varContainer));
+        cout << Form("Profile 2D: %013.9f +/- %013.9f in: %d entries;  My profile: %013.9f +/- %013.9f\n",
+            hprofile2dBinContent, hprofile2dBinError, hprofile2dBinEntries, myProfileBinContent, myProfileBinError);
+        if (hprofile2dBinEntries > 1) {
+          hprofileSum += hprofile2dBinContent;
+          myProfileSum += myProfileBinContent;
+          hprofileErrSum += hprofile2dBinError;
+          myProfileErrSum += myProfileBinError;
+        }
+      }
+    }
+    cout << Form("Profile 2D cummulated sum: %20.9f, my profile cummulated sum: %20.9f\n", hprofileSum, myProfileSum);
+    cout << Form("Profile 2D error cummulated sum: %20.9f, my profile error cummulated sum: %20.9f\n", hprofileErrSum, myProfileErrSum);
+    myList->Print();
+    hprof2d->Print();
   }
 }
 
