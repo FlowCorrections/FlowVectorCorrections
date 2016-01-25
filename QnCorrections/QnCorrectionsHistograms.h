@@ -391,13 +391,13 @@ inline void QnCorrectionsHistogramBase::FillBinAxesValues(Float_t *variableConta
 /// GetBinContent (once the intended bin is obtained by mean
 /// of GetBin) returns in the profile way
 /// \f[
-///    \frac{\Sigma fValues(bin)}{fEntries(bin)}
+///    \frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}
 /// \f]
 /// while GetBinError returns the standard deviation of the values
 /// in the interested bin
 /// \f[
-///    \sqrt{\frac{\Sigma fValues^2(bin)}{fEntries(bin)}
-///          - \left(\frac{\Sigma fValues(bin)}{fEntries(bin)}\right)^2}
+///    \sqrt{\frac{\Sigma \mbox{fValues}^2\mbox{(bin)}}{\mbox{fEntries(bin)}}
+///          - \left(\frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}\right)^2}
 /// \f]
 ///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
