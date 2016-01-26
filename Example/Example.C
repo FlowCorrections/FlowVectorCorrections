@@ -66,7 +66,7 @@ Int_t nEventNo;
 /* the prepared tests */
 void TestEventClasses();
 void TestProfileHistograms();
-
+void TestComponentsHistograms();
 /// The actual example code
 ///
 /// We will use it as a kind of sandbox to incrementally test
@@ -91,6 +91,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
   /* run the tests */
   TestEventClasses();
   TestProfileHistograms();
+  TestComponentsHistograms();
 
   /* event loop */
   for(Int_t ie=0; ie<nevents; ie++) Loop();
@@ -299,4 +300,113 @@ void TestProfileHistograms() {
   cout << Form("Profile 2D error cummulated sum: %20.9f, my profile error cummulated sum: %20.9f\n", hprofileErrSum, myProfileErrSum);
   myList->Print();
   hprof2d->Print();
+}
+
+void TestComponentsHistograms() {
+  /* let's test now the components profile functions */
+  cout << "\n\nCOMPONENTS PROFILE HISTOGRAMS TESTS\n========================\n";
+  Int_t nBins = 40;
+  Double_t min = -4.0;
+  Double_t max = 4.0;
+  Double_t binwidth = (max - min) / nBins;
+  Double_t binmiddle[nBins]; for (Int_t bin = 0; bin < nBins; bin++) binmiddle[bin] = min + binwidth / 2 + bin * binwidth;
+
+  /* the ROOT 2D profiles */
+  TProfile2D *hprofX2d  = new TProfile2D("hprofX2d","Profile of pz*|cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+  TProfile2D *hprofY2d  = new TProfile2D("hprofY2d","Profile of pz*|sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+
+  Float_t px, py, pz;
+  /* now let's build our event class variables */
+  Int_t nDimensions = 2;
+  QnCorrectionsEventClassVariablesSet evtClassSet = QnCorrectionsEventClassVariablesSet(nDimensions);
+  evtClassSet[0] = new QnCorrectionsEventClassVariable(kPx,VarNames[kPx],nBins,min,max);
+  evtClassSet[1] = new QnCorrectionsEventClassVariable(kPy,VarNames[kPy],nBins,min,max);
+
+  /* the variable container */
+  Float_t varContainer[kNVars];
+
+  /* and now our histogram */
+  Int_t nNoOfHarmonics = 1;
+  Int_t harmonicsMap[] = {2};
+  Int_t myHarmonic = 2;
+  QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet);
+  /* and the list we need for create it */
+  TList *myList = new TList(); myList->SetOwner(kTRUE);
+  myProfile->CreateComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
+  myList->Print();
+
+  /* taken from the TProfile2D description */
+  for ( Int_t i=0; i<25000; i++) {
+     gRandom->Rannor(px,py);
+     pz = px*px + py*py;
+     hprofX2d->Fill(px,py,pz*(TMath::Abs(TMath::Cos(2*TMath::ATan2(py,px)))),1);
+     hprofY2d->Fill(px,py,pz*(TMath::Abs(TMath::Sin(2*TMath::ATan2(py,px)))),1);
+
+     /* let's fill the variable container with the new sample */
+     varContainer[kPx] = px;
+     varContainer[kPy] = py;
+
+     /* and now fill our profile */
+     /* test we cannot access the Fill base method -> get error */
+     /* comment this out after the test */
+     myProfile->Fill(varContainer, pz*(TMath::Abs(TMath::Cos(2*TMath::ATan2(py,px)))));
+     myProfile->FillX(myHarmonic, varContainer, pz*(TMath::Abs(TMath::Cos(2*TMath::ATan2(py,px)))));
+     myProfile->FillY(myHarmonic, varContainer, pz*(TMath::Abs(TMath::Sin(2*TMath::ATan2(py,px)))));
+  }
+  /* let's match both profile supports */
+  Double_t hprofileXSum = 0.0;
+  Double_t hprofileYSum = 0.0;
+  Double_t myProfileXSum = 0.0;
+  Double_t myProfileYSum = 0.0;
+  Double_t hprofileXErrSum = 0.0;
+  Double_t hprofileYErrSum = 0.0;
+  Double_t myProfileXErrSum = 0.0;
+  Double_t myProfileYErrSum = 0.0;
+  for (Int_t binpx = 0; binpx < nBins; binpx++) {
+    for (Int_t binpy = 0; binpy < nBins; binpy++) {
+      /* for the profile is easy */
+      Double_t hprofileX2dBinContent = hprofX2d->GetBinContent(hprofX2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+      Double_t hprofileX2dBinError =  hprofX2d->GetBinError(hprofX2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+      Int_t hprofileX2dBinEntries = hprofX2d->GetBinEntries(hprofX2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+      Double_t hprofileY2dBinContent = hprofY2d->GetBinContent(hprofY2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+      Double_t hprofileY2dBinError =  hprofY2d->GetBinError(hprofY2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+      Int_t hprofileY2dBinEntries = hprofY2d->GetBinEntries(hprofY2d->FindBin(binmiddle[binpx], binmiddle[binpy]));
+
+      /* for us we have to fill the variable container first */
+      varContainer[kPx] = binmiddle[binpx];
+      varContainer[kPy] = binmiddle[binpy];
+      /* test we cannot access the GetBinContent base method -> get error */
+      /* comment this out after the test */
+      Double_t myProfileBinContent = myProfile->GetBinContent(myProfile->GetBin(varContainer));
+      Double_t myProfileXBinContent = myProfile->GetXBinContent(myHarmonic,myProfile->GetBin(varContainer));
+      Double_t myProfileXBinError = myProfile->GetXBinError(myHarmonic,myProfile->GetBin(varContainer));
+      Double_t myProfileYBinContent = myProfile->GetYBinContent(myHarmonic,myProfile->GetBin(varContainer));
+      Double_t myProfileYBinError = myProfile->GetYBinError(myHarmonic,myProfile->GetBin(varContainer));
+      /* remove comment if you want a detailed output of each of the bins */
+      /* cout << Form("Profile 2D X: %013.9f +/- %013.9f in: %03d entries;  My profile X: %013.9f +/- %013.9f\n",
+          hprofileX2dBinContent, hprofileX2dBinError, hprofileX2dBinEntries, myProfileXBinContent, myProfileXBinError);
+      cout << Form("Profile 2D Y: %013.9f +/- %013.9f in: %03d entries;  My profile Y: %013.9f +/- %013.9f\n",
+          hprofileY2dBinContent, hprofileY2dBinError, hprofileY2dBinEntries, myProfileYBinContent, myProfileYBinError); */
+      if (hprofileX2dBinEntries > 1) {
+        hprofileXSum += hprofileX2dBinContent;
+        myProfileXSum += myProfileXBinContent;
+        hprofileXErrSum += hprofileX2dBinError;
+        myProfileXErrSum += myProfileXBinError;
+      }
+      if (hprofileY2dBinEntries > 1) {
+        hprofileYSum += hprofileY2dBinContent;
+        myProfileYSum += myProfileYBinContent;
+        hprofileYErrSum += hprofileY2dBinError;
+        myProfileYErrSum += myProfileYBinError;
+      }
+    }
+  }
+  cout << Form("Profile 2D X cummulated sum: %20.9f, my profile X cummulated sum: %20.9f\n", hprofileXSum, myProfileXSum);
+  cout << Form("Profile 2D X error cummulated sum: %20.9f, my profile X error cummulated sum: %20.9f\n\n", hprofileXErrSum, myProfileXErrSum);
+  cout << Form("Profile 2D Y cummulated sum: %20.9f, my profile Y cummulated sum: %20.9f\n", hprofileYSum, myProfileYSum);
+  cout << Form("Profile 2D Y error cummulated sum: %20.9f, my profile Y error cummulated sum: %20.9f\n\n", hprofileYErrSum, myProfileYErrSum);
+
+  myList->Print();
+  hprofX2d->Print();
+  hprofY2d->Print();
 }
