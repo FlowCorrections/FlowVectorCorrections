@@ -241,7 +241,7 @@ QnCorrectionsBitSetCut::QnCorrectionsBitSetCut(Int_t varId, Int_t bitNo, Bool_t 
     QnCorrectionsFatal(Form("You requested a cut on bit %d but the highest bit number supported by the framework is currently %d",
         bitNo, nHighestBitNumberSupported));
   }
-  fBitMask = 0x00000001 < bitNo;
+  fBitMask = 0x00000001 << bitNo;
   fExpectedResult = (set ? fBitMask : 0x00000000);
 }
 

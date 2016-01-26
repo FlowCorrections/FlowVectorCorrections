@@ -68,6 +68,7 @@ void TestEventClasses();
 void TestProfileHistograms();
 void TestComponentsHistograms();
 void TestCorrelationComponentsHistograms();
+void TestCuts();
 
   /// The actual example code
 ///
@@ -95,6 +96,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
   TestProfileHistograms();
   TestComponentsHistograms();
   TestCorrelationComponentsHistograms();
+  TestCuts();
 
   /* event loop */
   for(Int_t ie=0; ie<nevents; ie++) Loop();
@@ -312,7 +314,7 @@ void TestProfileHistograms() {
 
 void TestComponentsHistograms() {
   /* let's test now the components profile functions */
-  cout << "\n\nCOMPONENTS PROFILE HISTOGRAMS TESTS\n========================\n";
+  cout << "\n\nCOMPONENTS PROFILE HISTOGRAMS TESTS\n===================================\n";
   Int_t nBins = 40;
   Double_t min = -4.0;
   Double_t max = 4.0;
@@ -505,7 +507,7 @@ void TestComponentsHistograms() {
 
 void TestCorrelationComponentsHistograms() {
   /* let's test now the correlation components profile functions */
-  cout << "\n\nCORRELATION COMPONENTS PROFILE HISTOGRAMS TESTS\n========================\n";
+  cout << "\n\nCORRELATION COMPONENTS PROFILE HISTOGRAMS TESTS\n===============================================\n";
   Int_t nBins = 40;
   Double_t min = -4.0;
   Double_t max = 4.0;
@@ -786,4 +788,113 @@ void TestCorrelationComponentsHistograms() {
   delete hprofXY2d;
   delete hprofYX2d;
   delete hprofYY2d;
+}
+
+void TestCuts() {
+  /* let's test now the cuts functions */
+  cout << "\n\nCUTS TESTS\n==========\n";
+
+  /* define the variables we are going to use */
+  enum {
+    kValueToFilterBit,
+    kVariableAbove,
+    kVariableBelow,
+    kVariableWithin,
+    kVariableOutside,
+    kVariableValue,
+    kNoOfVariables
+  };
+
+  /* let's define the bit numbering */
+  enum {
+    kBit0,
+    kBit1,
+    kBit2,
+    kBit3,
+    kBit4,
+    kBit5,
+    kBit6,
+    kBit7
+  };
+
+  /* and let's define our variable bank */
+  Float_t varBank[kNoOfVariables];
+
+  /* let's create few cuts */
+  /* first the cuts set storage */
+  QnCorrectionsCutsSet mySetOfCuts;
+  mySetOfCuts.Add(new QnCorrectionsBitSetCut(kValueToFilterBit, kBit3, kTRUE));
+  mySetOfCuts.Add(new QnCorrectionsBitSetCut(kValueToFilterBit, kBit7, kFALSE));
+  mySetOfCuts.Add(new QnCorrectionsAboveCut(kVariableAbove, 3.5));
+  mySetOfCuts.Add(new QnCorrectionsBelowCut(kVariableBelow, 1.7));
+  mySetOfCuts.Add(new QnCorrectionsWithinCut(kVariableWithin, -0.8, 0.8));
+  mySetOfCuts.Add(new QnCorrectionsOutsideCut(kVariableOutside, -0.3, 0.3));
+  mySetOfCuts.Add(new QnCorrectionsValueCut(kVariableValue, -1.3));
+  /* let's own the cuts due to how they are created */
+  mySetOfCuts.SetOwner(kTRUE);
+
+  /* let's put some values */
+  varBank[kValueToFilterBit] = 0x0080; /* will fail both */
+  varBank[kVariableAbove] = 1.9; /* will fail */
+  varBank[kVariableBelow] = 1.75; /* will fail */
+  varBank[kVariableWithin] = 0.87; /* will fail */
+  varBank[kVariableOutside] = 0; /* will fail */
+  varBank[kVariableValue] = -1.3007; /* will fail */
+
+  /* let's check the over all set */
+  if (!mySetOfCuts.IsSelected(varBank)) cout << "  correctly the set of cuts rejects the variable bank content\n";
+  else cout << "  ERROR: should have rejected the variable content\n";
+
+  /* let's fine tune the rejection */
+  if (!mySetOfCuts.At(0)->IsSelected(varBank)) cout << "  correct filter bit set\n";
+  else cout << "  ERROR: filter bit set\n";
+  if (!mySetOfCuts.At(1)->IsSelected(varBank)) cout << "  correct filter bit reset\n";
+  else cout << "  ERROR: filter bit reset\n";
+  if (!mySetOfCuts.At(2)->IsSelected(varBank)) cout << "  correct filter above\n";
+  else cout << "  ERROR: filter above\n";
+  if (!mySetOfCuts.At(3)->IsSelected(varBank)) cout << "  correct filter below\n";
+  else cout << "  ERROR: filter below\n";
+  if (!mySetOfCuts.At(4)->IsSelected(varBank)) cout << "  correct filter within\n";
+  else cout << "  ERROR: filter within\n";
+  if (!mySetOfCuts.At(5)->IsSelected(varBank)) cout << "  correct filter outside\n";
+  else cout << "  ERROR: filter outside\n";
+  if (!mySetOfCuts.At(6)->IsSelected(varBank)) cout << "  correct filter value\n";
+  else cout << "  ERROR: filter value\n";
+
+  varBank[kValueToFilterBit] = 0x007F; /* will pass both */
+  varBank[kVariableAbove] = 3.7; /* will pass */
+  varBank[kVariableBelow] = 1.69; /* will pass */
+  varBank[kVariableWithin] = -0.87; /* will fail */
+  varBank[kVariableOutside] = -3.01; /* will pass */
+  varBank[kVariableValue] = -1.3; /* will pass */
+
+  /* let's check the over all set */
+  if (!mySetOfCuts.IsSelected(varBank)) cout << "  correctly the set of cuts rejects the variable bank content\n";
+  else cout << "  ERROR: should have rejected the variable content\n";
+
+  /* let's fine tune the rejection */
+  if (mySetOfCuts.At(0)->IsSelected(varBank)) cout << "  correct filter bit set\n";
+  else cout << "  ERROR: filter bit set\n";
+  if (mySetOfCuts.At(1)->IsSelected(varBank)) cout << "  correct filter bit reset\n";
+  else cout << "  ERROR: filter bit reset\n";
+  if (mySetOfCuts.At(2)->IsSelected(varBank)) cout << "  correct filter above\n";
+  else cout << "  ERROR: filter above\n";
+  if (mySetOfCuts.At(3)->IsSelected(varBank)) cout << "  correct filter below\n";
+  else cout << "  ERROR: filter below\n";
+  if (!mySetOfCuts.At(4)->IsSelected(varBank)) cout << "  correct filter within\n";
+  else cout << "  ERROR: filter within\n";
+  if (mySetOfCuts.At(5)->IsSelected(varBank)) cout << "  correct filter outside\n";
+  else cout << "  ERROR: filter outside\n";
+  if (mySetOfCuts.At(6)->IsSelected(varBank)) cout << "  correct filter value\n";
+  else cout << "  ERROR: filter value\n";
+
+  /* so the last one to pass it */
+  varBank[kVariableWithin] = -0.73; /* will pass */
+
+  /* let's check the over all set */
+  if (mySetOfCuts.IsSelected(varBank)) cout << "  correctly the set of cuts accepts the variable bank content\n";
+  else cout << "  ERROR: should have accepted the variable content\n";
+  /* let's fine tune the rejection */
+  if (mySetOfCuts.At(4)->IsSelected(varBank)) cout << "  correct filter within\n";
+  else cout << "  ERROR: filter within\n";
 }
