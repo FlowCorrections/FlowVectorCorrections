@@ -50,7 +50,10 @@ class QnCorrectionsEventClassVariable : public TObject {
   const Double_t *GetBins() const { return fBins; }
   /// Gets the lower edge for the passed bin number
   /// \param bin bin number starting from one
-  Double_t        GetBinEdge(Int_t bin) const { return (((bin < 1) || (bin > fNBins)) ? 0.0 : fBins[bin-1]); }
+  Double_t        GetBinLowerEdge(Int_t bin) const { return (((bin < 1) || (bin > fNBins)) ? 0.0 : fBins[bin-1]); }
+  /// Gets the upper edge for the passed bin number
+  /// \param bin bin number starting from one
+  Double_t        GetBinUpperEdge(Int_t bin) const { return (((bin < 1) || (bin > fNBins)) ? 0.0 : fBins[bin]); }
 
   /// Gets the lowest variable value considered
   Double_t        GetLowerEdge() {return fBins[0]; }
