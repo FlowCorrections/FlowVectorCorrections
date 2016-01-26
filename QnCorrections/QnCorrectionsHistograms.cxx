@@ -1482,7 +1482,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinContent(Int_t harmoni
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1509,7 +1509,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinContent(Int_t harmoni
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1536,7 +1536,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinContent(Int_t harmoni
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1563,7 +1563,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinContent(Int_t harmoni
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1590,7 +1590,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinError(Int_t harmonic,
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1621,7 +1621,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinError(Int_t harmonic,
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1652,7 +1652,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinError(Int_t harmonic,
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1683,7 +1683,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinError(Int_t harmonic,
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
     return 0.0;
   }
 
@@ -1713,11 +1713,12 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinError(Int_t harmonic,
 void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fXXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   if (fXXharmonicFillMask & harmonicNumberMask[harmonic]) {
-    QnCorrectionsError(Form("Filling twice the harmonic %d before entries update in histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Filling twice the harmonic %d before entries update in histogram %s.\n" \
+        "   This means you probably have not updated the other components for this harmonic. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   /* now it's safe to continue */
@@ -1759,11 +1760,12 @@ void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *
 void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fXYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   if (fXYharmonicFillMask & harmonicNumberMask[harmonic]) {
-    QnCorrectionsError(Form("Filling twice the harmonic %d before entries update in histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Filling twice the harmonic %d before entries update in histogram %s.\n" \
+        "   This means you probably have not updated the other components for this harmonic. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   /* now it's safe to continue */
@@ -1805,11 +1807,12 @@ void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *
 void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fYXValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   if (fYXharmonicFillMask & harmonicNumberMask[harmonic]) {
-    QnCorrectionsError(Form("Filling twice the harmonic %d before entries update in histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Filling twice the harmonic %d before entries update in histogram %s.\n" \
+        "   This means you probably have not updated the other components for this harmonic. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   /* now it's safe to continue */
@@ -1851,11 +1854,12 @@ void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *
 void QnCorrectionsCorrelationComponentsProfile::FillYY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fYYValues[harmonic] == NULL) {
-    QnCorrectionsError(Form("Accessing non allocated harmonic %d in component histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   if (fYYharmonicFillMask & harmonicNumberMask[harmonic]) {
-    QnCorrectionsError(Form("Filling twice the harmonic %d before entries update in histogram %s.", harmonic, GetName()));
+    QnCorrectionsFatal(Form("Filling twice the harmonic %d before entries update in histogram %s.\n" \
+        "   This means you probably have not updated the other components for this harmonic. FIX IT, PLEASE.", harmonic, GetName()));
   }
 
   /* now it's safe to continue */
