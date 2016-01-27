@@ -71,7 +71,7 @@ The correction framework makes an extensive use of profile histograms in order t
 So far ROOT only supports up to tridimensional profiles, but we wanted to give more flexibility and, due to the fact we expect not that much bins per variable you will use to define your event classes, we decided to build multidimensional profiles functionality. With this aim we provide a base class, QnCorrectionsHistogramBase, that should not be instantiated, and which declares the whole interface for the correction framework histogram classes, a single multidimensional histogram profile class, QnCorrectionsProfile, a components oriented multidimensional histogram profile class, QnCorrectionsComponentsProfile, which provide support for both components, X and Y, for a set of selected harmonics, and a correlation components oriented multidimenional histogram profile class, QnCorrectionsCorrelationComponentsProfile, which provide support for the correlation components, XX, XY, YX and YY, for a set of selected harmonics. 
 
 ### QnCorrectionsHistogramBase
-Is the base for the whole set of histogram classes and declares their interfaces for the basic methods. It is not oriented to be instantiated and as an additional development support will include run time messages that will orient you when you are not doing a proper use of its descendant classes.
+Is the base for the whole set of histogram classes and declares their interfaces for the basic methods. It is not oriented to be instantiated and as an additional development support will include run time error messages that will orient you when you are not doing a proper use of its descendant classes.
 
 ### QnCorrectionsProfile
 Implements a multidimensional histogram profile. You construct one of them passing as parameter an event classes variables set. Then you ask for the actual support histograms creation and then you use it as you will expect from a conventional histogram.
@@ -93,5 +93,69 @@ Example:
 ~~~
 
 ### QnCorrectionsComponentsProfile
+Implements a multidimensional histogram profile for each of the components X and Y for each of the selected harmonics. The harmonic number is handled in the expected way, i.e., if you are interested in the second harmonic, you will always address it as the second (2) harmonic. But you have to provide some help at histogram creation time.
 
+At construction time you provide the same information as for any other histogram profile within the framework: an event classs variable set
+~~~{.cxx}
+    QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", fEventClasses);
+~~~
+But at creation time, if you want full support for your criteria of numbering harmonics you have to provide a map to indicate so to the framework. For instance, suppose you need support for three harmonics, the even ones, 2, 4 and 6. Then you write
+~~~{.cxx}
+  Int_t nNoOfHarmonics = 3;
+  Int_t harmonicsMap[] = {2,4,6};
+
+  myProfile->CreateComponentsProfileHistograms(myList, nNoOfHarmonics, harmonicsMap);
+~~~
+Now you have access to each component in an explicit way both for filling the histograms and for getting its bin content. So, as you would expect
+~~~{.cxx}
+    Int_t myHarmonic = 2;
+    myProfile->FillX(myHarmonic, varContainer, weight2X);
+    myProfile->FillY(myHarmonic, varContainer, weight2Y);
+    myHarmonic = 4;
+    myProfile->FillX(myHarmonic, varContainer, weight4X);
+    myProfile->FillY(myHarmonic, varContainer, weight4Y);
+    myHarmonic = 6;
+    myProfile->FillX(myHarmonic, varContainer, weight6X);
+    myProfile->FillY(myHarmonic, varContainer, weight6Y);
+~~~
+The framework expects you to fill both components for the whole set of harmonics you asked support for each time you perform a fill so, if you fail doing that the framework will raise an error indicating you you are not doing what it is expected you to do.
+Accessing the content of your profile is straight forward, as you expected,
+~~~{.cxx}
+    myHarmonic = 2;
+    Double_t myProfile2XBinContent = myProfile->GetXBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YBinContent = myProfile->GetYBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2XBinError = myProfile->GetXBinError(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YBinError = myProfile->GetYBinError(myHarmonic, myProfile->GetBin(varContainer));
+~~~
+ 
 ### QnCorrectionsCorrelationComponentsProfile
+Implements a multidimensional histogram profile for each of the correlation components XX, XY, YX and YY for each of the selected harmonics. The overall behavior matches the QnCorrectionsComponentsProfile one so, we just include the adapted code snipets
+~~~{.cxx}
+    QnCorrectionsCorrelationComponentsProfile *myProfile = 
+        new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myComponentsCorrelationProfile", fEventClasses);
+~~~
+~~~{.cxx}
+  Int_t nNoOfHarmonics = 1;
+  Int_t harmonicsMap[] = {2};
+
+  myProfile->CreateComponentsCorrelationProfileHistograms(myList, nNoOfHarmonics, harmonicsMap);
+~~~
+~~~{.cxx}
+    Int_t myHarmonic = 2;
+    myProfile->FillXX(myHarmonic, varContainer, weight2XX);
+    myProfile->FillXY(myHarmonic, varContainer, weight2XY);
+    myProfile->FillYX(myHarmonic, varContainer, weight2YX);
+    myProfile->FillYY(myHarmonic, varContainer, weight2YY);
+~~~
+The framework expects you to fill both components for the whole set of harmonics you asked support for each time you perform a fill so, if you fail doing that the framework will raise an error indicating you you are not doing what it is expected you to do.
+~~~{.cxx}
+    myHarmonic = 2;
+    Double_t myProfile2XXBinContent = myProfile->GetXXBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2XYBinContent = myProfile->GetXYBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YXBinContent = myProfile->GetYXBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YYBinContent = myProfile->GetYYBinContent(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2XXBinError = myProfile->GetXXBinError(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2XYBinError = myProfile->GetXYBinError(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YXBinError = myProfile->GetYXBinError(myHarmonic, myProfile->GetBin(varContainer));
+    Double_t myProfile2YYBinError = myProfile->GetYYBinError(myHarmonic, myProfile->GetBin(varContainer));
+~~~

@@ -161,10 +161,10 @@ private:
 ///
 /// As any histogram derived from QnCorrectionsHistogramBase the set
 /// of variables that identify the different event classes has to
-/// be passed to the constructor together with the required number of
-/// harmonics and an optional harmonic expected numbering scheme.
-/// Of course,  the base name and base title for the different
-/// histograms has to be also provided.
+/// be passed to the constructor. Of course,  the base name and base
+/// title for the different histograms has to be also provided.
+/// At creation time the required number of harmonics and an optional
+/// expected harmonic numbering scheme has to be passed.
 ///
 /// The harmonic map passed should contain an ordered array with
 /// as many items as requested harmonics that provides the external
