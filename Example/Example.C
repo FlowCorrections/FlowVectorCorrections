@@ -1,12 +1,17 @@
 /// \file Example.C
 /// \brief The file where we test things
 ///
-/// At the current level it incorporates the tests for the
-/// event class variables, for the event class variables set
-/// and for the corrections profile function.
+/// At the current level it incorporates the tests for:
+/// * event classes variables
+/// * event class variables set
+/// * profile function support
+/// * components profile function support
+/// * correlation components profile function support
+/// * cuts function support
+/// * logging function support (implicitly via the others)
 ///
-/// For the last one, some indications are needed because the
-/// behavior is matched towards the TProfile objects, concretely,
+/// For the profile functions, some indications are needed because the
+/// behavior is matched towards TProfile objects, concretely,
 /// the TProfile2D. Our histograms store float quantities while
 /// TProfile2D stores double quantities, and, as you might perceive
 /// in the output, this makes some differences. Our profile function
@@ -70,7 +75,7 @@ void TestComponentsHistograms();
 void TestCorrelationComponentsHistograms();
 void TestCuts();
 
-  /// The actual example code
+/// The actual example code
 ///
 /// We will use it as a kind of sandbox to incrementally test
 /// our functionality until its final shape.
@@ -182,6 +187,7 @@ void Loop(){
 
 }
 
+/// Test fot the event classes variables and set
 void TestEventClasses() {
   //-----------------------------------------------------------
   // Variables for defining event classes for Q-vector calibration
@@ -233,6 +239,7 @@ void TestEventClasses() {
   delete CorrEventClasses[1];
 }
 
+/// Test for the profile function support
 void TestProfileHistograms() {
   /* let's test now the profile functions */
   cout << "\n\nPROFILE HISTOGRAMS TESTS\n========================\n";
@@ -312,6 +319,7 @@ void TestProfileHistograms() {
   delete hprof2d;
 }
 
+/// Test for the components profile function support
 void TestComponentsHistograms() {
   /* let's test now the components profile functions */
   cout << "\n\nCOMPONENTS PROFILE HISTOGRAMS TESTS\n===================================\n";
@@ -505,6 +513,7 @@ void TestComponentsHistograms() {
   delete hprofY2d;
 }
 
+/// Test for the correlations components profile function support
 void TestCorrelationComponentsHistograms() {
   /* let's test now the correlation components profile functions */
   cout << "\n\nCORRELATION COMPONENTS PROFILE HISTOGRAMS TESTS\n===============================================\n";
@@ -790,6 +799,7 @@ void TestCorrelationComponentsHistograms() {
   delete hprofYY2d;
 }
 
+/// Test for the cuts function support
 void TestCuts() {
   /* let's test now the cuts functions */
   cout << "\n\nCUTS TESTS\n==========\n";
@@ -823,13 +833,13 @@ void TestCuts() {
   /* let's create few cuts */
   /* first the cuts set storage */
   QnCorrectionsCutsSet mySetOfCuts;
-  mySetOfCuts.Add(new QnCorrectionsBitSetCut(kValueToFilterBit, kBit3, kTRUE));
-  mySetOfCuts.Add(new QnCorrectionsBitSetCut(kValueToFilterBit, kBit7, kFALSE));
-  mySetOfCuts.Add(new QnCorrectionsAboveCut(kVariableAbove, 3.5));
-  mySetOfCuts.Add(new QnCorrectionsBelowCut(kVariableBelow, 1.7));
-  mySetOfCuts.Add(new QnCorrectionsWithinCut(kVariableWithin, -0.8, 0.8));
-  mySetOfCuts.Add(new QnCorrectionsOutsideCut(kVariableOutside, -0.3, 0.3));
-  mySetOfCuts.Add(new QnCorrectionsValueCut(kVariableValue, -1.3));
+  mySetOfCuts.Add(new QnCorrectionsCutBitSetCut(kValueToFilterBit, kBit3, kTRUE));
+  mySetOfCuts.Add(new QnCorrectionsCutBitSetCut(kValueToFilterBit, kBit7, kFALSE));
+  mySetOfCuts.Add(new QnCorrectionsCutAboveCut(kVariableAbove, 3.5));
+  mySetOfCuts.Add(new QnCorrectionsCutBelowCut(kVariableBelow, 1.7));
+  mySetOfCuts.Add(new QnCorrectionsCutWithinCut(kVariableWithin, -0.8, 0.8));
+  mySetOfCuts.Add(new QnCorrectionsCutOutsideCut(kVariableOutside, -0.3, 0.3));
+  mySetOfCuts.Add(new QnCorrectionsCutValueCut(kVariableValue, -1.3));
   /* let's own the cuts due to how they are created */
   mySetOfCuts.SetOwner(kTRUE);
 
