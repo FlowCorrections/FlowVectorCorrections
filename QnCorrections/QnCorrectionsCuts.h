@@ -222,7 +222,7 @@ Bool_t QnCorrectionsCutOutside::IsSelected(Float_t *variableContainer) {
     return kTRUE;
 }
 
-/// \class QnCorrectionsCut
+/// \class QnCorrectionsCutValue
 /// \brief Value cut class for Q vector correction
 ///
 /// Provides support for cuts based in the interest

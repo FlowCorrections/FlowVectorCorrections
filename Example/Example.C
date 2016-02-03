@@ -56,7 +56,8 @@ enum Variables{
   kPy,
   kNVars
 };
-  
+
+/// the variables names
 TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
 
 #ifdef MAKEEVENTTEXTOUTPUT
