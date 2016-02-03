@@ -30,11 +30,17 @@
 #include <TObject.h>
 #include <TStopwatch.h>
 #include <TFile.h>
+
+/* to exclude */
 #include <TProfile2D.h>
+#include <TClonesArray.h>
+/* end to exclude */
 
 #include "../QnCorrections/QnCorrectionsEventClasses.h"
 #include "../QnCorrections/QnCorrectionsCuts.h"
 #include "../QnCorrections/QnCorrectionsHistograms.h"
+#include "../QnCorrections/QnCorrectionsDataVector.h"
+#include "../QnCorrections/QnCorrectionsQnVector.h"
 
 void Setup();
 void Loop();
@@ -75,6 +81,7 @@ void TestProfileHistograms();
 void TestComponentsHistograms();
 void TestCorrelationComponentsHistograms();
 void TestCuts();
+void TestDataVectorsAndQnVectors(Int_t nEvents = 20);
 
 /// The actual example code
 ///
@@ -103,6 +110,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
   TestComponentsHistograms();
   TestCorrelationComponentsHistograms();
   TestCuts();
+  TestDataVectorsAndQnVectors(2);
 
   /* event loop */
   for(Int_t ie=0; ie<nevents; ie++) Loop();
@@ -908,4 +916,104 @@ void TestCuts() {
   /* let's fine tune the rejection */
   if (mySetOfCuts.At(4)->IsSelected(varBank)) cout << "  correct filter within\n";
   else cout << "  ERROR: filter within\n";
+}
+
+/// Test the data vectors and the Qn vectors
+/// \param nEvents number of events to simulate
+void TestDataVectorsAndQnVectors(Int_t nEvents) {
+  /* let's test now vector functions */
+  cout << "\n\nVECTORS TESTS\n=============\n";
+
+  /// the data vectors bank
+  TClonesArray *dataVectorsBank = new TClonesArray("QnCorrectionsDataVector", 100000);
+  /// the channelized data vectors bank
+  TClonesArray *channelizedDataVectorsBank = new TClonesArray("QnCorrectionsChannelizedDataVector", 100000);
+
+  /// the Q vectors we are going to use
+  Int_t nHarmonics = 3;
+  Int_t harmonicMap[] = {2, 4, 6};
+  QnCorrectionsQnVectorBuild myChannelizedDetectorQnVector(nHarmonics,harmonicMap);
+  QnCorrectionsQnVectorBuild myDetectorQnVector(nHarmonics,harmonicMap);
+
+  /// loop over events
+  for (Int_t event = 0; event < nEvents; event++) {
+    /// Set event data
+    Float_t centrality = gRandom->Rndm()*100;
+    cout << "Centrality: " << centrality << "\n";
+
+    /// Fill azimuthal angle and weights into data vector objects
+    Float_t dphi = 2.0*TMath::Pi() / 8.0;
+    const Double_t phiSector[8] = { dphi*0.0,dphi*1.0,dphi*2.0,dphi*3.0,dphi*4.0,dphi*5.0,dphi*6.0,dphi*7.0 };
+
+    Double_t flowV2 = 0.5;
+    Double_t rotation = -0.3;
+    Double_t PsiRP = gRandom->Rndm()*2.0*TMath::Pi();
+
+    Double_t weight = 0.0;
+
+    for(Int_t ich=0; ich<64; ich++){
+      // weight contains flow and event multiplicity dependent channel signal, and non-uniform acceptance
+      weight = gRandom->Rndm()*((200.+ich)/200.)*(100-centrality)*(1+flowV2*TMath::Cos(2*(phiSector[ich%8]-PsiRP)));
+
+      /// add the data vector to the bank
+      QnCorrectionsChannelizedDataVector *channelizedDataVector =
+          new ((*channelizedDataVectorsBank)[channelizedDataVectorsBank->GetEntriesFast()]) QnCorrectionsChannelizedDataVector();
+      channelizedDataVector->SetId(ich);
+      channelizedDataVector->SetPhi(phiSector[ich%8]+rotation);
+      channelizedDataVector->SetWeight(weight);
+    }
+
+    /// let's fill the Q vector
+    for (Int_t ixdata = 0; ixdata < channelizedDataVectorsBank->GetEntriesFast(); ixdata++) {
+      QnCorrectionsChannelizedDataVector *dataVector =
+          dynamic_cast<QnCorrectionsChannelizedDataVector*>(channelizedDataVectorsBank->At(ixdata));
+      myChannelizedDetectorQnVector.Add(dataVector->Phi(), dataVector->Weight());
+      cout << Form("channel: d, phi: %f, weight: %f\n", dataVector->Phi(), dataVector->Weight());
+      cout << Form("X comp: %f\n", myChannelizedDetectorQnVector.Qx(2));
+      cout << Form("fN: %f\n", myChannelizedDetectorQnVector.GetN());
+      cout << Form("sumW: %f\n", myChannelizedDetectorQnVector.GetSumOfWeights());
+    }
+
+    /// let's output the event plane for the different harmonics
+    cout << Form("Introduced #Psi: %f\n", PsiRP);
+    for (Int_t h = 0; h < nHarmonics; h++) {
+      cout << Form("  EP(h=%d): %f\n", harmonicMap[h], myChannelizedDetectorQnVector.EventPlane(harmonicMap[h]));
+    }
+
+    /// let's clean everything before next event loop
+    channelizedDataVectorsBank->Clear("C");
+    myChannelizedDetectorQnVector.Reset();
+
+    /// now not channelized data vectors
+    Int_t Multiplicity = Int_t (2 + gRandom->Rndm() * (100-centrality) * 100);
+    cout << "Multiplicity: " << Multiplicity << "\n";
+
+    for (Int_t track = 0; track < Multiplicity; track++){
+      Double_t phiTrack = gRandom->Rndm() * 2.0 * TMath::Pi();
+
+      /// add the data vector to the bank
+      QnCorrectionsDataVector *dataVector =
+          new ((*dataVectorsBank)[dataVectorsBank->GetEntriesFast()]) QnCorrectionsDataVector();
+      dataVector->SetPhi(phiTrack);
+    }
+
+    cout << Form("data vector bank entries: %d\n", dataVectorsBank->GetEntriesFast());
+
+    /// let's fill the Q vector
+    for (Int_t ixdata = 0; ixdata < dataVectorsBank->GetEntriesFast(); ixdata++) {
+      QnCorrectionsDataVector *dataVector =
+          dynamic_cast<QnCorrectionsDataVector*>(dataVectorsBank->At(ixdata));
+      myDetectorQnVector.Add(dataVector->Phi(), dataVector->Weight());
+    }
+
+    /// let's output the event plane for the different harmonics
+    cout << Form("Introduced #Psi: %f\n", PsiRP);
+    for (Int_t h = 0; h < nHarmonics; h++) {
+      cout << Form("  EP(h=%d): %f\n", harmonicMap[h], myDetectorQnVector.EventPlane(harmonicMap[h]));
+    }
+
+    /// let's clean everything before next event loop
+    dataVectorsBank->Clear("C");
+    myDetectorQnVector.Reset();
+  }
 }

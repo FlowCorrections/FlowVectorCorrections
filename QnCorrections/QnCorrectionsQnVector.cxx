@@ -29,10 +29,10 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsQnVectors.cxx
+/// \file QnCorrectionsQnVector.cxx
 /// \brief Implementation of Q vector classes
 
-#include "QnCorrectionsQnVectors.h"
+#include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsLog.h"
 
 /// \cond CLASSIMP
@@ -41,8 +41,6 @@ ClassImp(QnCorrectionsQnVector);
 
 /// the minimum value that will be considered as meaningful for processing
 const Float_t  QnCorrectionsQnVector::fMinimumSignificantValue = 1e-6;
-/// The maximum external harmonic number the framework support
-const Int_t    QnCorrectionsQnVector::nMaxHarmonicNumberSupported = 15;
 /// Mask for each external harmonic number
 const UInt_t   QnCorrectionsQnVector::harmonicNumberMask[] =
 {0x0000,0x0002,0x0004,0x0008,0x0010,0x0020,0x0040,0x0080,
@@ -50,8 +48,8 @@ const UInt_t   QnCorrectionsQnVector::harmonicNumberMask[] =
 
 /// Default constructor
 QnCorrectionsQnVector::QnCorrectionsQnVector() : TObject() {
-  memset(fQnX, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
-  memset(fQnY, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
+  memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fHighestHarmonic = 0;
   fHarmonicMask = 0x0000;
 }
@@ -72,20 +70,20 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() : TObject() {
 ///
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
-QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nNoOfHarmonics, UInt_t *harmonicMap) :
+QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nNoOfHarmonics, Int_t *harmonicMap) :
     TObject() {
 
-  memset(fQnX, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
-  memset(fQnY, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
+  memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
 
   /* check whether within the supported harmonic range */
   fHighestHarmonic = nNoOfHarmonics;
   if (harmonicMap != NULL) {
     fHighestHarmonic = harmonicMap[nNoOfHarmonics - 1];
   }
-  if (nMaxHarmonicNumberSupported < fHighestHarmonic) {
+  if (MAXHARMONICNUMBERSUPPORTED < fHighestHarmonic) {
     QnCorrectionsFatal(Form("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
-        fHighestHarmonic, nMaxHarmonicNumberSupported));
+        fHighestHarmonic, MAXHARMONICNUMBERSUPPORTED));
   }
   fHarmonicMask = 0x0000;
   Int_t currentHarmonic = 0;
@@ -105,8 +103,8 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nNoOfHarmonics, UInt_t *harmo
 QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
     TObject(Qn) {
 
-  memcpy(fQnX, Qn.fQnX, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
-  memcpy(fQnY, Qn.fQnY, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
+  memcpy(fQnX, Qn.fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memcpy(fQnY, Qn.fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fHighestHarmonic = Qn.fHighestHarmonic;
   fHarmonicMask = Qn.fHarmonicMask;
 }
@@ -126,9 +124,9 @@ QnCorrectionsQnVector::~QnCorrectionsQnVector() {
 /// \param harmonic the intended harmonic
 void QnCorrectionsQnVector::ActivateHarmonic(Int_t harmonic) {
   /* check whether within the supported harmonic range */
-  if (nMaxHarmonicNumberSupported < harmonic) {
+  if (MAXHARMONICNUMBERSUPPORTED < harmonic) {
     QnCorrectionsFatal(Form("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
-        harmonic, nMaxHarmonicNumberSupported));
+        harmonic, MAXHARMONICNUMBERSUPPORTED));
   }
   /* checks whether already active */
   if (fHighestHarmonic < harmonic) {
@@ -156,8 +154,8 @@ void QnCorrectionsQnVector::ActivateHarmonic(Int_t harmonic) {
 /// The passed Q vector is copied within the current object
 /// \param Qn pointer to the Q vector to be copied
 void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn) {
-  memcpy(fQnX, Qn->fQnX, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
-  memcpy(fQnY, Qn->fQnY, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
+  memcpy(fQnX, Qn->fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memcpy(fQnY, Qn->fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fHighestHarmonic = Qn->fHighestHarmonic;
   fHarmonicMask = Qn->fHarmonicMask;
 }
@@ -175,8 +173,8 @@ void QnCorrectionsQnVector::Normalize() {
 
 /// Resets the Q vector values without touching the structure
 void QnCorrectionsQnVector::Reset() {
-  memset(fQnX, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
-  memset(fQnY, 0, (nMaxHarmonicNumberSupported + 1)*sizeof(Float_t));
+  memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
 }
 
 /// Gets the event plane for the asked harmonic
@@ -209,7 +207,7 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector
 ///
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
-QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, UInt_t *harmonicMap = NULL) :
+QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap) :
     QnCorrectionsQnVector(nNoOfHarmonics, harmonicMap) {
 
   fSumW = 0.0;
@@ -265,7 +263,7 @@ void QnCorrectionsQnVectorBuild::Set(QnCorrectionsQnVectorBuild* Qn) {
 void QnCorrectionsQnVectorBuild::Add(QnCorrectionsQnVectorBuild* Qn) {
 
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
-    if (fHarmonicMask & harmonicNumberMask[h] == harmonicNumberMask[h]) {
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
       fQnX[h] += Qn->Qx(h);
       fQnY[h] += Qn->Qy(h);
     }

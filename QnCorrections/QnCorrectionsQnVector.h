@@ -11,10 +11,14 @@
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
 
-/// \file QnCorrectionsQnVectors.h
+/// \file QnCorrectionsQnVector.h
 /// \brief Classes that model Q vectors for different harmonics within the Q vector correction framework
 
 #include <TObject.h>
+#include <TMath.h>
+
+/// The maximum external harmonic number the framework currently support for Q vectors
+#define MAXHARMONICNUMBERSUPPORTED 15
 
 /// \class QnCorrectionsQnVector
 /// \brief Class that models and encapsulates a Q vector set
@@ -27,7 +31,7 @@ class QnCorrectionsQnVector : public TObject {
 
 public:
   QnCorrectionsQnVector();
-  QnCorrectionsQnVector(Int_t nNoOfHarmonics, UInt_t *harmonicMap = NULL);
+  QnCorrectionsQnVector(Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   QnCorrectionsQnVector(const QnCorrectionsQnVector &Q);
   virtual ~QnCorrectionsQnVector();
 
@@ -42,7 +46,7 @@ public:
   /// \param qy the Y component for the Q vector
   virtual void SetQy(Int_t harmonic, Float_t qy) { fQnY[harmonic] = qy; }
 
-  virtual void Set(QnCorrectionsQnVector* Qn);
+  void Set(QnCorrectionsQnVector* Qn);
 
   void Normalize();
   /// Provides the length of the Q vector for the considered harmonic
@@ -83,11 +87,10 @@ private:
 protected:
 
   static const Float_t  fMinimumSignificantValue;     ///< the minimum value that will be considered as meaningful for processing
-  static const Int_t    nMaxHarmonicNumberSupported;  ///< The maximum external harmonic number the framework supports
   static const UInt_t   harmonicNumberMask[];         ///< Mask for each external harmonic number
 
-  Float_t fQnX[nMaxHarmonicNumberSupported];   ///< the Q vector X component for each harmonic
-  Float_t fQnY[nMaxHarmonicNumberSupported];   ///< the Q vector Y component for each harmonic
+  Float_t fQnX[MAXHARMONICNUMBERSUPPORTED+1];   ///< the Q vector X component for each harmonic
+  Float_t fQnY[MAXHARMONICNUMBERSUPPORTED+1];   ///< the Q vector Y component for each harmonic
   Int_t   fHighestHarmonic;                    ///< the highest harmonic number handled
   UInt_t  fHarmonicMask;                       ///< the mask for the supported harmonics
 
@@ -110,14 +113,14 @@ class QnCorrectionsQnVectorBuild : public QnCorrectionsQnVector {
 
 public:
   QnCorrectionsQnVectorBuild();
-  QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, UInt_t *harmonicMap = NULL);
+  QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   QnCorrectionsQnVectorBuild(const QnCorrectionsQnVectorBuild &Qn);
   virtual ~QnCorrectionsQnVectorBuild();
 
   virtual void SetQx(Int_t harmonic, Float_t qx);
   virtual void SetQy(Int_t harmonic, Float_t qy);
 
-  virtual void Set(QnCorrectionsQnVectorBuild* Qn);
+  void Set(QnCorrectionsQnVectorBuild* Qn);
 
   void Add(QnCorrectionsQnVectorBuild* qvec);
   void Add(Double_t phi, Double_t weight = 1.0);
@@ -157,10 +160,10 @@ protected:
 /// Adds a contribution to the build Q vector
 /// \param phi azimuthal angle contribution
 /// \param weight the weight of the contribution
-inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight = 1.0) {
+inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
 
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
-    if (fHarmonicMask & harmonicNumberMask[h] == harmonicNumberMask[h]) {
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
       fQnX[h] += weight * TMath::Cos(h*phi);
       fQnY[h] += weight * TMath::Sin(h*phi);
     }

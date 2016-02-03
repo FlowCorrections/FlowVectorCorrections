@@ -18,6 +18,8 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsEventClasses.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCuts.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistograms.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsDataVector.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVector.cxx"+debugString);
 
   gROOT->LoadMacro("Example.C"+debugString);
 

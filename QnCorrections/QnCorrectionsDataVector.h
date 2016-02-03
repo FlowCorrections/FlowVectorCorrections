@@ -37,6 +37,9 @@ public:
   /// \param phi the azimuthal angle
   virtual void SetPhi(Float_t phi) { fPhi = phi; }
 
+  /// Gets the azimuthal angle for the data vector
+  /// \return phi
+  virtual Float_t Phi() { return fPhi; }
   /// Gets the weight for the data vector
   /// \return defaults to 1.0
   virtual Float_t Weight() { return 1.0; }
