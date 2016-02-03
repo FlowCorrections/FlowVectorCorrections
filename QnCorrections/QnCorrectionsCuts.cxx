@@ -65,17 +65,17 @@ QnCorrectionsCutBase::~QnCorrectionsCutBase() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutAboveCut);
+ClassImp(QnCorrectionsCutAbove);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutAboveCut::QnCorrectionsCutAboveCut() : QnCorrectionsCutBase() {
+QnCorrectionsCutAbove::QnCorrectionsCutAbove() : QnCorrectionsCutBase() {
   fThreshold = 1e10;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutAboveCut::QnCorrectionsCutAboveCut(const QnCorrectionsCutAboveCut &cut) :
+QnCorrectionsCutAbove::QnCorrectionsCutAbove(const QnCorrectionsCutAbove &cut) :
     QnCorrectionsCutBase(cut) {
   fThreshold = cut.fThreshold;
 }
@@ -83,27 +83,27 @@ QnCorrectionsCutAboveCut::QnCorrectionsCutAboveCut(const QnCorrectionsCutAboveCu
 /// Normal constructor
 /// \param varId external Id for the affected variable
 /// \param threshold the value the variable content should be above
-QnCorrectionsCutAboveCut::QnCorrectionsCutAboveCut(Int_t varId, Float_t threshold) :
+QnCorrectionsCutAbove::QnCorrectionsCutAbove(Int_t varId, Float_t threshold) :
     QnCorrectionsCutBase(varId) {
   fThreshold = threshold;
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutAboveCut::~QnCorrectionsCutAboveCut() {
+QnCorrectionsCutAbove::~QnCorrectionsCutAbove() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutBelowCut);
+ClassImp(QnCorrectionsCutBelow);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutBelowCut::QnCorrectionsCutBelowCut() : QnCorrectionsCutBase() {
+QnCorrectionsCutBelow::QnCorrectionsCutBelow() : QnCorrectionsCutBase() {
   fThreshold = -1e10;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutBelowCut::QnCorrectionsCutBelowCut(const QnCorrectionsCutBelowCut &cut) :
+QnCorrectionsCutBelow::QnCorrectionsCutBelow(const QnCorrectionsCutBelow &cut) :
     QnCorrectionsCutBase(cut) {
   fThreshold = cut.fThreshold;
 }
@@ -111,28 +111,28 @@ QnCorrectionsCutBelowCut::QnCorrectionsCutBelowCut(const QnCorrectionsCutBelowCu
 /// Normal constructor
 /// \param varId external Id for the affected variable
 /// \param threshold the value the variable content should be below
-QnCorrectionsCutBelowCut::QnCorrectionsCutBelowCut(Int_t varId, Float_t threshold) :
+QnCorrectionsCutBelow::QnCorrectionsCutBelow(Int_t varId, Float_t threshold) :
     QnCorrectionsCutBase(varId) {
   fThreshold = threshold;
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutBelowCut::~QnCorrectionsCutBelowCut() {
+QnCorrectionsCutBelow::~QnCorrectionsCutBelow() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutWithinCut);
+ClassImp(QnCorrectionsCutWithin);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutWithinCut::QnCorrectionsCutWithinCut() :  QnCorrectionsCutBase() {
+QnCorrectionsCutWithin::QnCorrectionsCutWithin() :  QnCorrectionsCutBase() {
   fMinThreshold = 1e10;
   fMaxThreshold = -1e10;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutWithinCut::QnCorrectionsCutWithinCut(const QnCorrectionsCutWithinCut &cut) :
+QnCorrectionsCutWithin::QnCorrectionsCutWithin(const QnCorrectionsCutWithin &cut) :
     QnCorrectionsCutBase(cut) {
   fMinThreshold = cut.fMinThreshold;
   fMaxThreshold = cut.fMaxThreshold;
@@ -142,29 +142,29 @@ QnCorrectionsCutWithinCut::QnCorrectionsCutWithinCut(const QnCorrectionsCutWithi
 /// \param varId external Id for the affected variable
 /// \param min the value the variable content should be above
 /// \param max the value the variable content should be below
-QnCorrectionsCutWithinCut::QnCorrectionsCutWithinCut(Int_t varId, Float_t min, Float_t max) :
+QnCorrectionsCutWithin::QnCorrectionsCutWithin(Int_t varId, Float_t min, Float_t max) :
     QnCorrectionsCutBase(varId) {
   fMinThreshold = min;
   fMaxThreshold = max;
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutWithinCut::~QnCorrectionsCutWithinCut() {
+QnCorrectionsCutWithin::~QnCorrectionsCutWithin() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutOutsideCut);
+ClassImp(QnCorrectionsCutOutside);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutOutsideCut::QnCorrectionsCutOutsideCut() :  QnCorrectionsCutBase() {
+QnCorrectionsCutOutside::QnCorrectionsCutOutside() :  QnCorrectionsCutBase() {
   fMinThreshold = -1e10;
   fMaxThreshold = 1e10;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutOutsideCut::QnCorrectionsCutOutsideCut(const QnCorrectionsCutOutsideCut &cut) :
+QnCorrectionsCutOutside::QnCorrectionsCutOutside(const QnCorrectionsCutOutside &cut) :
     QnCorrectionsCutBase(cut) {
   fMinThreshold = cut.fMinThreshold;
   fMaxThreshold = cut.fMaxThreshold;
@@ -174,28 +174,28 @@ QnCorrectionsCutOutsideCut::QnCorrectionsCutOutsideCut(const QnCorrectionsCutOut
 /// \param varId external Id for the affected variable
 /// \param min the value the variable content should be below
 /// \param max the value the variable content should be above
-QnCorrectionsCutOutsideCut::QnCorrectionsCutOutsideCut(Int_t varId, Float_t min, Float_t max) :
+QnCorrectionsCutOutside::QnCorrectionsCutOutside(Int_t varId, Float_t min, Float_t max) :
     QnCorrectionsCutBase(varId) {
   fMinThreshold = min;
   fMaxThreshold = max;
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutOutsideCut::~QnCorrectionsCutOutsideCut() {
+QnCorrectionsCutOutside::~QnCorrectionsCutOutside() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutValueCut);
+ClassImp(QnCorrectionsCutValue);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutValueCut::QnCorrectionsCutValueCut() : QnCorrectionsCutBase() {
+QnCorrectionsCutValue::QnCorrectionsCutValue() : QnCorrectionsCutBase() {
   fValue = 0.0;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutValueCut::QnCorrectionsCutValueCut(const QnCorrectionsCutValueCut &cut) :
+QnCorrectionsCutValue::QnCorrectionsCutValue(const QnCorrectionsCutValue &cut) :
     QnCorrectionsCutBase(cut) {
   fValue = cut.fValue;
 }
@@ -204,28 +204,28 @@ QnCorrectionsCutValueCut::QnCorrectionsCutValueCut(const QnCorrectionsCutValueCu
 /// Normal constructor
 /// \param varId external Id for the affected variable
 /// \param value the value the variable content should be equal to
-QnCorrectionsCutValueCut::QnCorrectionsCutValueCut(Int_t varId, Float_t value) :
+QnCorrectionsCutValue::QnCorrectionsCutValue(Int_t varId, Float_t value) :
     QnCorrectionsCutBase(varId) {
   fValue = value;
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutValueCut::~QnCorrectionsCutValueCut() {
+QnCorrectionsCutValue::~QnCorrectionsCutValue() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCutBitSetCut);
+ClassImp(QnCorrectionsCutBitSet);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsCutBitSetCut::QnCorrectionsCutBitSetCut() : QnCorrectionsCutBase() {
+QnCorrectionsCutBitSet::QnCorrectionsCutBitSet() : QnCorrectionsCutBase() {
   fBitMask = 0x00000000;
   fExpectedResult = 0xFFFFFFFF;
 }
 
 /// Copy constructor
 /// \param cut the cut object to be cloned
-QnCorrectionsCutBitSetCut::QnCorrectionsCutBitSetCut(const QnCorrectionsCutBitSetCut &cut) :
+QnCorrectionsCutBitSet::QnCorrectionsCutBitSet(const QnCorrectionsCutBitSet &cut) :
     QnCorrectionsCutBase(cut) {
   fBitMask = cut.fBitMask;
   fExpectedResult = cut.fExpectedResult;
@@ -235,7 +235,7 @@ QnCorrectionsCutBitSetCut::QnCorrectionsCutBitSetCut(const QnCorrectionsCutBitSe
 /// \param varId external Id for the affected variable
 /// \param bitNo the bit on the variable content to test (from 0 to 31)
 /// \param set (kFALSE)kTRUE for cut on the bit (un)set
-QnCorrectionsCutBitSetCut::QnCorrectionsCutBitSetCut(Int_t varId, Int_t bitNo, Bool_t set) :
+QnCorrectionsCutBitSet::QnCorrectionsCutBitSet(Int_t varId, Int_t bitNo, Bool_t set) :
     QnCorrectionsCutBase(varId) {
   if (nHighestBitNumberSupported < bitNo) {
     QnCorrectionsFatal(Form("You requested a cut on bit %d but the highest bit number supported by the framework is currently %d",
@@ -246,7 +246,7 @@ QnCorrectionsCutBitSetCut::QnCorrectionsCutBitSetCut(Int_t varId, Int_t bitNo, B
 }
 
 /// Default destructor. Does nothing
-QnCorrectionsCutBitSetCut::~QnCorrectionsCutBitSetCut() {
+QnCorrectionsCutBitSet::~QnCorrectionsCutBitSet() {
 }
 
 /// \cond CLASSIMP

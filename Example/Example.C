@@ -833,13 +833,13 @@ void TestCuts() {
   /* let's create few cuts */
   /* first the cuts set storage */
   QnCorrectionsCutsSet mySetOfCuts;
-  mySetOfCuts.Add(new QnCorrectionsCutBitSetCut(kValueToFilterBit, kBit3, kTRUE));
-  mySetOfCuts.Add(new QnCorrectionsCutBitSetCut(kValueToFilterBit, kBit7, kFALSE));
-  mySetOfCuts.Add(new QnCorrectionsCutAboveCut(kVariableAbove, 3.5));
-  mySetOfCuts.Add(new QnCorrectionsCutBelowCut(kVariableBelow, 1.7));
-  mySetOfCuts.Add(new QnCorrectionsCutWithinCut(kVariableWithin, -0.8, 0.8));
-  mySetOfCuts.Add(new QnCorrectionsCutOutsideCut(kVariableOutside, -0.3, 0.3));
-  mySetOfCuts.Add(new QnCorrectionsCutValueCut(kVariableValue, -1.3));
+  mySetOfCuts.Add(new QnCorrectionsCutBitSet(kValueToFilterBit, kBit3, kTRUE));
+  mySetOfCuts.Add(new QnCorrectionsCutBitSet(kValueToFilterBit, kBit7, kFALSE));
+  mySetOfCuts.Add(new QnCorrectionsCutAbove(kVariableAbove, 3.5));
+  mySetOfCuts.Add(new QnCorrectionsCutBelow(kVariableBelow, 1.7));
+  mySetOfCuts.Add(new QnCorrectionsCutWithin(kVariableWithin, -0.8, 0.8));
+  mySetOfCuts.Add(new QnCorrectionsCutOutside(kVariableOutside, -0.3, 0.3));
+  mySetOfCuts.Add(new QnCorrectionsCutValue(kVariableValue, -1.3));
   /* let's own the cuts due to how they are created */
   mySetOfCuts.SetOwner(kTRUE);
 

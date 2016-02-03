@@ -58,7 +58,7 @@ class QnCorrectionsCutBase: public TObject {
 /// \endcond
 };
 
-/// \class QnCorrectionsCutAboveCut
+/// \class QnCorrectionsCutAbove
 /// \brief Lower limit cut class for Q vector correction
 ///
 /// Provides support for cuts based in a lower limit
@@ -70,20 +70,20 @@ class QnCorrectionsCutBase: public TObject {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 22, 2016
-class QnCorrectionsCutAboveCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutAbove: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutAboveCut();
-  QnCorrectionsCutAboveCut(const QnCorrectionsCutAboveCut &cut);
-  QnCorrectionsCutAboveCut(Int_t varId, Float_t threshold);
-  virtual ~QnCorrectionsCutAboveCut();
+  QnCorrectionsCutAbove();
+  QnCorrectionsCutAbove(const QnCorrectionsCutAbove &cut);
+  QnCorrectionsCutAbove(Int_t varId, Float_t threshold);
+  virtual ~QnCorrectionsCutAbove();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
   Float_t         fThreshold;   ///< The value that must be surpassed
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutAboveCut, 1);
+  ClassDef(QnCorrectionsCutAbove, 1);
 /// \endcond
 };
 
@@ -91,14 +91,14 @@ class QnCorrectionsCutAboveCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is above the threshold else kFALSE
-Bool_t QnCorrectionsCutAboveCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutAbove::IsSelected(Float_t *variableContainer) {
   if (variableContainer[fVarId] > fThreshold)
     return kTRUE;
   else
     return kFALSE;
 }
 
-/// \class QnCorrectionsCutBelowCut
+/// \class QnCorrectionsCutBelow
 /// \brief Upper limit cut class for Q vector correction
 ///
 /// Provides support for cuts based in an upper limit
@@ -110,20 +110,20 @@ Bool_t QnCorrectionsCutAboveCut::IsSelected(Float_t *variableContainer) {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 22, 2016
-class QnCorrectionsCutBelowCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutBelow: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutBelowCut();
-  QnCorrectionsCutBelowCut(const QnCorrectionsCutBelowCut &cut);
-  QnCorrectionsCutBelowCut(Int_t varId, Float_t threshold);
-  virtual ~QnCorrectionsCutBelowCut();
+  QnCorrectionsCutBelow();
+  QnCorrectionsCutBelow(const QnCorrectionsCutBelow &cut);
+  QnCorrectionsCutBelow(Int_t varId, Float_t threshold);
+  virtual ~QnCorrectionsCutBelow();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
   Float_t         fThreshold;   ///< The upper, not reached, value
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutBelowCut, 1);
+  ClassDef(QnCorrectionsCutBelow, 1);
 /// \endcond
 };
 
@@ -131,14 +131,14 @@ class QnCorrectionsCutBelowCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutBelowCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutBelow::IsSelected(Float_t *variableContainer) {
   if (variableContainer[fVarId] < fThreshold)
     return kTRUE;
   else
     return kFALSE;
 }
 
-/// \class QnCorrectionsCutWithinCut
+/// \class QnCorrectionsCutWithin
 /// \brief Within range cut class for Q vector correction
 ///
 /// Provides support for cuts based in being within a range
@@ -151,13 +151,13 @@ Bool_t QnCorrectionsCutBelowCut::IsSelected(Float_t *variableContainer) {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 22, 2016
-class QnCorrectionsCutWithinCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutWithin: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutWithinCut();
-  QnCorrectionsCutWithinCut(const QnCorrectionsCutWithinCut &cut);
-  QnCorrectionsCutWithinCut(Int_t varId, Float_t min, Float_t max);
-  virtual ~QnCorrectionsCutWithinCut();
+  QnCorrectionsCutWithin();
+  QnCorrectionsCutWithin(const QnCorrectionsCutWithin &cut);
+  QnCorrectionsCutWithin(Int_t varId, Float_t min, Float_t max);
+  virtual ~QnCorrectionsCutWithin();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
@@ -165,7 +165,7 @@ class QnCorrectionsCutWithinCut: public QnCorrectionsCutBase {
   Float_t         fMaxThreshold;   ///< The upper limit
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutWithinCut, 1);
+  ClassDef(QnCorrectionsCutWithin, 1);
 /// \endcond
 };
 
@@ -173,14 +173,14 @@ class QnCorrectionsCutWithinCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutWithinCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutWithin::IsSelected(Float_t *variableContainer) {
   if ((fMinThreshold < variableContainer[fVarId]) && (variableContainer[fVarId] < fMaxThreshold))
     return kTRUE;
   else
     return kFALSE;
 }
 
-/// \class QnCorrectionsCutOutsideCut
+/// \class QnCorrectionsCutOutside
 /// \brief Outside range cut class for Q vector correction
 ///
 /// Provides support for cuts based in being outside a range
@@ -193,13 +193,13 @@ Bool_t QnCorrectionsCutWithinCut::IsSelected(Float_t *variableContainer) {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 22, 2016
-class QnCorrectionsCutOutsideCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutOutside: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutOutsideCut();
-  QnCorrectionsCutOutsideCut(const QnCorrectionsCutOutsideCut &cut);
-  QnCorrectionsCutOutsideCut(Int_t varId, Float_t min, Float_t max);
-  virtual ~QnCorrectionsCutOutsideCut();
+  QnCorrectionsCutOutside();
+  QnCorrectionsCutOutside(const QnCorrectionsCutOutside &cut);
+  QnCorrectionsCutOutside(Int_t varId, Float_t min, Float_t max);
+  virtual ~QnCorrectionsCutOutside();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
@@ -207,7 +207,7 @@ class QnCorrectionsCutOutsideCut: public QnCorrectionsCutBase {
   Float_t         fMaxThreshold;   ///< The upper limit
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutOutsideCut, 1);
+  ClassDef(QnCorrectionsCutOutside, 1);
 /// \endcond
 };
 
@@ -215,14 +215,14 @@ class QnCorrectionsCutOutsideCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutOutsideCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutOutside::IsSelected(Float_t *variableContainer) {
   if ((fMinThreshold < variableContainer[fVarId]) && (variableContainer[fVarId] < fMaxThreshold))
     return kFALSE;
   else
     return kTRUE;
 }
 
-/// \class QnCorrectionsCutValueCut
+/// \class QnCorrectionsCut
 /// \brief Value cut class for Q vector correction
 ///
 /// Provides support for cuts based in the interest
@@ -235,20 +235,20 @@ Bool_t QnCorrectionsCutOutsideCut::IsSelected(Float_t *variableContainer) {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 25, 2016
-class QnCorrectionsCutValueCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutValue: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutValueCut();
-  QnCorrectionsCutValueCut(const QnCorrectionsCutValueCut &cut);
-  QnCorrectionsCutValueCut(Int_t varId, Float_t value);
-  virtual ~QnCorrectionsCutValueCut();
+  QnCorrectionsCutValue();
+  QnCorrectionsCutValue(const QnCorrectionsCutValue &cut);
+  QnCorrectionsCutValue(Int_t varId, Float_t value);
+  virtual ~QnCorrectionsCutValue();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
   Float_t         fValue;   ///< The desired value
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutValueCut, 1);
+  ClassDef(QnCorrectionsCutValue, 1);
 /// \endcond
 };
 
@@ -256,14 +256,14 @@ class QnCorrectionsCutValueCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual variable content is equal to the stored value else kFALSE
-Bool_t QnCorrectionsCutValueCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutValue::IsSelected(Float_t *variableContainer) {
   if (variableContainer[fVarId] != fValue)
     return kFALSE;
   else
     return kTRUE;
 }
 
-/// \class QnCorrectionsCutBitSetCut
+/// \class QnCorrectionsCutBitSet
 /// \brief Bit setting cut class for Q vector correction
 ///
 /// Provides support for cuts based in the setting or not
@@ -277,13 +277,13 @@ Bool_t QnCorrectionsCutValueCut::IsSelected(Float_t *variableContainer) {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 25, 2016
-class QnCorrectionsCutBitSetCut: public QnCorrectionsCutBase {
+class QnCorrectionsCutBitSet: public QnCorrectionsCutBase {
 
  public:
-  QnCorrectionsCutBitSetCut();
-  QnCorrectionsCutBitSetCut(const QnCorrectionsCutBitSetCut &cut);
-  QnCorrectionsCutBitSetCut(Int_t varId, Int_t bitNo, Bool_t set);
-  virtual ~QnCorrectionsCutBitSetCut();
+  QnCorrectionsCutBitSet();
+  QnCorrectionsCutBitSet(const QnCorrectionsCutBitSet &cut);
+  QnCorrectionsCutBitSet(Int_t varId, Int_t bitNo, Bool_t set);
+  virtual ~QnCorrectionsCutBitSet();
 
   virtual Bool_t IsSelected(Float_t *variableContainer);
  private:
@@ -291,7 +291,7 @@ class QnCorrectionsCutBitSetCut: public QnCorrectionsCutBase {
   UInt_t          fExpectedResult; ///< The expected masked result to pass the cut
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCutBitSetCut, 1);
+  ClassDef(QnCorrectionsCutBitSet, 1);
 /// \endcond
 };
 
@@ -299,7 +299,7 @@ class QnCorrectionsCutBitSetCut: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutBitSetCut::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutBitSet::IsSelected(Float_t *variableContainer) {
   if ((UInt_t(variableContainer[fVarId]) & fBitMask) != fExpectedResult)
     return kFALSE;
   else
