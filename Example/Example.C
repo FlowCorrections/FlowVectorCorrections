@@ -957,10 +957,8 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
 
       /// add the data vector to the bank
       QnCorrectionsChannelizedDataVector *channelizedDataVector =
-          new ((*channelizedDataVectorsBank)[channelizedDataVectorsBank->GetEntriesFast()]) QnCorrectionsChannelizedDataVector();
-      channelizedDataVector->SetId(ich);
-      channelizedDataVector->SetPhi(phiSector[ich%8]+rotation);
-      channelizedDataVector->SetWeight(weight);
+          new (channelizedDataVectorsBank->ConstructedAt(channelizedDataVectorsBank->GetEntriesFast()))
+            QnCorrectionsChannelizedDataVector(ich, phiSector[ich%8]+rotation, weight);
     }
 
     /// let's fill the Q vector
@@ -996,8 +994,8 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
 
       /// add the data vector to the bank
       QnCorrectionsDataVector *dataVector =
-          new ((*dataVectorsBank)[dataVectorsBank->GetEntriesFast()]) QnCorrectionsDataVector();
-      dataVector->SetPhi(phiTrack);
+          new (dataVectorsBank->ConstructedAt(dataVectorsBank->GetEntriesFast()))
+              QnCorrectionsDataVector(phiTrack);
     }
 
     cout << Form("data vector bank entries: %d\n", dataVectorsBank->GetEntriesFast());

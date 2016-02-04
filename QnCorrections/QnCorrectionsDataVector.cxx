@@ -45,6 +45,12 @@ QnCorrectionsDataVector::QnCorrectionsDataVector() : TObject() {
   fPhi = 0.0;
 }
 
+/// Normal constructor
+/// \param phi the azimuthal angle
+QnCorrectionsDataVector::QnCorrectionsDataVector(Float_t phi) : TObject() {
+  fPhi = phi;
+}
+
 /// Default destructor
 QnCorrectionsDataVector::~QnCorrectionsDataVector() {
 
@@ -59,6 +65,17 @@ QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector() :
     QnCorrectionsDataVector() {
   fId = -1;
   fWeight = fEqualizedWeight = 1.0;
+}
+
+/// Normal constructor
+/// \param channelId channel number
+/// \param phi the azimuthal angle
+/// \param weight the data vector weight
+QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector(Int_t channelId, Float_t phi, Float_t weight) :
+    QnCorrectionsDataVector(phi) {
+  fId = channelId;
+  fWeight = weight;
+  fEqualizedWeight = 1.0;
 }
 
 /// Default destructor

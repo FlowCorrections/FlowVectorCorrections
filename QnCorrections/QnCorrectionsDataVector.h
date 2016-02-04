@@ -31,6 +31,7 @@
 class QnCorrectionsDataVector : public TObject {
 public:
   QnCorrectionsDataVector();
+  QnCorrectionsDataVector(Float_t phi);
   virtual ~QnCorrectionsDataVector();
 
   /// Sets the data vector azimuthal angle
@@ -71,6 +72,7 @@ class QnCorrectionsChannelizedDataVector : public QnCorrectionsDataVector{
 public:
 
   QnCorrectionsChannelizedDataVector();
+  QnCorrectionsChannelizedDataVector(Int_t channelId, Float_t phi, Float_t weight);
   virtual ~QnCorrectionsChannelizedDataVector();
 
   /// Sets the channel id associated with the data vector
