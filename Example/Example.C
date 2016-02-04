@@ -969,8 +969,11 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
           dynamic_cast<QnCorrectionsChannelizedDataVector*>(channelizedDataVectorsBank->At(ixdata));
       myChannelizedDetectorQnVector.Add(dataVector->Phi(), dataVector->Weight());
       cout << Form("channel: d, phi: %f, weight: %f\n", dataVector->Phi(), dataVector->Weight());
-      cout << Form("X comp: %f\n", myChannelizedDetectorQnVector.Qx(2));
-      cout << Form("fN: %f\n", myChannelizedDetectorQnVector.GetN());
+      cout << Form("X(2) comp: %f; X(4) comp: %f; X(6) comp: %f\n",
+          myChannelizedDetectorQnVector.Qx(2), myChannelizedDetectorQnVector.Qx(4), myChannelizedDetectorQnVector.Qx(6));
+      cout << Form("Y(2) comp: %f; Y(4) comp: %f; Y(6) comp: %f\n",
+          myChannelizedDetectorQnVector.Qy(2), myChannelizedDetectorQnVector.Qy(4), myChannelizedDetectorQnVector.Qy(6));
+      cout << Form("fN: %d\n", myChannelizedDetectorQnVector.GetN());
       cout << Form("sumW: %f\n", myChannelizedDetectorQnVector.GetSumOfWeights());
     }
 
