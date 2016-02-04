@@ -90,10 +90,10 @@ public:
   /// \return the equalized weight
   virtual Float_t EgualizedWeight() { return fEqualizedWeight; }
 
- private:
-  Int_t   fId;                    /// the channel id associated with the data vector
-  Float_t fWeight;                /// raw weight as from the detector
-  Float_t fEqualizedWeight;       /// equalized weight after channel equalization
+private:
+  Int_t   fId;                    ///< the channel id associated with the data vector
+  Float_t fWeight;                ///< raw weight as from the detector
+  Float_t fEqualizedWeight;       ///< equalized weight after channel equalization
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsChannelizedDataVector, 1);
