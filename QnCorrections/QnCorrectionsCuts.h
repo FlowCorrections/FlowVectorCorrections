@@ -47,7 +47,7 @@ class QnCorrectionsCutBase: public TObject {
   ///
   /// \param variableContainer the current variables content addressed by var Id
   /// \return kTRUE if the actual value passes the cut else kFALSE
-  virtual Bool_t IsSelected(Float_t *variableContainer) = 0;
+  virtual Bool_t IsSelected(const Float_t *variableContainer) = 0;
  protected:
   Int_t         fVarId;   ///< The external Id for the variable in the data bank
 
@@ -78,7 +78,7 @@ class QnCorrectionsCutAbove: public QnCorrectionsCutBase {
   QnCorrectionsCutAbove(Int_t varId, Float_t threshold);
   virtual ~QnCorrectionsCutAbove();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   Float_t         fThreshold;   ///< The value that must be surpassed
 
@@ -91,7 +91,7 @@ class QnCorrectionsCutAbove: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is above the threshold else kFALSE
-Bool_t QnCorrectionsCutAbove::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutAbove::IsSelected(const Float_t *variableContainer) {
   if (variableContainer[fVarId] > fThreshold)
     return kTRUE;
   else
@@ -118,7 +118,7 @@ class QnCorrectionsCutBelow: public QnCorrectionsCutBase {
   QnCorrectionsCutBelow(Int_t varId, Float_t threshold);
   virtual ~QnCorrectionsCutBelow();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   Float_t         fThreshold;   ///< The upper, not reached, value
 
@@ -131,7 +131,7 @@ class QnCorrectionsCutBelow: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutBelow::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutBelow::IsSelected(const Float_t *variableContainer) {
   if (variableContainer[fVarId] < fThreshold)
     return kTRUE;
   else
@@ -159,7 +159,7 @@ class QnCorrectionsCutWithin: public QnCorrectionsCutBase {
   QnCorrectionsCutWithin(Int_t varId, Float_t min, Float_t max);
   virtual ~QnCorrectionsCutWithin();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   Float_t         fMinThreshold;   ///< The lower limit
   Float_t         fMaxThreshold;   ///< The upper limit
@@ -173,7 +173,7 @@ class QnCorrectionsCutWithin: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutWithin::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutWithin::IsSelected(const Float_t *variableContainer) {
   if ((fMinThreshold < variableContainer[fVarId]) && (variableContainer[fVarId] < fMaxThreshold))
     return kTRUE;
   else
@@ -201,7 +201,7 @@ class QnCorrectionsCutOutside: public QnCorrectionsCutBase {
   QnCorrectionsCutOutside(Int_t varId, Float_t min, Float_t max);
   virtual ~QnCorrectionsCutOutside();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   Float_t         fMinThreshold;   ///< The lower limit
   Float_t         fMaxThreshold;   ///< The upper limit
@@ -215,7 +215,7 @@ class QnCorrectionsCutOutside: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutOutside::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutOutside::IsSelected(const Float_t *variableContainer) {
   if ((fMinThreshold < variableContainer[fVarId]) && (variableContainer[fVarId] < fMaxThreshold))
     return kFALSE;
   else
@@ -243,7 +243,7 @@ class QnCorrectionsCutValue: public QnCorrectionsCutBase {
   QnCorrectionsCutValue(Int_t varId, Float_t value);
   virtual ~QnCorrectionsCutValue();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   Float_t         fValue;   ///< The desired value
 
@@ -256,7 +256,7 @@ class QnCorrectionsCutValue: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual variable content is equal to the stored value else kFALSE
-Bool_t QnCorrectionsCutValue::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutValue::IsSelected(const Float_t *variableContainer) {
   if (variableContainer[fVarId] != fValue)
     return kFALSE;
   else
@@ -285,7 +285,7 @@ class QnCorrectionsCutBitSet: public QnCorrectionsCutBase {
   QnCorrectionsCutBitSet(Int_t varId, Int_t bitNo, Bool_t set);
   virtual ~QnCorrectionsCutBitSet();
 
-  virtual Bool_t IsSelected(Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
  private:
   UInt_t          fBitMask;   ///< The mask to apply to the variable value
   UInt_t          fExpectedResult; ///< The expected masked result to pass the cut
@@ -299,7 +299,7 @@ class QnCorrectionsCutBitSet: public QnCorrectionsCutBase {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual value is below the threshold else kFALSE
-Bool_t QnCorrectionsCutBitSet::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutBitSet::IsSelected(const Float_t *variableContainer) {
   if ((UInt_t(variableContainer[fVarId]) & fBitMask) != fExpectedResult)
     return kFALSE;
   else
@@ -349,7 +349,7 @@ public:
   /// \return the event class variable object a position i
   virtual QnCorrectionsCutBase *At(Int_t i) const { return (QnCorrectionsCutBase *) TObjArray::At(i); }
 
-  Bool_t IsSelected(Float_t *variableContainer);
+  Bool_t IsSelected(const Float_t *variableContainer);
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCutsSet, 1);
@@ -361,7 +361,7 @@ public:
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return kTRUE if the actual values pass the set of cuts else kFALSE
-Bool_t QnCorrectionsCutsSet::IsSelected(Float_t *variableContainer) {
+Bool_t QnCorrectionsCutsSet::IsSelected(const Float_t *variableContainer) {
   for (Int_t icut = 0; icut < GetEntriesFast(); icut++) {
     if (!At(icut)->IsSelected(variableContainer)) {
       return kFALSE;
