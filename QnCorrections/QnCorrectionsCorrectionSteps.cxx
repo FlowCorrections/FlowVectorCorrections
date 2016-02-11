@@ -29,27 +29,47 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsCorrectionStep.cxx
+/// \file QnCorrectionsCorrectionSteps.cxx
 /// \brief Correction steps base classes implementation
 
-#include "QnCorrectionsCorrectionStep.h"
+#include "QnCorrectionsCorrectionSteps.h"
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsCorrectionStepBase);
+/// \endcond
 
 /// Default constructor
 QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase() : TNamed() {
 
+  fKey = "";
 }
 
 /// Normal constructor
 /// \param name the name of the correction step
-QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase(const char *name) :
+/// \param key the associated ordering key
+QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase(const char *name, const char *key) :
     TNamed(name,name) {
 
+  fKey = key;
 }
 
 /// Default destructor
 QnCorrectionsCorrectionStepBase::~QnCorrectionsCorrectionStepBase() {
 
 }
+
+/// Checks if should be applied before the one passed as parameter
+/// \param correction correction to check whether to be applied after
+/// \return kTRUE if to apply before the one passed as argument
+Bool_t QnCorrectionsCorrectionStepBase::Before(const QnCorrectionsCorrectionStepBase *correction) {
+
+  if (fKey.CompareTo(correction->GetKey()) < 0) return kTRUE;
+  return kFALSE;
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsCorrectionOnInputData);
+/// \endcond
 
 /// Default constructor
 QnCorrectionsCorrectionOnInputData::QnCorrectionsCorrectionOnInputData() :
@@ -59,8 +79,9 @@ QnCorrectionsCorrectionOnInputData::QnCorrectionsCorrectionOnInputData() :
 
 /// Normal constructor
 /// \param name of the correction step
-QnCorrectionsCorrectionOnInputData::QnCorrectionsCorrectionOnInputData(const char *name) :
-    QnCorrectionsCorrectionStepBase(name) {
+/// \param key the associated ordering key
+QnCorrectionsCorrectionOnInputData::QnCorrectionsCorrectionOnInputData(const char *name, const char *key) :
+    QnCorrectionsCorrectionStepBase(name, key) {
 
 }
 
@@ -68,6 +89,11 @@ QnCorrectionsCorrectionOnInputData::QnCorrectionsCorrectionOnInputData(const cha
 QnCorrectionsCorrectionOnInputData::~QnCorrectionsCorrectionOnInputData() {
 
 }
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsCorrectionOnQvector);
+/// \endcond
+
 
 /// Default constructor
 QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
@@ -77,13 +103,88 @@ QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
 
 /// Normal constructor
 /// \param name of the correction step
-QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector(const char *name) :
-    QnCorrectionsCorrectionStepBase(name) {
+/// \param key the associated ordering key
+QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector(const char *name, const char *key) :
+    QnCorrectionsCorrectionStepBase(name, key) {
 
 }
 
 /// Default destructor
 QnCorrectionsCorrectionOnQvector::~QnCorrectionsCorrectionOnQvector() {
 
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsSetOfCorrectionsOnInputData);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsSetOfCorrectionsOnInputData::QnCorrectionsSetOfCorrectionsOnInputData() : TList() {
+
+}
+
+/// Default destructor
+QnCorrectionsSetOfCorrectionsOnInputData::~QnCorrectionsSetOfCorrectionsOnInputData() {
+
+}
+
+/// Adds a new correction to the set.
+///
+/// The correction is incorporated in its proper place according to
+/// its key
+void QnCorrectionsSetOfCorrectionsOnInputData::AddCorrection(QnCorrectionsCorrectionOnInputData *correction) {
+  if (IsEmpty()) {
+    AddFirst(correction);
+  }
+  else if (correction->Before((QnCorrectionsCorrectionOnInputData *) First())) {
+    AddFirst(correction);
+  }
+  else if (((QnCorrectionsCorrectionOnInputData *) Last())->Before(correction)) {
+    AddLast(correction);
+  }
+  else {
+    for (Int_t ix = 0; ix < GetEntries(); ix++) {
+      if (!correction->Before(At(ix))) {
+        AddAt(correction, ix-1);
+      }
+    }
+  }
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsSetOfCorrectionsOnQvector);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsSetOfCorrectionsOnQvector::QnCorrectionsSetOfCorrectionsOnQvector() : TList() {
+
+}
+
+/// Default destructor
+QnCorrectionsSetOfCorrectionsOnQvector::~QnCorrectionsSetOfCorrectionsOnQvector() {
+
+}
+
+/// Adds a new correction to the set.
+///
+/// The correction is incorporated in its proper place according to
+/// its key
+void QnCorrectionsSetOfCorrectionsOnQvector::AddCorrection(QnCorrectionsCorrectionOnQvector *correction) {
+  if (IsEmpty()) {
+    AddFirst(correction);
+  }
+  else if (correction->Before((QnCorrectionsCorrectionOnQvector *) First())) {
+    AddFirst(correction);
+  }
+  else if (((QnCorrectionsCorrectionOnQvector *) Last())->Before(correction)) {
+    AddLast(correction);
+  }
+  else {
+    for (Int_t ix = 0; ix < GetEntries(); ix++) {
+      if (!correction->Before(At(ix))) {
+        AddAt(correction, ix-1);
+      }
+    }
+  }
 }
 

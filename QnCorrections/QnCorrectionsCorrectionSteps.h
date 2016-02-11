@@ -15,11 +15,15 @@
 /// \brief Base classes that support the different correction steps within Q vector correction framework
 ///
 
-#include <TObject.h>
+#include <TNamed.h>
 #include <TList.h>
 
 /// \class QnCorrectionsCorrectionStepBase
 /// \brief Base class for correction steps
+///
+/// Each correction has a name and a key. The name identifies it
+/// in an open way while the key is used to codify its position
+/// in an ordered list of consecutive corrections.
 ///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
@@ -29,8 +33,12 @@
 class QnCorrectionsCorrectionStepBase : public TNamed {
 public:
   QnCorrectionsCorrectionStepBase();
-  QnCorrectionsCorrectionStepBase(const char *name);
+  QnCorrectionsCorrectionStepBase(const char *name, const char *key);
   virtual ~QnCorrectionsCorrectionStepBase();
+
+  /// Gets the correction ordering key
+  const char *GetKey() const { return (const char *) fKey; }
+  Bool_t Before(const QnCorrectionsCorrectionStepBase *correction);
 
   /// Attaches the needed input information to the correction step
   ///
@@ -38,11 +46,22 @@ public:
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list) = 0;
+  /// Asks for support histograms creation
+  ///
+  /// Pure virtual function
+  /// \param list list where the histograms should be incorporated for its persistence
+  /// \return kTRUE if everything went OK
+  virtual Bool_t CreateSupportHistograms(TList *list) = 0;
   /// Processes the correction step
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+protected:
+  TString fKey; ///< the correction key that codifies order information
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsCorrectionStepBase, 1);
+/// \endcond
 };
 
 /// \class QnCorrectionsCorrectionOnInputData
@@ -56,7 +75,7 @@ public:
 class QnCorrectionsCorrectionOnInputData: public QnCorrectionsCorrectionStepBase {
 public:
   QnCorrectionsCorrectionOnInputData();
-  QnCorrectionsCorrectionOnInputData(const char *name);
+  QnCorrectionsCorrectionOnInputData(const char *name, const char *key);
   virtual ~QnCorrectionsCorrectionOnInputData();
 
   /// Attaches the needed input information to the correction step
@@ -64,12 +83,21 @@ public:
   /// Pure virtual function
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
-  virtual Bool_t AttachInput(TList *list) = 0;
+  virtual Bool_t AttachInput(TList *list);
+  /// Asks for support histograms creation
+  ///
+  /// Pure virtual function
+  /// \param list list where the histograms should be incorporated for its persistence
+  /// \return kTRUE if everything went OK
+  virtual Bool_t CreateSupportHistograms(TList *list);
   /// Processes the correction step
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsCorrectionOnInputData, 1);
+/// \endcond
 };
 
 /// \class QnCorrectionsCorrectionOnQvector
@@ -83,7 +111,7 @@ public:
 class QnCorrectionsCorrectionOnQvector: public QnCorrectionsCorrectionStepBase {
 public:
   QnCorrectionsCorrectionOnQvector();
-  QnCorrectionsCorrectionOnQvector(const char *name);
+  QnCorrectionsCorrectionOnQvector(const char *name, const char *key);
   virtual ~QnCorrectionsCorrectionOnQvector();
 
   /// Attaches the needed input information to the correction step
@@ -91,12 +119,21 @@ public:
   /// Pure virtual function
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
-  virtual Bool_t AttachInput(TList *list) = 0;
+  virtual Bool_t AttachInput(TList *list);
+  /// Asks for support histograms creation
+  ///
+  /// Pure virtual function
+  /// \param list list where the histograms should be incorporated for its persistence
+  /// \return kTRUE if everything went OK
+  virtual Bool_t CreateSupportHistograms(TList *list);
   /// Processes the correction step
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsCorrectionOnQvector, 1);
+/// \endcond
 };
 
 /// \class QnCorrectionsSetOfCorrectionsOnInputData
@@ -124,6 +161,10 @@ public:
   QnCorrectionsCorrectionOnInputData *At(Int_t i)
     { return (QnCorrectionsCorrectionOnInputData *) TList::At(i);}
 
+  void AddCorrection(QnCorrectionsCorrectionOnInputData *correction);
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsSetOfCorrectionsOnInputData, 1);
+/// \endcond
 };
 
 /// \class QnCorrectionsSetOfCorrectionsOnQvector
@@ -151,6 +192,10 @@ public:
   QnCorrectionsCorrectionOnQvector *At(Int_t i)
     { return (QnCorrectionsCorrectionOnQvector *) TList::At(i);}
 
+  void AddCorrection(QnCorrectionsCorrectionOnQvector *correction);
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsSetOfCorrectionsOnQvector, 1);
+/// \endcond
 };
 
 #endif // QNCORRECTIONS_CORRECTIONSTEPS_H
