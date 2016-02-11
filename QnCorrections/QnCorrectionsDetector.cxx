@@ -29,10 +29,17 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsDetector.cxx
-/// \brief Correction steps base classes implementation
+// \file QnCorrectionsDetector.cxx
+// \brief Detector configuration classes implementation
 
 #include "QnCorrectionsDetector.h"
+#include "QnCorrectionsLog.h"
+
+#define INITIALDATAVECTORBANKSIZE 100000
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsDetector);
+/// \endcond
+
 
 /// Default constructor
 QnCorrectionsDetector::QnCorrectionsDetector() : TNamed() {
@@ -41,14 +48,243 @@ QnCorrectionsDetector::QnCorrectionsDetector() : TNamed() {
 
 /// Normal constructor
 /// \param name the name of the detector
-/// \id detector Id
+/// \param id detector Id
 QnCorrectionsDetector::QnCorrectionsDetector(const char *name, Int_t id) :
     TNamed(name,name) {
   fDetectorId = id;
 }
 
 /// Default destructor
+/// The detector class does not own anything
 QnCorrectionsDetector::~QnCorrectionsDetector() {
 
 }
 
+/// Asks for support histograms creation
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetector::CreateSupportHistograms(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    retValue = retValue || (fConfigurations.At(ixConfiguration)->CreateSupportHistograms(list));
+  }
+  return retValue;
+}
+
+/// Asks for attaching the needed input information to the correction steps
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the input information should be found
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetector::AttachCorrectionInputs(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    retValue = retValue || (fConfigurations.At(ixConfiguration)->AttachCorrectionInputs(list));
+  }
+  return retValue;
+}
+
+/// Adds a new detector configuration to the current detector
+///
+/// Raise an execution error if the configuration detector reference
+/// does not match the current detector and if the detector configuration
+/// is already incorporated to the detector.
+/// \param detectorConfiguration pointer to the configuration to be added
+void QnCorrectionsDetector::AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration) {
+  if (this != detectorConfiguration->GetDetector()) {
+    QnCorrectionsFatal(Form("You are adding %s detector configuration of detector Id %d to detector Id %d. FIX IT, PLEASE.",
+        detectorConfiguration->GetName(),
+        detectorConfiguration->GetDetector()->GetId(),
+        GetId()));
+    return;
+  }
+  if (fConfigurations.FindObject(detectorConfiguration->GetName())) {
+    QnCorrectionsFatal(Form("You are trying to add twice %s detector configuration to detector Id %d. FIX IT, PLEASE.",
+        detectorConfiguration->GetName(),
+        GetId()));
+    return;
+  }
+  fConfigurations.Add(detectorConfiguration);
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsDetectorConfigurationBase);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
+    fQnVector() {
+  fDetector = NULL;
+  fCuts = NULL;
+  fDataVectorBank = NULL;
+  fQnVectorCorrections = NULL;
+  fEventClassVariables = NULL;
+}
+
+/// Normal constructor
+/// \param name the name of the detector configuration
+/// \param detector the detector object that will own the detector configuration
+/// \param eventClassesVariables the set of event classes variables
+/// \param nNoOfHarmonics the number of harmonics that must be handled
+/// \param harmonicMap an optional ordered array with the harmonic numbers
+QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(const char *name,
+      QnCorrectionsDetector *detector,
+      QnCorrectionsEventClassVariablesSet *eventClassesVariables,
+      Int_t nNoOfHarmonics,
+      Int_t *harmonicMap) :
+          TNamed(name,name),
+          fQnVector(nNoOfHarmonics, harmonicMap) {
+
+  fDetector = detector;
+  fCuts = NULL;
+  fDataVectorBank = NULL;
+  fQnVectorCorrections = NULL;
+  fEventClassVariables = eventClassesVariables;
+}
+
+/// Default destructor
+/// Releases the memory which was taken
+QnCorrectionsDetectorConfigurationBase::~QnCorrectionsDetectorConfigurationBase() {
+  if (fDataVectorBank != NULL) {
+    delete fDataVectorBank;
+  }
+}
+
+/// Asks for support histograms creation
+///
+/// The request is transmitted, as per a base class, to the Q vector corrections.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(list));
+  }
+  return retValue;
+}
+
+  /// Asks for attaching the needed input information to the correction steps
+  ///
+  /// The request is transmitted, as per a base class, to the Q vector corrections.
+  /// \param list list where the input information should be found
+  /// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->AttachInput(list));
+  }
+  return retValue;
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsTrackDetectorConfiguration);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration() : QnCorrectionsDetectorConfigurationBase() {
+
+}
+
+/// Normal constructor
+/// Allocates the data vector bank.
+/// \param name the name of the detector configuration
+/// \param detector the detector object that will own the detector configuration
+/// \param eventClassesVariables the set of event classes variables
+/// \param nNoOfHarmonics the number of harmonics that must be handled
+/// \param harmonicMap an optional ordered array with the harmonic numbers
+QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration(const char *name,
+      QnCorrectionsDetector *detector,
+      QnCorrectionsEventClassVariablesSet *eventClassesVariables,
+      Int_t nNoOfHarmonics,
+      Int_t *harmonicMap) :
+          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
+
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
+}
+
+/// Default destructor
+/// Memory taken is released by the parent class destructor
+QnCorrectionsTrackDetectorConfiguration::~QnCorrectionsTrackDetectorConfiguration() {
+
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsChannelDetectorConfiguration);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration() :
+    QnCorrectionsDetectorConfigurationBase() {
+  fUsedChannel = NULL;
+  fChannelGroup = NULL;
+  fInputDataCorrections = NULL;
+}
+
+/// Normal constructor
+/// Allocates the data vector bank.
+/// \param name the name of the detector configuration
+/// \param detector the detector object that will own the detector configuration
+/// \param eventClassesVariables the set of event classes variables
+/// \param nNoOfHarmonics the number of harmonics that must be handled
+/// \param harmonicMap an optional ordered array with the harmonic numbers
+QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration(const char *name,
+      QnCorrectionsDetector *detector,
+      QnCorrectionsEventClassVariablesSet *eventClassesVariables,
+      Int_t nNoOfHarmonics,
+      Int_t *harmonicMap) :
+          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
+
+  fDataVectorBank = new TClonesArray("QnCorrectionsChannelizedDataVector", INITIALDATAVECTORBANKSIZE);
+}
+
+/// Default destructor
+/// Memory taken is released by the parent class destructor
+QnCorrectionsChannelDetectorConfiguration::~QnCorrectionsChannelDetectorConfiguration() {
+
+}
+
+
+  virtual Bool_t CreateSupportHistograms(TList *list);
+  /// Asks for attaching the needed input information to the correction steps
+  ///
+  /// The request is transmitted to the incoming data correction steps
+  /// and to the Q vector correction steps.
+  /// \param list list where the input information should be found
+  /// \return kTRUE if everything went OK
+  virtual Bool_t AttachCorrectionInputs(TList *list);
+  /// Ask for processing corrections for the involved detector configuration
+  ///
+  /// The request is transmitted to the incoming data correction steps
+  /// and to the Q vector correction steps.
+  /// \return kTRUE if everything went OK
+  virtual Bool_t ProcessCorrections();
+
+  Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
+  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
+  QnCorrectionsSetOfCorrectionsOnInputData *fInputDataCorrections; ///< set of corrections to apply on input data vectors
+
+};
+
+
+
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsDetectorConfigurationSet);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsDetectorConfigurationSet::QnCorrectionsDetectorConfigurationSet() :
+    TObjArray() {
+
+}
+
+/// Default destructor
+QnCorrectionsDetectorConfigurationSet::~QnCorrectionsDetectorConfigurationSet() {
+
+}
