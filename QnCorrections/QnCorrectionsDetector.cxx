@@ -117,11 +117,10 @@ ClassImp(QnCorrectionsDetectorConfigurationBase);
 
 /// Default constructor
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
-    fQnVector() {
+    fQnVector(), fQnVectorCorrections() {
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
-  fQnVectorCorrections = NULL;
   fEventClassVariables = NULL;
 }
 
@@ -137,12 +136,11 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           TNamed(name,name),
-          fQnVector(nNoOfHarmonics, harmonicMap) {
+          fQnVector(nNoOfHarmonics, harmonicMap), fQnVectorCorrections() {
 
   fDetector = detector;
   fCuts = NULL;
   fDataVectorBank = NULL;
-  fQnVectorCorrections = NULL;
   fEventClassVariables = eventClassesVariables;
 }
 
@@ -223,6 +221,7 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
     QnCorrectionsDetectorConfigurationBase() {
   fUsedChannel = NULL;
   fChannelGroup = NULL;
+  fNoOfChannels = 0;
   fInputDataCorrections = NULL;
 }
 
@@ -236,42 +235,74 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
 QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration(const char *name,
       QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
+      Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
-
+  fUsedChannel = NULL;
+  fChannelGroup = NULL;
+  fNoOfChannels = nNoOfChannels;
   fDataVectorBank = new TClonesArray("QnCorrectionsChannelizedDataVector", INITIALDATAVECTORBANKSIZE);
+  fInputDataCorrections = NULL;
 }
 
 /// Default destructor
-/// Memory taken is released by the parent class destructor
+/// Realeas the memory taken
 QnCorrectionsChannelDetectorConfiguration::~QnCorrectionsChannelDetectorConfiguration() {
 
+  if (fUsedChannel != NULL) delete fUsedChannel;
+  if (fChannelGroup != NULL) delete fChannelGroup;
+}
+
+/// Incorporates the channels scheme to the detector configuration
+/// \param bUsedChannel array of booleans one per each channel
+/// \param nChannelGroup array of group number for each channel
+void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+  /* TODO: there should be smart procedures on how to improve the channels scan for actual data */
+  fUsedChannel = new Bool_t[fNoOfChannels];
+  fChannelGroup = new Int_t[fNoOfChannels];
+
+  for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
+    fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
+    fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+  }
+}
+
+Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList *list) {
+
+  Bool_t result = kFALSE;
+
+
+  return result;
+}
+
+/// Asks for attaching the needed input information to the correction steps
+///
+/// The request is transmitted to the incoming data correction steps
+/// and to the Q vector correction steps.
+/// \param list list where the input information should be found
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *list) {
+
+  Bool_t result = kFALSE;
+
+
+  return result;
 }
 
 
-  virtual Bool_t CreateSupportHistograms(TList *list);
-  /// Asks for attaching the needed input information to the correction steps
-  ///
-  /// The request is transmitted to the incoming data correction steps
-  /// and to the Q vector correction steps.
-  /// \param list list where the input information should be found
-  /// \return kTRUE if everything went OK
-  virtual Bool_t AttachCorrectionInputs(TList *list);
-  /// Ask for processing corrections for the involved detector configuration
+/// Ask for processing corrections for the involved detector configuration
   ///
   /// The request is transmitted to the incoming data correction steps
   /// and to the Q vector correction steps.
   /// \return kTRUE if everything went OK
-  virtual Bool_t ProcessCorrections();
-
-  Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
-  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
-  QnCorrectionsSetOfCorrectionsOnInputData *fInputDataCorrections; ///< set of corrections to apply on input data vectors
-
-};
+Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections() {
+/* TODO: this must go inline!!! */
+  Bool_t result = kFALSE;
 
 
+  return result;
+}
 
 
 /// \cond CLASSIMP
