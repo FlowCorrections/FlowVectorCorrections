@@ -41,6 +41,7 @@
 #include "../QnCorrections/QnCorrectionsHistograms.h"
 #include "../QnCorrections/QnCorrectionsDataVector.h"
 #include "../QnCorrections/QnCorrectionsQnVector.h"
+#include "../QnCorrections/QnCorrectionsDetector.h"
 
 void Setup();
 void Loop();
@@ -48,14 +49,15 @@ void Finish();
 
 /// the detectors we will use for our example
 enum Detectors{
-  kDetector1,
+  kDetector1 = 0,
   kDetector2,
-  kDetector3
+  kDetector3,
+  kNDetectors
 };
 
 /// few variables to use with above detectors
 enum Variables{
-  kCentrality,
+  kCentrality = 0,
   kVertexZ,
   kCharge,
   kPx,
@@ -63,8 +65,9 @@ enum Variables{
   kNVars
 };
 
-/// the variables names
+/// the variables and detector names
 TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
+TString DetectorNames[kNDetectors] = {"Detector one", "Detector two", "Detector three"};
 
 #ifdef MAKEEVENTTEXTOUTPUT
 const char *sTrackEventFileName = "trackEventFile.txt";
@@ -140,7 +143,94 @@ void Setup(){
   }
 #endif
 
+  /* our event classes variables: vertexZ and centrality */
+  const Int_t nEventClassesDimensions = 2;
+  QnCorrectionsEventClassVariablesSet *CorrEventClasses = new QnCorrectionsEventClassVariablesSet(nEventClassesDimensions);
+  Double_t VtxZaxes[][2] = { { -10.0, 4} , {-7.0, 1}, {7.0, 8}, {10.0, 1}};
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(kVertexZ, VarNames[kVertexZ], VtxZaxes));
+  CorrEventClasses->Add(new QnCorrectionsEventClassVariable(kCentrality, VarNames[kCentrality], 10, 0.0, 100.0));
 
+  /* the harmonics the analysis will run on */
+  Int_t nNoOfHarmonics = 1;
+  Int_t harmonicsMap[] = {2};
+
+  /* our cuts to differentiate positive from negative tracks */
+  QnCorrectionsCutsSet *myPositiveCuts = new QnCorrectionsCutsSet();
+  myPositiveCuts->Add(new QnCorrectionsCutAbove(kCharge, 0.0));
+  /* let's own the cuts due to how they are created */
+  myPositiveCuts->SetOwner(kTRUE);
+
+  QnCorrectionsCutsSet *myNegativeCuts = new QnCorrectionsCutsSet();
+  myNegativeCuts->Add(new QnCorrectionsCutBelow(kCharge, 0.0));
+  /* let's own the cuts due to how they are created */
+  myNegativeCuts->SetOwner(kTRUE);
+
+  /* let's create our detectors */
+  QnCorrectionsDetector *myDetectorOne = new QnCorrectionsDetector(DetectorNames[kDetector1], kDetector1);
+  QnCorrectionsDetector *myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
+
+  /* and our detector configurations for the track detector */
+  QnCorrectionsTrackDetectorConfiguration *myDetectorOnePositive =
+      new QnCorrectionsTrackDetectorConfiguration(
+          "Det1pos",
+          myDetectorOne,
+          CorrEventClasses,
+          nNoOfHarmonics,
+          harmonicsMap);
+  myDetectorOnePositive->SetCuts(myPositiveCuts);
+
+  QnCorrectionsTrackDetectorConfiguration *myDetectorOneNegative =
+      new QnCorrectionsTrackDetectorConfiguration(
+          "Det1neg",
+          myDetectorOne,
+          CorrEventClasses,
+          nNoOfHarmonics,
+          harmonicsMap);
+  myDetectorOneNegative->SetCuts(myNegativeCuts);
+
+  /* and our detector detector configurations for the channels detector */
+  Int_t nNoOfChannels = 64;
+  Int_t nLowestDetectorTwoCChannel = 32;
+  Bool_t *bUsedChannelDetectorTwoC = new Bool_t[nNoOfChannels];
+  Bool_t *bUsedChannelDetectorTwoA = new Bool_t[nNoOfChannels];
+  Int_t *nChannelGroupDetectorTwoC = new Int_t[nNoOfChannels];
+  Int_t *nChannelGroupDetectorTwoA = new Int_t[nNoOfChannels];
+
+  for(Int_t ixChannel = 0; ixChannel < nNoOfChannels; ixChannel++) {
+    if (ixChannel < nLowestDetectorTwoCChannel) {
+      /* we are in sub-detector A */
+      bUsedChannelDetectorTwoC[ixChannel] = kFALSE;
+      bUsedChannelDetectorTwoA[ixChannel] = kTRUE;
+    }
+    else {
+      /* we are in sub-detector C */
+      bUsedChannelDetectorTwoC[ixChannel] = kTRUE;
+      bUsedChannelDetectorTwoA[ixChannel] = kFALSE;
+    }
+    /* and channel groups */
+    nChannelGroupDetectorTwoC[ixChannel] = Int_t(ixChannel / 8);
+    nChannelGroupDetectorTwoA[ixChannel] = Int_t(ixChannel / 8);
+  }
+
+  QnCorrectionsChannelDetectorConfiguration *myDetectorTwoA =
+      new QnCorrectionsChannelDetectorConfiguration(
+          "Det2A",
+          myDetectorTwo,
+          CorrEventClasses,
+          nNoOfChannels,
+          nNoOfHarmonics,
+          harmonicsMap);
+  myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
+
+  QnCorrectionsChannelDetectorConfiguration *myDetectorTwoC =
+      new QnCorrectionsChannelDetectorConfiguration(
+          "Det2C",
+          myDetectorTwo,
+          CorrEventClasses,
+          nNoOfChannels,
+          nNoOfHarmonics,
+          harmonicsMap);
+  myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
 }
 
 /// the clean up routine
