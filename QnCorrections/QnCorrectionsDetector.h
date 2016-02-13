@@ -18,58 +18,16 @@
 #include <TObject.h>
 #include <TList.h>
 #include <TObjArray.h>
+#include <TClonesArray.h>
 #include "QnCorrectionsCuts.h"
 #include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsEventClasses.h"
+#include "QnCorrectionsQnVector.h"
+#include "QnCorrectionsDataVector.h"
 
 class QnCorrectionsDetectorConfigurationSet;
-
-/// \class QnCorrectionsDetector
-/// \brief Detector class within Q vector correction framework
-///
-/// The roles of the detector class are: to store its unique name and Id,
-/// and to store and handle the list of the different
-/// configurations defined for the involved detector.
-///
-/// The detector Id should only be obtained at creation time and
-/// the object, once created, does not allow its modification.
-///
-/// The detector object is in the path of the whole control flow and
-/// as such it should distribute the different commands to the
-/// defined detector configurations.
-///
-/// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
-/// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
-/// \author Víctor González <victor.gonzalez@cern.ch>, UCM
-/// \date Feb 08, 2016
-
-class QnCorrectionsDetector : public TNamed {
-public:
-  QnCorrectionsDetector();
-  QnCorrectionsDetector(const char *name, Int_t id);
-  virtual ~QnCorrectionsDetector();
-
-  /// Gets the detector Id
-  ///
-  /// \return detector Id
-  Int_t GetId() { return fDetectorId; }
-
-  Bool_t CreateSupportHistograms(TList *list);
-  Bool_t AttachCorrectionInputs(TList *list);
-  Bool_t ProcessCorrections();
-
-  void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
-
-  void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
-
-private:
-  Int_t fDetectorId;            ///< detector Id
-  QnCorrectionsDetectorConfigurationSet fConfigurations;  ///< the set of configurations defined for this detector
-
-/// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetector, 1);
-/// \endcond
-};
+class QnCorrectionsDetectorConfigurationBase;
+class QnCorrectionsDetector;
 
 /// \class QnCorrectionsDetectorConfigurationBase
 /// \brief The base of a concrete detector configuration within Q vector correction framework
@@ -189,23 +147,6 @@ public:
 /// \endcond
 };
 
-/// New data vector for the detector configuration.
-/// A check is made to see if the current variable bank content passes
-/// the associated cuts. If so, the data vector is stored.
-/// \param variableContainer pointer to the variable content bank
-/// \param phi azimuthal angle
-/// \param weight the weight of the data vector. Ignored for track detector configurations.
-/// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
-    const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
-  if (IsSelected(variableContainer)) {
-    /// add the data vector to the bank
-    QnCorrectionsDataVector *dataVector =
-        new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-            QnCorrectionsDataVector(phi);
-  }
-}
-
 /// \class QnCorrectionsChannelDetectorConfiguration
 /// \brief Channel detector configuration within Q vector correction framework
 ///
@@ -228,9 +169,12 @@ public:
   QnCorrectionsChannelDetectorConfiguration(const char *name,
       QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
+      Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
   virtual ~QnCorrectionsChannelDetectorConfiguration();
+
+  void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup);
 
   virtual Bool_t CreateSupportHistograms(TList *list);
   /// Asks for attaching the needed input information to the correction steps
@@ -252,33 +196,13 @@ public:
 private:
   Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
   Int_t *fChannelGroup; ///< array, the group to which the channel pertains
+  Int_t fNoOfChannels;
   QnCorrectionsSetOfCorrectionsOnInputData *fInputDataCorrections; ///< set of corrections to apply on input data vectors
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsChannelDetectorConfiguration, 1);
 /// \endcond
 };
-
-/// New data vector for the detector configuration.
-/// A check is made to match the channel Id with the ones assigned
-/// to the detector configuration and then an additional one to
-/// see if the current variable bank content passes
-/// the associated cuts. If so, the data vector is stored.
-/// \param variableContainer pointer to the variable content bank
-/// \param phi azimuthal angle
-/// \param weight the weight of the data vector. Ignored for track detector configurations.
-/// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
-    const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
-  if (fUsedChannel[channelId]) {
-    if (IsSelected(variableContainer)) {
-      /// add the data vector to the bank
-      QnCorrectionsChannelizedDataVector *channelizedDataVector =
-          new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-            QnCorrectionsChannelizedDataVector(channelId, phi, weight);
-    }
-  }
-}
 
 /// \class QnCorrectionsDetectorConfigurationSet
 /// \brief Array of detector configurations within Q vector correction framework
@@ -303,13 +227,98 @@ public:
   /// Access the detector configuration at the passed position
   /// \param i position in the list (starting at zero)
   /// \return the detector configuration object a position i
-  QnCorrectionsDetectorConfigurationBase *At(Int_t i)
+  virtual QnCorrectionsDetectorConfigurationBase *At(Int_t i) const
     { return (QnCorrectionsDetectorConfigurationBase *) TObjArray::At(i);}
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetectorConfigurationSet, 1);
 /// \endcond
 };
+
+/// \class QnCorrectionsDetector
+/// \brief Detector class within Q vector correction framework
+///
+/// The roles of the detector class are: to store its unique name and Id,
+/// and to store and handle the list of the different
+/// configurations defined for the involved detector.
+///
+/// The detector Id should only be obtained at creation time and
+/// the object, once created, does not allow its modification.
+///
+/// The detector object is in the path of the whole control flow and
+/// as such it should distribute the different commands to the
+/// defined detector configurations.
+///
+/// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
+/// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
+/// \author Víctor González <victor.gonzalez@cern.ch>, UCM
+/// \date Feb 08, 2016
+
+class QnCorrectionsDetector : public TNamed {
+public:
+  QnCorrectionsDetector();
+  QnCorrectionsDetector(const char *name, Int_t id);
+  virtual ~QnCorrectionsDetector();
+
+  /// Gets the detector Id
+  ///
+  /// \return detector Id
+  Int_t GetId() { return fDetectorId; }
+
+  Bool_t CreateSupportHistograms(TList *list);
+  Bool_t AttachCorrectionInputs(TList *list);
+  Bool_t ProcessCorrections();
+
+  void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
+
+  void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+
+private:
+  Int_t fDetectorId;            ///< detector Id
+  QnCorrectionsDetectorConfigurationSet fConfigurations;  ///< the set of configurations defined for this detector
+
+/// \cond CLASSIMP
+  ClassDef(QnCorrectionsDetector, 1);
+/// \endcond
+};
+
+/// New data vector for the detector configuration.
+/// A check is made to see if the current variable bank content passes
+/// the associated cuts. If so, the data vector is stored.
+/// \param variableContainer pointer to the variable content bank
+/// \param phi azimuthal angle
+/// \param weight the weight of the data vector. Ignored for track detector configurations.
+/// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
+inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
+    const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
+  if (IsSelected(variableContainer)) {
+    /// add the data vector to the bank
+    QnCorrectionsDataVector *dataVector =
+        new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
+            QnCorrectionsDataVector(phi);
+  }
+}
+
+/// New data vector for the detector configuration.
+/// A check is made to match the channel Id with the ones assigned
+/// to the detector configuration and then an additional one to
+/// see if the current variable bank content passes
+/// the associated cuts. If so, the data vector is stored.
+/// \param variableContainer pointer to the variable content bank
+/// \param phi azimuthal angle
+/// \param weight the weight of the data vector. Ignored for track detector configurations.
+/// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
+inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
+    const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
+  if (fUsedChannel[channelId]) {
+    if (IsSelected(variableContainer)) {
+      /// add the data vector to the bank
+      QnCorrectionsChannelizedDataVector *channelizedDataVector =
+          new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
+            QnCorrectionsChannelizedDataVector(channelId, phi, weight);
+    }
+  }
+}
 
 /// New data vector for the detector
 /// The request is transmitted to the attached detector configurations.
