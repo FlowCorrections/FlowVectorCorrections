@@ -158,7 +158,7 @@ public:
   /// Access the correction step at the passed position
   /// \param i position in the list (starting at zero)
   /// \return the correction step object a position i
-  QnCorrectionsCorrectionOnInputData *At(Int_t i)
+  virtual QnCorrectionsCorrectionOnInputData *At(Int_t i) const
     { return (QnCorrectionsCorrectionOnInputData *) TList::At(i);}
 
   void AddCorrection(QnCorrectionsCorrectionOnInputData *correction);
@@ -189,7 +189,7 @@ public:
   /// Access the correction step at the passed position
   /// \param i position in the list (starting at zero)
   /// \return the correction step object a position i
-  QnCorrectionsCorrectionOnQvector *At(Int_t i)
+  virtual QnCorrectionsCorrectionOnQvector *At(Int_t i) const
     { return (QnCorrectionsCorrectionOnQvector *) TList::At(i);}
 
   void AddCorrection(QnCorrectionsCorrectionOnQvector *correction);
