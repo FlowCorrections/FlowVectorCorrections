@@ -33,16 +33,11 @@ public:
   QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
   virtual ~QnCorrectionsHistogramBase();
 
-  /// Attaches existing histograms as the supporting histograms
-  ///
-  /// Interface declaration function.
-  /// Default behavior. Base class should not be instantiated.
-  ///
-  /// \param histogramList list where the histograms have to be located
-  /// \return the associated bin to the current variables content
-  virtual Bool_t AttachHistograms(TList *histogramList) { return kFALSE; }
+  virtual Bool_t AttachHistograms(TList *histogramList);
+  virtual Bool_t AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup);
 
   virtual Int_t GetBin(Float_t *variableContainer);
+  virtual Int_t GetBin(Float_t *variableContainer, Int_t nChannel);
   virtual Float_t GetBinContent(Int_t bin);
   virtual Float_t GetXBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetYBinContent(Int_t harmonic, Int_t bin);
@@ -60,6 +55,7 @@ public:
   virtual Float_t GetYYBinError(Int_t harmonic, Int_t bin);
 
   virtual void Fill(Float_t *variableContainer, Float_t weight);
+  virtual void Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight);
   virtual void FillX(Int_t harmonic, Float_t *variableContainer, Float_t weight);
   virtual void FillY(Int_t harmonic, Float_t *variableContainer, Float_t weight);
   virtual void FillXX(Int_t harmonic, Float_t *variableContainer, Float_t weight);
@@ -75,6 +71,7 @@ protected:
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsHistogramBase, 1);
   /// \endcond
+  static const char *szChannelAxisTitle;                ///< The title for the channel extra axis
   static const char *szEntriesHistoSuffix;              ///< The suffix for the name of the entries histograms
   static const char *szXComponentSuffix;                ///< The suffix for the name of X component histograms
   static const char *szYComponentSuffix;                ///< The suffix for the name of Y component histograms
@@ -136,17 +133,105 @@ public:
 
   Bool_t CreateProfileHistograms(TList *histogramList);
   virtual Bool_t AttachHistograms(TList *histogramList);
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup)
+  { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
   virtual Int_t GetBin(Float_t *variableContainer);
+  /// wrong call for this class invoke base class behavior
+  virtual Int_t GetBin(Float_t *variableContainer, Int_t nChannel)
+  { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
   virtual Float_t GetBinContent(Int_t bin);
   virtual Float_t GetBinError(Int_t bin);
 
   virtual void Fill(Float_t *variableContainer, Float_t weight);
+  /// wrong call for this class invoke base class behavior
+  virtual void Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight)
+  { QnCorrectionsHistogramBase::Fill(variableContainer, nChannel, weight); }
 private:
   THnF *fValues;   ///< Cumulates values for each of the event classes
   THnI *fEntries;  ///< Cumulates the number on each of the event classes
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsProfile, 1);
+  /// \endcond
+};
+
+/// \class QnCorrectionsProfileChannelized
+/// \brief Channelized profile class for the Q vector correction histograms
+///
+/// Encapsulates a multidimensional profile. Each dimension
+/// corresponds to one of the event classes variables so,
+/// the number of dimensions matches the number of variables within
+/// the set passed in the constructor. Additionally incorporates an
+/// extra dimension to consider the channel number
+///
+/// The involved histograms can be created on the fly when needed,
+/// and included in a provided list, or attached to existing ones
+/// from a given list. In any case they are not destroyed because
+/// they are not own by the class but by the involved list.
+///
+/// Storage efficiency reasons dictate that channels were stored in
+/// consecutive order although externally to the class everything is
+/// handled with the actual external channel number. But if the
+/// histograms stored in a file are draw the channels will appear
+/// as enumerated form 0 to the number of active channels handled
+/// by the detector configuration that is associated to the histogram
+/// and as such by the own histogram.
+///
+/// GetBinContent (once the intended bin is obtained by mean
+/// of GetBin) returns in the profile way
+/// \f[
+///    \frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}
+/// \f]
+/// while GetBinError returns the standard deviation of the values
+/// in the interested bin
+/// \f[
+///    \sqrt{\frac{\Sigma \mbox{fValues}^2\mbox{(bin)}}{\mbox{fEntries(bin)}}
+///          - \left(\frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}\right)^2}
+/// \f]
+///
+/// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
+/// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
+/// \author Víctor González <victor.gonzalez@cern.ch>, UCM
+/// \date Feb 11, 2016
+class QnCorrectionsProfileChannelized : public QnCorrectionsHistogramBase {
+public:
+  QnCorrectionsProfileChannelized();
+  QnCorrectionsProfileChannelized(const char *name,
+      const char *title,
+      QnCorrectionsEventClassVariablesSet &ecvs,
+      Int_t nNoOfChannels);
+  virtual ~QnCorrectionsProfileChannelized();
+
+  Bool_t CreateProfileHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup);
+  virtual Bool_t AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup);
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t AttachHistograms(TList *histogramList)
+  { return QnCorrectionsHistogramBase::AttachHistograms(histogramList); }
+
+  virtual Int_t GetBin(Float_t *variableContainer, Int_t nChannel);
+  /// wrong call for this class invoke base class behavior
+  virtual Int_t GetBin(Float_t *variableContainer)
+  { return QnCorrectionsHistogramBase::GetBin(variableContainer); }
+  virtual Float_t GetBinContent(Int_t bin);
+  virtual Float_t GetBinError(Int_t bin);
+
+  virtual void Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight);
+  /// wrong call for this class invoke base class behavior
+  virtual void Fill(Float_t *variableContainer,Float_t weight)
+  { QnCorrectionsHistogramBase::Fill(variableContainer, weight); }
+private:
+  THnF *fValues;   ///< Cumulates values for each of the event classes
+  THnI *fEntries;  ///< Cumulates the number on each of the event classes
+  Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
+  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
+  Int_t fNoOfChannels; ///< The number of channels associated to the whole detector
+  Int_t fActualNoOfChannels; ///< The actual number of channels handled by the histogram
+  Int_t *fChannelMap; ///< array, the map from histo to detector channel number
+
+
+  /// \cond CLASSIMP
+  ClassDef(QnCorrectionsProfileChannelized, 1);
   /// \endcond
 };
 
@@ -191,8 +276,14 @@ public:
 
   Bool_t CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup)
+  { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
   virtual Int_t GetBin(Float_t *variableContainer);
+  /// wrong call for this class invoke base class behavior
+  virtual Int_t GetBin(Float_t *variableContainer, Int_t nChannel)
+  { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
   virtual Float_t GetXBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetYBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetXBinError(Int_t harmonic, Int_t bin);
@@ -251,8 +342,14 @@ public:
 
   Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup)
+  { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
   virtual Int_t GetBin(Float_t *variableContainer);
+  /// wrong call for this class invoke base class behavior
+  virtual Int_t GetBin(Float_t *variableContainer, Int_t nChannel)
+  { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
   virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetXYBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetYXBinContent(Int_t harmonic, Int_t bin);

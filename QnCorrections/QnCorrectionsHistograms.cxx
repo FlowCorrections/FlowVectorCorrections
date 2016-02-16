@@ -8,6 +8,7 @@
 #include "QnCorrectionsLog.h"
 
 /// The suffix for the name of the entries histograms
+const char *QnCorrectionsHistogramBase::szChannelAxisTitle = "Channel number";
 const char *QnCorrectionsHistogramBase::szEntriesHistoSuffix = "_entries";
 const char *QnCorrectionsHistogramBase::szXComponentSuffix = "X";
 const char *QnCorrectionsHistogramBase::szYComponentSuffix = "Y";
@@ -46,6 +47,10 @@ QnCorrectionsHistogramBase::~QnCorrectionsHistogramBase() {
 /// the different event classes the involved histograms
 /// are storing information about
 ///
+/// This is the base class. For simplicity and consistency
+/// we leave open an extra variable storage that will be
+/// used by the channelized histograms.
+///
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
@@ -54,8 +59,41 @@ QnCorrectionsHistogramBase::QnCorrectionsHistogramBase(const char *name, const c
   TNamed(name, title),
   fEventClassVariables(ecvs),
   fBinAxesValues(NULL) {
-  fBinAxesValues = new Double_t[fEventClassVariables.GetEntries()];
+
+  /* one place more for storing the channel number by inherited classes */
+  fBinAxesValues = new Double_t[fEventClassVariables.GetEntries() + 1];
 }
+
+/// Attaches existing histograms as the supporting histograms
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+///
+/// \param histogramList list where the histograms have to be located
+/// \return the associated bin to the current variables content
+Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a channelized profile without passing channels information. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::AttachHistograms()"));
+  return kFALSE;
+}
+
+/// Attaches existing histograms as the support histograms for the profile function
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+///
+/// \param histogramList list where the histograms have to be located
+/// \param bUsedChannel array of booleans one per each channel
+/// \param nChannelGroup array of group number for each channel
+/// \return true if properly attached else false
+Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a non channelized profile but passing channels information. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::AttachHistograms()"));
+  return kFALSE;
+}
+
 
 /// Get the bin number for the current variable content
 ///
@@ -69,7 +107,27 @@ QnCorrectionsHistogramBase::QnCorrectionsHistogramBase(const char *name, const c
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
 Int_t QnCorrectionsHistogramBase::GetBin(Float_t *variableContainer) {
-  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class. FIX IT, PLEASE.",
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a channelized profile without passing the channel number. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetBin()"));
+  return -1;
+}
+
+/// Get the bin number for the current variable content and channel number
+///
+/// The bin number identifies the event class the current
+/// variable content points to and the passed channel
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param nChannel the interested external channel number
+/// \return the associated bin to the current variables content
+Int_t QnCorrectionsHistogramBase::GetBin(Float_t *variableContainer, Int_t nChannel) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a non channelized profile passing a channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBin()"));
   return -1;
 }
@@ -364,7 +422,28 @@ Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t harmonic, Int_t bin) {
 /// \param weight the increment in the bin content
 void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
-      "   FillX or FillY, or FillXX ... FillYY or you have instantiated a base class. FIX IT, PLEASE.",
+      "   FillX or FillY, or FillXX ... FillYY or you have instantiated a base class or you are using\n" \
+      "a channelized profile without passing a channel number. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::Fill()"));
+}
+
+/// Fills the histogram
+///
+/// The involved bin is computed according to the current variables
+/// content and passed channel number. The bin is then increased by the given
+/// weight and the entries also increased properly.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param nChannel the interested external channel number
+/// \param weight the increment in the bin content
+void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   FillX or FillY, or FillXX ... FillYY or you have instantiated a base class or you are using\n" \
+      "a non channelized profile passing a channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::Fill()"));
 }
 
@@ -666,6 +745,279 @@ void QnCorrectionsProfile::Fill(Float_t *variableContainer, Float_t weight) {
   Double_t nEntries = fValues->GetEntries();
 
   FillBinAxesValues(variableContainer);
+  fValues->Fill(fBinAxesValues, weight);
+  fValues->SetEntries(nEntries + 1);
+  fEntries->Fill(fBinAxesValues, 1.0);
+}
+
+/// \cond CLASSIMP
+ClassImp(QnCorrectionsProfileChannelized);
+/// \endcond
+
+/// Default constructor
+QnCorrectionsProfileChannelized::QnCorrectionsProfileChannelized() :
+    QnCorrectionsHistogramBase() {
+
+  fValues = NULL;
+  fEntries = NULL;
+  fUsedChannel = NULL;
+  fChannelGroup = NULL;
+  fNoOfChannels = 0;
+  fActualNoOfChannels = 0;
+  fChannelMap = NULL;
+}
+
+/// Normal constructor
+///
+/// Stores the set of variables that identify the
+/// different event classes passing them to its parent
+/// and prepares the object for actual histogram
+/// creation or attachment
+///
+/// \param name base for the name of the histograms
+/// \param title base for the title of the histograms
+/// \param ecvs the event classes variables set
+/// \param nNoOfChannels the number of channels associated
+QnCorrectionsProfileChannelized::QnCorrectionsProfileChannelized(const char *name,
+    const char *title,
+    QnCorrectionsEventClassVariablesSet &ecvs,
+    Int_t nNoOfChannels) : QnCorrectionsHistogramBase(name, title, ecvs) {
+
+  fValues = NULL;
+  fEntries = NULL;
+  fUsedChannel = NULL;
+  fChannelGroup = NULL;
+  fNoOfChannels = nNoOfChannels;
+  fActualNoOfChannels = 0;
+  fChannelMap = NULL;
+}
+
+/// Default destructor
+/// Releases the memory taken
+QnCorrectionsProfileChannelized::~QnCorrectionsProfileChannelized() {
+
+  if (fUsedChannel != NULL) delete fUsedChannel;
+  if (fChannelGroup != NULL) delete fChannelGroup;
+  if (fChannelMap != NULL) delete fChannelMap;
+}
+
+
+
+/// Creates the support histograms for the profile function
+///
+/// Based in the event classes variables set in the parent class
+/// and the channel information passed as parameters
+/// the values and entries multidimensional histograms are
+/// created.
+///
+/// Both histograms are added to the passed histogram list
+///
+/// The actual number of channels is stored and a mask from
+/// external channel number to histogram channel number.
+/// \param histogramList list where the histograms have to be added
+/// \param bUsedChannel array of booleans one per each channel
+/// \param nChannelGroup array of group number for each channel
+/// \return true if properly created
+Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+  /* let's build the histograms names and titles */
+  TString histoName = GetName();
+  TString histoTitle = GetTitle();
+  TString entriesHistoName = GetName(); entriesHistoName += szEntriesHistoSuffix;
+  TString entriesHistoTitle = GetTitle(); entriesHistoTitle += szEntriesHistoSuffix;
+
+  /* we open space for channel variable as well */
+  Int_t nVariables = fEventClassVariables.GetEntriesFast();
+  Double_t *minvals = new Double_t[nVariables+1];
+  Double_t *maxvals = new Double_t[nVariables+1];
+  Int_t *nbins = new Int_t[nVariables+1];
+
+  /* get the multidimensional structure */
+  fEventClassVariables.GetMultidimensionalConfiguration(nbins,minvals,maxvals);
+
+  /* lets consider now the channel information */
+  fUsedChannel = new Bool_t[fNoOfChannels];
+  fChannelGroup = new Int_t[fNoOfChannels];
+  fChannelMap = new Int_t[fNoOfChannels];
+
+  fActualNoOfChannels = 0;
+  for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
+    fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
+    fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+    if (bUsedChannel[ixChannel]) {
+      fChannelMap[ixChannel] = fActualNoOfChannels;
+      fActualNoOfChannels++;
+    }
+  }
+
+  /* TODO: there will be a wrong external view of the channel number especially */
+  /* manifested when there are holes in the channel assignment */
+  /* so, lets complete the dimension information */
+  minvals[nVariables] = -0.5;
+  maxvals[nVariables] = -0.5 + fActualNoOfChannels;
+  nbins[nVariables] = fActualNoOfChannels;
+
+  /* create the values and entries multidimensional histograms */
+  fValues = new THnF((const char *) histoName, (const char *) histoTitle,nVariables,nbins,minvals,maxvals);
+  fEntries = new THnI((const char *) entriesHistoName, (const char *) entriesHistoTitle,nVariables,nbins,minvals,maxvals);
+
+  /* now let's set the proper binning and label on each axis */
+  for (Int_t var = 0; var < nVariables; var++) {
+    fValues->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+    fEntries->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+    fValues->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetName());
+    fEntries->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetName());
+  }
+
+  /* and now the channel axis */
+  fValues->GetAxis(nVariables)->SetTitle(szChannelAxisTitle);
+  fEntries->GetAxis(nVariables)->SetTitle(szChannelAxisTitle);
+
+  fValues->Sumw2();
+
+  histogramList->Add(fValues);
+  histogramList->Add(fEntries);
+
+  delete [] minvals;
+  delete [] maxvals;
+  delete [] nbins;
+
+  return kTRUE;
+}
+
+
+/// Attaches existing histograms as the support histograms for the profile function
+///
+/// The histograms are located in the passed list and if found and with the
+/// proper dimensions their references are stored in member variables.
+///
+/// Channel information is used to build internal structures such as
+/// the channel map and the actual number of channels. The information
+/// is matched with the found histogram to validate it.
+/// \param histogramList list where the histograms have to be located
+/// \param bUsedChannel array of booleans one per each channel
+/// \param nChannelGroup array of group number for each channel
+/// \return true if properly attached else false
+Bool_t QnCorrectionsProfileChannelized::AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+  /* let's build the histograms names */
+  TString histoName = GetName();
+  TString entriesHistoName = GetName(); entriesHistoName += szEntriesHistoSuffix;
+
+  /* initialize. Remember we don't own the histograms */
+  fEntries = NULL;
+  fValues = NULL;
+
+  /* lets consider now the channel information */
+  fUsedChannel = new Bool_t[fNoOfChannels];
+  fChannelGroup = new Int_t[fNoOfChannels];
+  fChannelMap = new Int_t[fNoOfChannels];
+
+  fActualNoOfChannels = 0;
+  for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
+    fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
+    fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+    if (bUsedChannel[ixChannel]) {
+      fChannelMap[ixChannel] = fActualNoOfChannels;
+      fActualNoOfChannels++;
+    }
+  }
+
+  fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
+  if (fEntries != NULL) {
+    /* let's check the channel axis */
+    if (fActualNoOfChannels != fEntries->GetAxis(fEventClassVariables.GetEntriesFast())->GetNbins())
+      return kFALSE;
+    fValues = (THnF *) histogramList->FindObject((const char *)histoName);
+    if (fValues == NULL)
+      return kFALSE;
+    /* let's check the channel axis */
+    if (fActualNoOfChannels != fValues->GetAxis(fEventClassVariables.GetEntriesFast())->GetNbins())
+      return kFALSE;
+  }
+  else
+    return kFALSE;
+
+/* TODO: pending to decide whether we divide the histograms and modify the
+ * get content and get errors functions accordingly or we split the class
+ * in created histograms and attached histograms. So far we leave it as
+ * it is and we'll see the penalty for not having them divided.
+ */
+  return kTRUE;
+}
+
+
+/// Get the bin number for the current variable content and passed channel
+///
+/// The bin number identifies the event class the current
+/// variable content points to under the passed channel.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param nChannel the interested external channel number
+/// \return the associated bin to the current variables content
+Int_t QnCorrectionsProfileChannelized::GetBin(Float_t *variableContainer, Int_t nChannel) {
+  FillBinAxesValues(variableContainer);
+  /* store the channel number */
+  fBinAxesValues[fEventClassVariables.GetEntriesFast()] = fChannelMap[nChannel];
+  return fEntries->GetBin(fBinAxesValues);
+}
+
+/// Get the bin content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content
+/// is requested.If the number of entries is one or lower
+/// the bin is not considered valid and zero is returned
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
+  Int_t nEntries = fEntries->GetBinContent(bin);
+
+  if (nEntries > 1) {
+    return fValues->GetBinContent(bin) / Float_t(nEntries);
+  }
+  else {
+    return 0.0;
+  }
+}
+
+/// Get the bin content error for the passed bin number
+///
+/// The bin number identifies a desired event class whose content
+/// error is requested. If the number of entries is one or lower
+/// the bin is not considered valid and zero is returned.
+///
+/// \param bin the interested bin number
+/// \return the bin number content error
+Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
+  Int_t nEntries = fEntries->GetBinContent(bin);
+  Float_t values = fValues->GetBinContent(bin);
+  Float_t sumsqvalues = fValues->GetBinError2(bin);
+
+  if (nEntries > 1) {
+    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
+        - (values / nEntries)*(values / nEntries)));
+  }
+  else {
+    return 0.0;
+  }
+}
+
+/// Fills the histogram
+///
+/// The involved bin is computed according to the current variables
+/// content and the passed external channel number. The bin is then
+/// increased by the given weight and the entries also increased properly.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param nChannel the interested external channel number
+/// \param weight the increment in the bin content
+void QnCorrectionsProfileChannelized::Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight) {
+  /* keep the total entries in fValues updated */
+  Double_t nEntries = fValues->GetEntries();
+
+  FillBinAxesValues(variableContainer);
+  /* store the channel number */
+  fBinAxesValues[fEventClassVariables.GetEntriesFast()] = fChannelMap[nChannel];
+  /* and now update the bin */
   fValues->Fill(fBinAxesValues, weight);
   fValues->SetEntries(nEntries + 1);
   fEntries->Fill(fBinAxesValues, 1.0);
