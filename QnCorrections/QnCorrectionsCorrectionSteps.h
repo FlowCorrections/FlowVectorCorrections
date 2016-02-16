@@ -57,6 +57,9 @@ public:
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+  /// Clean the correction to accept a new event
+  /// Pure virtual function
+  virtual void ClearCorrectionStep() = 0;
 protected:
   TString fKey; ///< the correction key that codifies order information
 /// \cond CLASSIMP
@@ -83,18 +86,21 @@ public:
   /// Pure virtual function
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
-  virtual Bool_t AttachInput(TList *list);
+  virtual Bool_t AttachInput(TList *list) = 0;
   /// Asks for support histograms creation
   ///
   /// Pure virtual function
   /// \param list list where the histograms should be incorporated for its persistence
   /// \return kTRUE if everything went OK
-  virtual Bool_t CreateSupportHistograms(TList *list);
+  virtual Bool_t CreateSupportHistograms(TList *list) = 0;
   /// Processes the correction step
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+  /// Clean the correction to accept a new event
+  /// Pure virtual function
+  virtual void ClearCorrectionStep() = 0;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionOnInputData, 1);
 /// \endcond
@@ -119,18 +125,21 @@ public:
   /// Pure virtual function
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
-  virtual Bool_t AttachInput(TList *list);
+  virtual Bool_t AttachInput(TList *list) = 0;
   /// Asks for support histograms creation
   ///
   /// Pure virtual function
   /// \param list list where the histograms should be incorporated for its persistence
   /// \return kTRUE if everything went OK
-  virtual Bool_t CreateSupportHistograms(TList *list);
+  virtual Bool_t CreateSupportHistograms(TList *list) = 0;
   /// Processes the correction step
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process() = 0;
+  /// Clean the correction to accept a new event
+  /// Pure virtual function
+  virtual void ClearCorrectionStep() = 0;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionOnQvector, 1);
 /// \endcond
