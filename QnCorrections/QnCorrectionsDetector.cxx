@@ -166,11 +166,11 @@ Bool_t QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(TList *li
   return retValue;
 }
 
-  /// Asks for attaching the needed input information to the correction steps
-  ///
-  /// The request is transmitted, as per a base class, to the Q vector corrections.
-  /// \param list list where the input information should be found
-  /// \return kTRUE if everything went OK
+/// Asks for attaching the needed input information to the correction steps
+///
+/// The request is transmitted, as per a base class, to the Q vector corrections.
+/// \param list list where the input information should be found
+/// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
   Bool_t retValue = kFALSE;
@@ -178,6 +178,58 @@ Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *lis
     retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->AttachInput(list));
   }
   return retValue;
+}
+
+/// Incorporates the passed correction to the set of Q vector corrections
+/// \param correctionOnQn the correction to add
+void QnCorrectionsDetectorConfigurationBase::AddCorrectionOnQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) {
+  fQnVectorCorrections.AddCorrection(correctionOnQn);
+}
+
+/// Incorporates the passed correction to the set of input data corrections
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param correctionOnInputData the correction to add
+void QnCorrectionsDetectorConfigurationBase::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a non channelized detector configuration to calibrate input data. FIX IT, PLEASE.",
+      "QnCorrectionsDetectorConfigurationBase::AddCorrectionOnInputData()"));
+}
+
+/// Checks if the current content of the variable bank applies to
+/// the detector configuration
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer pointer to the variable content bank
+/// \return kTRUE if the current content applies to the configuration
+Bool_t QnCorrectionsDetectorConfigurationBase::IsSelected(const Float_t *variableContainer) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a channelized detector configuration without passing the channel number. FIX IT, PLEASE.",
+      "QnCorrectionsDetectorConfigurationBase::IsSelected()"));
+  return kFALSE;
+}
+
+/// Checks if the current content of the variable bank applies to
+/// the detector configuration for the passed channel.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer pointer to the variable content bank
+/// \param nChannel the interested external channel number
+/// \return kTRUE if the current content applies to the configuration
+Bool_t QnCorrectionsDetectorConfigurationBase::IsSelected(const Float_t *variableContainer, Int_t nChannel) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
+      "you are using a non channelized detector configuration but passing a channel number. FIX IT, PLEASE.",
+      "QnCorrectionsDetectorConfigurationBase::IsSelected()"));
+  return kFALSE;
 }
 
 /// \cond CLASSIMP
@@ -218,11 +270,11 @@ ClassImp(QnCorrectionsChannelDetectorConfiguration);
 
 /// Default constructor
 QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration() :
-    QnCorrectionsDetectorConfigurationBase() {
+    QnCorrectionsDetectorConfigurationBase(), fInputDataCorrections() {
+
   fUsedChannel = NULL;
   fChannelGroup = NULL;
   fNoOfChannels = 0;
-  fInputDataCorrections = NULL;
 }
 
 /// Normal constructor
@@ -238,16 +290,16 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
       Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
-          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
+          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap),
+          fInputDataCorrections() {
   fUsedChannel = NULL;
   fChannelGroup = NULL;
   fNoOfChannels = nNoOfChannels;
   fDataVectorBank = new TClonesArray("QnCorrectionsChannelizedDataVector", INITIALDATAVECTORBANKSIZE);
-  fInputDataCorrections = NULL;
 }
 
 /// Default destructor
-/// Realeas the memory taken
+/// Releases the memory taken
 QnCorrectionsChannelDetectorConfiguration::~QnCorrectionsChannelDetectorConfiguration() {
 
   if (fUsedChannel != NULL) delete fUsedChannel;
@@ -268,42 +320,51 @@ void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedC
   }
 }
 
+/// Asks for support histograms creation
+///
+/// The request is transmitted, as per a base class, to the input data corrections
+/// then to the base clase to propagate it to the Q vector corrections
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(list));
+  }
 
-  Bool_t result = kFALSE;
-
-
-  return result;
+  /* if everything right propagate it to Q vector corrections via base class */
+  if (retValue) {
+    return QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(list);
+  }
+  return retValue;
 }
 
 /// Asks for attaching the needed input information to the correction steps
 ///
-/// The request is transmitted to the incoming data correction steps
-/// and to the Q vector correction steps.
+/// The request is transmitted, as per a base class, to the input data corrections
+/// then to the base clase to propagate it to the Q vector corrections
 /// \param list list where the input information should be found
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *list) {
+  /* TODO: do we need to fine tune the list passed according to the detector? */
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fInputDataCorrections.At(ixCorrection)->AttachInput(list));
+  }
 
-  Bool_t result = kFALSE;
-
-
-  return result;
+  /* if everything right propagate it to Q vector corrections via base class */
+  if (retValue) {
+    QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(list);
+  }
+  return retValue;
 }
 
-
-/// Ask for processing corrections for the involved detector configuration
-  ///
-  /// The request is transmitted to the incoming data correction steps
-  /// and to the Q vector correction steps.
-  /// \return kTRUE if everything went OK
-Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections() {
-/* TODO: this must go inline!!! */
-  Bool_t result = kFALSE;
-
-
-  return result;
+/// Incorporates the passed correction to the set of input data corrections
+/// \param correctionOnInputData the correction to add
+void QnCorrectionsChannelDetectorConfiguration::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
+  fInputDataCorrections.AddCorrection(correctionOnInputData);
 }
-
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationSet);

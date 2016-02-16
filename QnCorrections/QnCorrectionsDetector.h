@@ -73,12 +73,7 @@ public:
   QnCorrectionsDetector *GetDetector() { return fDetector; }
 
   virtual Bool_t CreateSupportHistograms(TList *list);
-  /// Asks for attaching the needed input information to the correction steps
-  ///
-  /// The request is transmitted to the incoming data correction steps
-  /// and to the Q vector correction steps.
-  /// \param list list where the input information should be found
-  /// \return kTRUE if everything went OK
+
   virtual Bool_t AttachCorrectionInputs(TList *list);
   virtual Bool_t ProcessCorrections();
 
@@ -93,17 +88,17 @@ public:
   /// \param channelId the channel Id that originates the data vector
   virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1) = 0;
 
-  /// Checks if the current content of the variable bank applies to
-  /// the detector configuration
-  /// \param variableContainer pointer to the variable content bank
-  /// \return kTRUE if the current content applies to the configuration
-  virtual Bool_t IsSelected(const Float_t *variableContainer)
-    { return ((fCuts != NULL) ? fCuts->IsSelected(variableContainer) : kTRUE); }
+  virtual Bool_t IsSelected(const Float_t *variableContainer);
+  virtual Bool_t IsSelected(const Float_t *variableContainer, Int_t nChannel);
+
+  /// Clean the configuration to accept a new event
+  /// Pure virtual function
+  virtual void ClearConfiguration() = 0;
 
 private:
   QnCorrectionsDetector *fDetector;    ///< pointer to the detector that owns the configuration
-  QnCorrectionsCutsSet *fCuts;         ///< set of cuts that define the detector configuration
 protected:
+  QnCorrectionsCutsSet *fCuts;         ///< set of cuts that define the detector configuration
   TClonesArray *fDataVectorBank;        ///< input data for the current process / event
   QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
   QnCorrectionsSetOfCorrectionsOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
@@ -142,6 +137,18 @@ public:
 
   virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
+  /// Checks if the current content of the variable bank applies to
+  /// the detector configuration
+  /// \param variableContainer pointer to the variable content bank
+  /// \return kTRUE if the current content applies to the configuration
+  virtual Bool_t IsSelected(const Float_t *variableContainer)
+    { return ((fCuts != NULL) ? fCuts->IsSelected(variableContainer) : kTRUE); }
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t IsSelected(const Float_t *variableContainer, Int_t nChannel)
+  { return QnCorrectionsDetectorConfigurationBase::IsSelected(variableContainer,nChannel); }
+
+  virtual void ClearConfiguration();
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsTrackDetectorConfiguration, 1);
 /// \endcond
@@ -177,27 +184,32 @@ public:
   void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup);
 
   virtual Bool_t CreateSupportHistograms(TList *list);
-  /// Asks for attaching the needed input information to the correction steps
-  ///
-  /// The request is transmitted to the incoming data correction steps
-  /// and to the Q vector correction steps.
-  /// \param list list where the input information should be found
-  /// \return kTRUE if everything went OK
+
   virtual Bool_t AttachCorrectionInputs(TList *list);
-  /// Ask for processing corrections for the involved detector configuration
-  ///
-  /// The request is transmitted to the incoming data correction steps
-  /// and to the Q vector correction steps.
-  /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections();
 
+  virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
+
   virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+
+  /// Checks if the current content of the variable bank applies to
+  /// the detector configuration for the passed channel.
+  /// \param variableContainer pointer to the variable content bank
+  /// \param nChannel the interested external channel number
+  /// \return kTRUE if the current content applies to the configuration
+  virtual Bool_t IsSelected(const Float_t *variableContainer, Int_t nChannel)
+    { return ((fUsedChannel[nChannel]) ? ((fCuts != NULL) ? fCuts->IsSelected(variableContainer) : kTRUE) : kFALSE); }
+  /// wrong call for this class invoke base class behavior
+  virtual Bool_t IsSelected(const Float_t *variableContainer)
+  { return QnCorrectionsDetectorConfigurationBase::IsSelected(variableContainer); }
+
+  virtual void ClearConfiguration();
 
 private:
   Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
   Int_t *fChannelGroup; ///< array, the group to which the channel pertains
-  Int_t fNoOfChannels;
-  QnCorrectionsSetOfCorrectionsOnInputData *fInputDataCorrections; ///< set of corrections to apply on input data vectors
+  Int_t fNoOfChannels;  ///< The number of channels associated
+  QnCorrectionsSetOfCorrectionsOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsChannelDetectorConfiguration, 1);
@@ -273,6 +285,8 @@ public:
 
   void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
+  virtual void ClearDetector();
+
 private:
   Int_t fDetectorId;            ///< detector Id
   QnCorrectionsDetectorConfigurationSet fConfigurations;  ///< the set of configurations defined for this detector
@@ -281,6 +295,18 @@ private:
   ClassDef(QnCorrectionsDetector, 1);
 /// \endcond
 };
+
+/// Ask for processing corrections for the involved detector configuration
+///
+/// As for a base class the request is transmitted to the Q vector correction steps.
+/// \return kTRUE if everything went OK
+inline Bool_t QnCorrectionsDetectorConfigurationBase::ProcessCorrections() {
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->Process());
+  }
+  return retValue;
+}
 
 /// New data vector for the detector configuration.
 /// A check is made to see if the current variable bank content passes
@@ -299,6 +325,23 @@ inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
   }
 }
 
+/// Clean the configuration to accept a new event
+///
+/// Transfers the order to the Q vector correction steps and
+/// cleans the own Q vector and the input data vector bank
+/// for accepting the next event.
+inline void QnCorrectionsTrackDetectorConfiguration::ClearConfiguration() {
+  /* transfer the order to the Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->ClearCorrectionStep();
+  }
+  /* clean the own Q vector */
+  fQnVector.Reset();
+  /* and now clear the the input data bank */
+  fDataVectorBank->Clear("C");
+}
+
+
 /// New data vector for the detector configuration.
 /// A check is made to match the channel Id with the ones assigned
 /// to the detector configuration and then an additional one to
@@ -311,7 +354,7 @@ inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
 inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
   if (fUsedChannel[channelId]) {
-    if (IsSelected(variableContainer)) {
+    if (IsSelected(variableContainer, channelId)) {
       /// add the data vector to the bank
       QnCorrectionsChannelizedDataVector *channelizedDataVector =
           new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
@@ -319,6 +362,46 @@ inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
     }
   }
 }
+
+/// Ask for processing corrections for the involved detector configuration
+///
+/// The request is transmitted to the incoming data correction steps
+/// and to then to Q vector correction steps via base class
+/// \return kTRUE if everything went OK
+inline Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections() {
+  Bool_t retValue = kFALSE;
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue || (fInputDataCorrections.At(ixCorrection)->Process());
+  }
+
+  /* if everything right propagate it to Q vector corrections via base class */
+  if (retValue) {
+    return QnCorrectionsDetectorConfigurationBase::ProcessCorrections();
+  }
+  return retValue;
+}
+
+/// Clean the configuration to accept a new event
+///
+/// Transfers the order to the Q vector correction steps then
+/// to the input data correction steps and finally
+/// cleans the own Q vector and the input data vector bank
+/// for accepting the next event.
+inline void QnCorrectionsChannelDetectorConfiguration::ClearConfiguration() {
+  /* transfer the order to the Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->ClearCorrectionStep();
+  }
+  /* transfer the order to the data vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    fInputDataCorrections.At(ixCorrection)->ClearCorrectionStep();
+  }
+  /* clean the own Q vector */
+  fQnVector.Reset();
+  /* and now clear the the input data bank */
+  fDataVectorBank->Clear("C");
+}
+
 
 /// New data vector for the detector
 /// The request is transmitted to the attached detector configurations.
@@ -346,16 +429,14 @@ inline Bool_t QnCorrectionsDetector::ProcessCorrections() {
   return retValue;
 }
 
-/// Ask for processing corrections for the involved detector configuration
+/// Clean the detector to accept a new event
 ///
-/// As for the base class the request is transmitted to the Q vector correction steps.
-/// \return kTRUE if everything went OK
-inline Bool_t QnCorrectionsDetectorConfigurationBase::ProcessCorrections() {
-  Bool_t retValue = kFALSE;
-  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->Process());
+/// Transfers the order to the detector configurations
+inline void QnCorrectionsDetector::ClearDetector() {
+  /* transfer the order to the Q vector corrections */
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->ClearConfiguration();
   }
-  return retValue;
 }
 
 #endif // QNCORRECTIONS_DETECTOR_H
