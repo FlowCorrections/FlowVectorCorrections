@@ -69,6 +69,9 @@ enum Variables{
 TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
 TString DetectorNames[kNDetectors] = {"Detector one", "Detector two", "Detector three"};
 
+/// the variables content data container
+Float_t DataContainer[kNVars] = {0.0};
+
 #ifdef MAKEEVENTTEXTOUTPUT
 const char *sTrackEventFileName = "trackEventFile.txt";
 const char *sChannelsEventFileName = "channelEventFile.txt";
@@ -85,6 +88,15 @@ void TestComponentsHistograms();
 void TestCorrelationComponentsHistograms();
 void TestCuts();
 void TestDataVectorsAndQnVectors(Int_t nEvents = 20);
+
+/// The detectors we will be considering
+QnCorrectionsDetector *myDetectorOne;
+QnCorrectionsDetector *myDetectorTwo;
+
+/// Characteristics of the channelized detector
+Int_t nDetectorTwoNoOfChannels = 64;
+Int_t nDetectorTwoNoOfSectors = 8;
+Int_t nDetectorTwoLowestDetectorTwoCChannel = 32;
 
 /// The actual example code
 ///
@@ -108,12 +120,12 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
   stopwatch.Start();
 
   /* run the tests */
-  TestEventClasses();
+  /* TestEventClasses();
   TestProfileHistograms();
   TestComponentsHistograms();
   TestCorrelationComponentsHistograms();
   TestCuts();
-  TestDataVectorsAndQnVectors(2);
+  TestDataVectorsAndQnVectors(2); */
 
   /* event loop */
   for(Int_t ie=0; ie<nevents; ie++) Loop();
@@ -166,8 +178,8 @@ void Setup(){
   myNegativeCuts->SetOwner(kTRUE);
 
   /* let's create our detectors */
-  QnCorrectionsDetector *myDetectorOne = new QnCorrectionsDetector(DetectorNames[kDetector1], kDetector1);
-  QnCorrectionsDetector *myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
+  myDetectorOne = new QnCorrectionsDetector(DetectorNames[kDetector1], kDetector1);
+  myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
 
   /* and our detector configurations for the track detector */
   QnCorrectionsTrackDetectorConfiguration *myDetectorOnePositive =
@@ -188,16 +200,18 @@ void Setup(){
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
 
-  /* and our detector detector configurations for the channels detector */
-  Int_t nNoOfChannels = 64;
-  Int_t nLowestDetectorTwoCChannel = 32;
-  Bool_t *bUsedChannelDetectorTwoC = new Bool_t[nNoOfChannels];
-  Bool_t *bUsedChannelDetectorTwoA = new Bool_t[nNoOfChannels];
-  Int_t *nChannelGroupDetectorTwoC = new Int_t[nNoOfChannels];
-  Int_t *nChannelGroupDetectorTwoA = new Int_t[nNoOfChannels];
+  /* add the configurations to the detector */
+  myDetectorOne->AddDetectorConfiguration(myDetectorOnePositive);
+  myDetectorOne->AddDetectorConfiguration(myDetectorOneNegative);
 
-  for(Int_t ixChannel = 0; ixChannel < nNoOfChannels; ixChannel++) {
-    if (ixChannel < nLowestDetectorTwoCChannel) {
+  /* and our detector configurations for the channels detector */
+  Bool_t *bUsedChannelDetectorTwoC = new Bool_t[nDetectorTwoNoOfChannels];
+  Bool_t *bUsedChannelDetectorTwoA = new Bool_t[nDetectorTwoNoOfChannels];
+  Int_t *nChannelGroupDetectorTwoC = new Int_t[nDetectorTwoNoOfChannels];
+  Int_t *nChannelGroupDetectorTwoA = new Int_t[nDetectorTwoNoOfChannels];
+
+  for(Int_t ixChannel = 0; ixChannel < nDetectorTwoNoOfChannels; ixChannel++) {
+    if (ixChannel < nDetectorTwoLowestDetectorTwoCChannel) {
       /* we are in sub-detector A */
       bUsedChannelDetectorTwoC[ixChannel] = kFALSE;
       bUsedChannelDetectorTwoA[ixChannel] = kTRUE;
@@ -217,7 +231,7 @@ void Setup(){
           "Det2A",
           myDetectorTwo,
           CorrEventClasses,
-          nNoOfChannels,
+          nDetectorTwoNoOfChannels,
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
@@ -227,10 +241,16 @@ void Setup(){
           "Det2C",
           myDetectorTwo,
           CorrEventClasses,
-          nNoOfChannels,
+          nDetectorTwoNoOfChannels,
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
+
+  /* add the configurations to the detector */
+  myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);
+  myDetectorTwo->AddDetectorConfiguration(myDetectorTwoC);
+
+  /* here we should be able to store produced data vectors */
 }
 
 /// the clean up routine
@@ -249,6 +269,31 @@ void Loop(){
   }
 #endif
 
+  // Set event data
+  DataContainer[kCentrality] = gRandom->Rndm() * 100;
+  DataContainer[kVertexZ] = (gRandom->Rndm() - 0.5) * 20;
+
+  // azimuthal angle and weights to fill into data vector objects
+  Float_t dphi = 2 * TMath::Pi() / nDetectorTwoNoOfSectors;
+  Double_t phiSector[nDetectorTwoNoOfSectors];
+  for (Int_t ixSector = 0; ixSector < nDetectorTwoNoOfSectors; ixSector++) {
+    phiSector[ixSector] = ixSector * dphi;
+  }
+
+  Double_t flowV2 = 0.5;
+  Double_t rotation = -0.3;
+  Double_t PsiRP = gRandom->Rndm() * 2*TMath::Pi();
+
+  Double_t weight=0.;
+
+  for(Int_t ixChannel = 0; ixChannel < nDetectorTwoNoOfChannels; ixChannel++){
+    // weight contains flow and event multiplicity dependent channel signal, and non-uniform acceptance
+    weight = gRandom->Rndm()
+        * ((200. + ixChannel) / 200.)
+        * (100 - DataContainer[kCentrality])
+        * (1 + flowV2 * TMath::Cos(2 * (phiSector[ixChannel % nDetectorTwoNoOfSectors] - PsiRP)));
+
+    myDetectorTwo->AddDataVector(DataContainer, phiSector[ixChannel % nDetectorTwoNoOfSectors] + rotation, weight, ixChannel);
 
 #ifdef MAKEEVENTTEXTOUTPUT
     if (bProduceTextEventFile) {
@@ -261,6 +306,27 @@ void Loop(){
           weight);
     }
 #endif
+  }
+
+
+  Double_t multiplicity = 2 + gRandom->Rndm() * (100 - DataContainer[kCentrality]) * 100;
+  Int_t nTracks = 0;
+
+  while(nTracks < multiplicity){
+    Double_t trackPhi = gRandom->Rndm() * 2*TMath::Pi();
+
+    if (gRandom->Rndm() > (1 - flowV2 + flowV2 * TMath::Cos(2 * (trackPhi - PsiRP)))) continue;
+
+    if ((trackPhi > 0) && (trackPhi < 0.5))
+      if (gRandom->Rndm() < 0.5) continue;
+
+    // Fill relevant track information into data container, if track cuts have to be applied
+    if (gRandom->Rndm() < 0.4)
+      DataContainer[kCharge] = 1;
+    else
+      DataContainer[kCharge] = -1;
+
+    myDetectorOne->AddDataVector(DataContainer, trackPhi);
 
 
 #ifdef MAKEEVENTTEXTOUTPUT
@@ -274,7 +340,8 @@ void Loop(){
           (Int_t) QnMan->GetDataContainer()[kCharge]);
     }
 #endif
-
+    nTracks++;
+  }
 
 #ifdef MAKEEVENTTEXTOUTPUT
   if (bProduceTextEventFile) {
@@ -284,6 +351,10 @@ void Loop(){
   }
 #endif
 
+  myDetectorOne->ProcessCorrections();
+  myDetectorTwo->ProcessCorrections();
+  myDetectorOne->ClearDetector();
+  myDetectorTwo->ClearDetector();
 }
 
 /// Test fot the event classes variables and set
