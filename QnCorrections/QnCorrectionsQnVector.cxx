@@ -151,13 +151,19 @@ void QnCorrectionsQnVector::ActivateHarmonic(Int_t harmonic) {
 
 /// Copy member function
 ///
-/// The passed Q vector is copied within the current object
+/// The passed Q vector is copied within the current object.
+/// The harmonic structures are compared. A run time error is
+/// raised if they do not match.
 /// \param Qn pointer to the Q vector to be copied
 void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn) {
+  if ((fHighestHarmonic != Qn->fHighestHarmonic) ||
+      (fHarmonicMask != Qn->fHarmonicMask)) {
+    QnCorrectionsFatal("You requested set a Q vector with the values of other Q " \
+        "vector but the harmonic structures do not match");
+    return;
+  }
   memcpy(fQnX, Qn->fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memcpy(fQnY, Qn->fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
-  fHighestHarmonic = Qn->fHighestHarmonic;
-  fHarmonicMask = Qn->fHarmonicMask;
 }
 
 /// Normalize the Q vector to unit length
@@ -209,6 +215,15 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector
 /// \param harmonicMap ordered array with the external number of the harmonics
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap) :
     QnCorrectionsQnVector(nNoOfHarmonics, harmonicMap) {
+
+  fSumW = 0.0;
+  fN = 0;
+}
+
+/// Copy constructor from a Q vector
+/// \param Qn the Q vector build object to copy after construction
+QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVector &Qn) :
+    QnCorrectionsQnVector(Qn) {
 
   fSumW = 0.0;
   fN = 0;

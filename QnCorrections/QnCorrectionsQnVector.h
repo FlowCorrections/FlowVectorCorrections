@@ -20,6 +20,21 @@
 /// The maximum external harmonic number the framework currently support for Q vectors
 #define MAXHARMONICNUMBERSUPPORTED 15
 
+/// \typedef QnVectorCalibrationMethod
+/// \brief The class of the id of the supported Q vector calibration methods
+///
+/// Actually it is not a class because the C++ level of implementation.
+/// But full protection will be reached when were possible declaring it
+/// as a class.
+///
+/// M is the sum of weights.
+typedef enum {
+  QCALIB_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
+  QCALIB_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
+  QCALIB_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
+  QCALIB_QoverQlength   ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{|\mbox{Q}|} \f$
+} QnVectorCalibrationMethod;
+
 /// \class QnCorrectionsQnVector
 /// \brief Class that models and encapsulates a Q vector set
 ///
@@ -114,6 +129,7 @@ class QnCorrectionsQnVectorBuild : public QnCorrectionsQnVector {
 public:
   QnCorrectionsQnVectorBuild();
   QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  QnCorrectionsQnVectorBuild(const QnCorrectionsQnVector &Qn);
   QnCorrectionsQnVectorBuild(const QnCorrectionsQnVectorBuild &Qn);
   virtual ~QnCorrectionsQnVectorBuild();
 
@@ -125,6 +141,7 @@ public:
   void Add(QnCorrectionsQnVectorBuild* qvec);
   void Add(Double_t phi, Double_t weight = 1.0);
 
+  void Calibrate(QnVectorCalibrationMethod method);
 
   void NormalizeQoverM();
   void NormalizeQoverSquareRootOfM();
@@ -162,6 +179,7 @@ protected:
 /// \param weight the weight of the contribution
 inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
 
+  if (weight < fMinimumSignificantValue) return;
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
     if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
       fQnX[h] += weight * TMath::Cos(h*phi);
@@ -171,5 +189,24 @@ inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
   fSumW += weight;
   fN += 1;
 }
+
+/// Calibrates the Q vector according to the method passed
+/// \param method the method of calibration
+inline void QnCorrectionsQnVectorBuild::Calibrate(QnVectorCalibrationMethod method) {
+  switch (method) {
+  case QCALIB_noCalibration:
+    break;
+  case QCALIB_QoverSqrtM:
+    NormalizeQoverSquareRootOfM();
+    break;
+  case QCALIB_QoverM:
+    NormalizeQoverM();
+    break;
+  case QCALIB_QoverQlength:
+    Normalize();
+    break;
+  }
+}
+
 
 #endif /* QNCORRECTIONS_QNVECTORS_H */
