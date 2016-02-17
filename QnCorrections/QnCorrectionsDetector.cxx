@@ -111,6 +111,14 @@ void QnCorrectionsDetector::AddDetectorConfiguration(QnCorrectionsDetectorConfig
   fConfigurations.Add(detectorConfiguration);
 }
 
+/// Searches for a concrete detector configuration by name
+/// \param name the name of the detector configuration to find
+/// \return pointer to the found detector configuration (NULL if not found)
+QnCorrectionsDetectorConfigurationBase *QnCorrectionsDetector::FindDetectorConfiguration(const char *name) {
+  return (QnCorrectionsDetectorConfigurationBase *) fConfigurations.FindObject(name);
+}
+
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationBase);
 /// \endcond

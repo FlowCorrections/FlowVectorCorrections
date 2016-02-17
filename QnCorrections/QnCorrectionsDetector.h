@@ -282,6 +282,7 @@ public:
   Bool_t ProcessCorrections();
 
   void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
+  QnCorrectionsDetectorConfigurationBase *FindDetectorConfiguration(const char *name);
 
   void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
