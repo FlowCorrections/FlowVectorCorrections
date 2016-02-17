@@ -66,8 +66,9 @@ enum Variables{
   kNVars
 };
 
-/// the variables and detector names
+/// the variable names
 TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
+/// the detector names
 TString DetectorNames[kNDetectors] = {"Detector one", "Detector two", "Detector three"};
 
 #ifdef MAKEEVENTTEXTOUTPUT
@@ -88,9 +89,12 @@ void TestCuts();
 void TestDataVectorsAndQnVectors(Int_t nEvents = 20);
 
 
-/// Characteristics of the channelized detector
+/* Characteristics of the channelized detector */
+/// Channelized detector number of channels
 Int_t nDetectorTwoNoOfChannels = 64;
+/// Channelized detector number of sectors
 Int_t nDetectorTwoNoOfSectors = 8;
+/// Channelized detector lowest channel within the second sub-detector
 Int_t nDetectorTwoLowestDetectorTwoCChannel = 32;
 
 /// The actual example code
@@ -190,6 +194,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOnePositive->SetCuts(myPositiveCuts);
+  myDetectorOnePositive->SetQVectorCalibrationMethod(QCALIB_QoverM);
 
   QnCorrectionsTrackDetectorConfiguration *myDetectorOneNegative =
       new QnCorrectionsTrackDetectorConfiguration(
@@ -199,6 +204,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
+  myDetectorOneNegative->SetQVectorCalibrationMethod(QCALIB_QoverM);
 
   /* add the configurations to the detector */
   myDetectorOne->AddDetectorConfiguration(myDetectorOnePositive);
@@ -238,6 +244,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
+  myDetectorTwoA->SetQVectorCalibrationMethod(QCALIB_QoverM);
 
   QnCorrectionsChannelDetectorConfiguration *myDetectorTwoC =
       new QnCorrectionsChannelDetectorConfiguration(
@@ -248,6 +255,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
+  myDetectorTwoC->SetQVectorCalibrationMethod(QCALIB_QoverM);
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);

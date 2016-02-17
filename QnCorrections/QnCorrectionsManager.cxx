@@ -125,14 +125,17 @@ QnCorrectionsDetectorConfigurationBase *QnCorrectionsManager::FindDetectorConfig
   return NULL;
 }
 
+/// Initializes the correction framework
 void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 
 }
 
+/// Set the list of histograms associated to the current run of the framework
 void QnCorrectionsManager::SetWorkingHistogramList(TList *) {
 
 }
 
+/// Produce the final output and release the framework
 void QnCorrectionsManager::FinalizeQnCorrectionsFramework() {
 
 }
