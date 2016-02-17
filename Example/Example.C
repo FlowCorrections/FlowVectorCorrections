@@ -42,10 +42,11 @@
 #include "../QnCorrections/QnCorrectionsDataVector.h"
 #include "../QnCorrections/QnCorrectionsQnVector.h"
 #include "../QnCorrections/QnCorrectionsDetector.h"
+#include "../QnCorrections/QnCorrectionsManager.h"
 
-void Setup();
-void Loop();
-void Finish();
+void Setup(QnCorrectionsManager* QnMan);
+void Loop(QnCorrectionsManager* QnMan);
+void Finish(QnCorrectionsManager* QnMan);
 
 /// the detectors we will use for our example
 enum Detectors{
@@ -69,9 +70,6 @@ enum Variables{
 TString VarNames[kNVars] = {"Centrality", "VertexZ", "Charge", "px", "py"};
 TString DetectorNames[kNDetectors] = {"Detector one", "Detector two", "Detector three"};
 
-/// the variables content data container
-Float_t DataContainer[kNVars] = {0.0};
-
 #ifdef MAKEEVENTTEXTOUTPUT
 const char *sTrackEventFileName = "trackEventFile.txt";
 const char *sChannelsEventFileName = "channelEventFile.txt";
@@ -89,9 +87,6 @@ void TestCorrelationComponentsHistograms();
 void TestCuts();
 void TestDataVectorsAndQnVectors(Int_t nEvents = 20);
 
-/// The detectors we will be considering
-QnCorrectionsDetector *myDetectorOne;
-QnCorrectionsDetector *myDetectorTwo;
 
 /// Characteristics of the channelized detector
 Int_t nDetectorTwoNoOfChannels = 64;
@@ -106,15 +101,17 @@ Int_t nDetectorTwoLowestDetectorTwoCChannel = 32;
 #ifdef MAKEEVENTTEXTOUTPUT
 void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_t bTextEventFile = kFALSE){
 #else
-  void Example(Int_t nevents, TString inputFileName, TString outputFileName){
+void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 #endif
+
+  QnCorrectionsManager* QnMan = new QnCorrectionsManager();
 
 #ifdef MAKEEVENTTEXTOUTPUT
   bProduceTextEventFile = bTextEventFile;
 #endif
 
 
-  Setup();
+  Setup(QnMan);
 
   TStopwatch stopwatch;
   stopwatch.Start();
@@ -128,20 +125,20 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
   TestDataVectorsAndQnVectors(2); */
 
   /* event loop */
-  for(Int_t ie=0; ie<nevents; ie++) Loop();
+  for(Int_t ie=0; ie<nevents; ie++) Loop(QnMan);
 
   stopwatch.Stop();
   cout<<"Events:         "<<nevents<<endl;
   cout<<"Total time:     "<<stopwatch.RealTime()<<" s"<<endl;
   cout<<"Time per event: "<<stopwatch.RealTime()*1000./nevents<<" ms"<<endl;
 
-  Finish();
+  Finish(QnMan);
 
 
 }
 
 /// The routine to initialize our test framework before the events loop
-void Setup(){
+void Setup(QnCorrectionsManager* QnMan){
 
 #ifdef MAKEEVENTTEXTOUTPUT
   if (bProduceTextEventFile) {
@@ -154,6 +151,9 @@ void Setup(){
     nEventNo = 0;
   }
 #endif
+
+  /* initialize the corrections framework */
+  QnMan->InitializeQnCorrectionsFramework();
 
   /* our event classes variables: vertexZ and centrality */
   const Int_t nEventClassesDimensions = 2;
@@ -178,8 +178,8 @@ void Setup(){
   myNegativeCuts->SetOwner(kTRUE);
 
   /* let's create our detectors */
-  myDetectorOne = new QnCorrectionsDetector(DetectorNames[kDetector1], kDetector1);
-  myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
+  QnCorrectionsDetector *myDetectorOne = new QnCorrectionsDetector(DetectorNames[kDetector1], kDetector1);
+  QnCorrectionsDetector *myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
 
   /* and our detector configurations for the track detector */
   QnCorrectionsTrackDetectorConfiguration *myDetectorOnePositive =
@@ -203,6 +203,9 @@ void Setup(){
   /* add the configurations to the detector */
   myDetectorOne->AddDetectorConfiguration(myDetectorOnePositive);
   myDetectorOne->AddDetectorConfiguration(myDetectorOneNegative);
+
+  /* now add the detector to the framework */
+  QnMan->AddDetector(myDetectorOne);
 
   /* and our detector configurations for the channels detector */
   Bool_t *bUsedChannelDetectorTwoC = new Bool_t[nDetectorTwoNoOfChannels];
@@ -250,17 +253,21 @@ void Setup(){
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoC);
 
+  /* finally add the detector to the framework */
+  QnMan->AddDetector(myDetectorTwo);
+
   /* here we should be able to store produced data vectors */
 }
 
-/// the clean up routine
-void Finish(){
-
+/// the final output and clean up routine
+void Finish(QnCorrectionsManager* QnMan){
+  /* Make the final output of the correction framework */
+  QnMan->FinalizeQnCorrectionsFramework();
 }
 
 
 /// the events loop
-void Loop(){
+void Loop(QnCorrectionsManager* QnMan){
 
 #ifdef MAKEEVENTTEXTOUTPUT
   if (bProduceTextEventFile) {
@@ -270,8 +277,8 @@ void Loop(){
 #endif
 
   // Set event data
-  DataContainer[kCentrality] = gRandom->Rndm() * 100;
-  DataContainer[kVertexZ] = (gRandom->Rndm() - 0.5) * 20;
+  QnMan->GetDataContainer()[kCentrality] = gRandom->Rndm() * 100;
+  QnMan->GetDataContainer()[kVertexZ] = (gRandom->Rndm() - 0.5) * 20;
 
   // azimuthal angle and weights to fill into data vector objects
   Float_t dphi = 2 * TMath::Pi() / nDetectorTwoNoOfSectors;
@@ -290,10 +297,10 @@ void Loop(){
     // weight contains flow and event multiplicity dependent channel signal, and non-uniform acceptance
     weight = gRandom->Rndm()
         * ((200. + ixChannel) / 200.)
-        * (100 - DataContainer[kCentrality])
+        * (100 - QnMan->GetDataContainer()[kCentrality])
         * (1 + flowV2 * TMath::Cos(2 * (phiSector[ixChannel % nDetectorTwoNoOfSectors] - PsiRP)));
 
-    myDetectorTwo->AddDataVector(DataContainer, phiSector[ixChannel % nDetectorTwoNoOfSectors] + rotation, weight, ixChannel);
+    QnMan->AddDataVector(kDetector2, phiSector[ixChannel % nDetectorTwoNoOfSectors] + rotation, weight, ixChannel);
 
 #ifdef MAKEEVENTTEXTOUTPUT
     if (bProduceTextEventFile) {
@@ -309,7 +316,7 @@ void Loop(){
   }
 
 
-  Double_t multiplicity = 2 + gRandom->Rndm() * (100 - DataContainer[kCentrality]) * 100;
+  Double_t multiplicity = 2 + gRandom->Rndm() * (100 - QnMan->GetDataContainer()[kCentrality]) * 100;
   Int_t nTracks = 0;
 
   while(nTracks < multiplicity){
@@ -322,11 +329,11 @@ void Loop(){
 
     // Fill relevant track information into data container, if track cuts have to be applied
     if (gRandom->Rndm() < 0.4)
-      DataContainer[kCharge] = 1;
+      QnMan->GetDataContainer()[kCharge] = 1;
     else
-      DataContainer[kCharge] = -1;
+      QnMan->GetDataContainer()[kCharge] = -1;
 
-    myDetectorOne->AddDataVector(DataContainer, trackPhi);
+    QnMan->AddDataVector(kDetector1, trackPhi);
 
 
 #ifdef MAKEEVENTTEXTOUTPUT
@@ -351,10 +358,7 @@ void Loop(){
   }
 #endif
 
-  myDetectorOne->ProcessCorrections();
-  myDetectorTwo->ProcessCorrections();
-  myDetectorOne->ClearDetector();
-  myDetectorTwo->ClearDetector();
+  QnMan->ProcessEvent();
 }
 
 /// Test fot the event classes variables and set
