@@ -29,12 +29,13 @@
  *                                                                                                *
  **************************************************************************************************/
 
-// \file QnCorrectionsDetector.cxx
-// \brief Detector configuration classes implementation
+/// \file QnCorrectionsDetector.cxx
+/// \brief Detector and detector configuration classes implementation
 
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsLog.h"
 
+/// The default initial size of data vectors banks
 #define INITIALDATAVECTORBANKSIZE 100000
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetector);
@@ -67,9 +68,9 @@ QnCorrectionsDetector::~QnCorrectionsDetector() {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetector::CreateSupportHistograms(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
-    retValue = retValue || (fConfigurations.At(ixConfiguration)->CreateSupportHistograms(list));
+    retValue = retValue && (fConfigurations.At(ixConfiguration)->CreateSupportHistograms(list));
   }
   return retValue;
 }
@@ -81,9 +82,9 @@ Bool_t QnCorrectionsDetector::CreateSupportHistograms(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetector::AttachCorrectionInputs(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
-    retValue = retValue || (fConfigurations.At(ixConfiguration)->AttachCorrectionInputs(list));
+    retValue = retValue && (fConfigurations.At(ixConfiguration)->AttachCorrectionInputs(list));
   }
   return retValue;
 }
@@ -129,6 +130,7 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase()
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
+  fQnCalibrationMethod = QCALIB_noCalibration;
   fEventClassVariables = NULL;
 }
 
@@ -149,6 +151,7 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
   fDetector = detector;
   fCuts = NULL;
   fDataVectorBank = NULL;
+  fQnCalibrationMethod = QCALIB_noCalibration;
   fEventClassVariables = eventClassesVariables;
 }
 
@@ -167,9 +170,9 @@ QnCorrectionsDetectorConfigurationBase::~QnCorrectionsDetectorConfigurationBase(
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(list));
+    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(list));
   }
   return retValue;
 }
@@ -181,9 +184,9 @@ Bool_t QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(TList *li
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue || (fQnVectorCorrections.At(ixCorrection)->AttachInput(list));
+    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->AttachInput(list));
   }
   return retValue;
 }
@@ -278,7 +281,7 @@ ClassImp(QnCorrectionsChannelDetectorConfiguration);
 
 /// Default constructor
 QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration() :
-    QnCorrectionsDetectorConfigurationBase(), fInputDataCorrections() {
+    QnCorrectionsDetectorConfigurationBase(), fRawQnVector(), fInputDataCorrections() {
 
   fUsedChannel = NULL;
   fChannelGroup = NULL;
@@ -290,6 +293,7 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
 /// \param name the name of the detector configuration
 /// \param detector the detector object that will own the detector configuration
 /// \param eventClassesVariables the set of event classes variables
+/// \param nNoOfChannels the number of channels of the associated detector
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
 QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration(const char *name,
@@ -299,6 +303,7 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap),
+          fRawQnVector(),
           fInputDataCorrections() {
   fUsedChannel = NULL;
   fChannelGroup = NULL;
@@ -336,9 +341,9 @@ void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedC
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue || (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(list));
+    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(list));
   }
 
   /* if everything right propagate it to Q vector corrections via base class */
@@ -356,9 +361,9 @@ Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList 
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kFALSE;
+  Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue || (fInputDataCorrections.At(ixCorrection)->AttachInput(list));
+    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->AttachInput(list));
   }
 
   /* if everything right propagate it to Q vector corrections via base class */
