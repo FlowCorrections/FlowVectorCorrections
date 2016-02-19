@@ -194,6 +194,7 @@ Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *lis
 /// Incorporates the passed correction to the set of Q vector corrections
 /// \param correctionOnQn the correction to add
 void QnCorrectionsDetectorConfigurationBase::AddCorrectionOnQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) {
+  correctionOnQn->SetConfigurationOwner(this);
   fQnVectorCorrections.AddCorrection(correctionOnQn);
 }
 
@@ -376,6 +377,7 @@ Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *
 /// Incorporates the passed correction to the set of input data corrections
 /// \param correctionOnInputData the correction to add
 void QnCorrectionsChannelDetectorConfiguration::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
+  correctionOnInputData->SetConfigurationOwner(this);
   fInputDataCorrections.AddCorrection(correctionOnInputData);
 }
 
