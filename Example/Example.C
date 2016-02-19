@@ -43,6 +43,7 @@
 #include "../QnCorrections/QnCorrectionsQnVector.h"
 #include "../QnCorrections/QnCorrectionsDetector.h"
 #include "../QnCorrections/QnCorrectionsManager.h"
+#include "../QnCorrections/QnCorrectionsInputGainEqualization.h"
 
 void Setup(QnCorrectionsManager* QnMan);
 void Loop(QnCorrectionsManager* QnMan);
@@ -244,7 +245,13 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
+
+  /* let's configure the Q vector calibration */
   myDetectorTwoA->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* lets configure the equalization of input data */
+  QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
+  eqA->SetEqualizationMethod(QEQUAL_widthEqualization);
+  myDetectorTwoA->AddCorrectionOnInputData(eqA);
 
   QnCorrectionsChannelDetectorConfiguration *myDetectorTwoC =
       new QnCorrectionsChannelDetectorConfiguration(
@@ -255,7 +262,13 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
+
+  /* let's configure the Q vector calibration */
   myDetectorTwoC->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  /* lets configure the equalization of input data */
+  QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
+  eqC->SetEqualizationMethod(QEQUAL_widthEqualization);
+  myDetectorTwoC->AddCorrectionOnInputData(eqC);
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);
