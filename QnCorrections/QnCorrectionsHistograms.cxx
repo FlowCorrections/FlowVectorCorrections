@@ -87,7 +87,7 @@ Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList) {
 /// \param bUsedChannel array of booleans one per each channel
 /// \param nChannelGroup array of group number for each channel
 /// \return true if properly attached else false
-Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
       "you are using a non channelized profile but passing channels information. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::AttachHistograms()"));
@@ -106,7 +106,7 @@ Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList, Bool_t
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsHistogramBase::GetBin(Float_t *variableContainer) {
+Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
       "you are using a channelized profile without passing the channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBin()"));
@@ -125,7 +125,7 @@ Int_t QnCorrectionsHistogramBase::GetBin(Float_t *variableContainer) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsHistogramBase::GetBin(Float_t *variableContainer, Int_t nChannel) {
+Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer, Int_t nChannel) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
       "you are using a non channelized profile passing a channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBin()"));
@@ -420,7 +420,7 @@ Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t harmonic, Int_t bin) {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::Fill(const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   FillX or FillY, or FillXX ... FillYY or you have instantiated a base class or you are using\n" \
       "a channelized profile without passing a channel number. FIX IT, PLEASE.",
@@ -440,7 +440,7 @@ void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Float_t weight
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight) {
+void QnCorrectionsHistogramBase::Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   FillX or FillY, or FillXX ... FillYY or you have instantiated a base class or you are using\n" \
       "a non channelized profile passing a channel number. FIX IT, PLEASE.",
@@ -460,7 +460,7 @@ void QnCorrectionsHistogramBase::Fill(Float_t *variableContainer, Int_t nChannel
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill or FillXX ... FillYY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillX()"));
@@ -479,7 +479,7 @@ void QnCorrectionsHistogramBase::FillX(Int_t harmonic, Float_t *variableContaine
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill or FillXX ... FillYY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillY()"));
@@ -498,7 +498,7 @@ void QnCorrectionsHistogramBase::FillY(Int_t harmonic, Float_t *variableContaine
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillXX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillXX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill, FillX or FillY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillXX()"));
@@ -517,7 +517,7 @@ void QnCorrectionsHistogramBase::FillXX(Int_t harmonic, Float_t *variableContain
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillXY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill, FillX or FillY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillXY()"));
@@ -536,7 +536,7 @@ void QnCorrectionsHistogramBase::FillXY(Int_t harmonic, Float_t *variableContain
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillYX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillYX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill, FillX or FillY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillYX()"));
@@ -555,7 +555,7 @@ void QnCorrectionsHistogramBase::FillYX(Int_t harmonic, Float_t *variableContain
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsHistogramBase::FillYY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsHistogramBase::FillYY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill, FillX or FillY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillYY()"));
@@ -686,7 +686,7 @@ Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfile::GetBin(Float_t *variableContainer) {
+Int_t QnCorrectionsProfile::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
@@ -740,7 +740,7 @@ Float_t QnCorrectionsProfile::GetBinError(Int_t bin) {
 ///
 /// \param variableContainer the current variables conten addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsProfile::Fill(Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsProfile::Fill(const Float_t *variableContainer, Float_t weight) {
   /* keep the total entries in fValues updated */
   Double_t nEntries = fValues->GetEntries();
 
@@ -818,7 +818,7 @@ QnCorrectionsProfileChannelized::~QnCorrectionsProfileChannelized() {
 /// \param bUsedChannel array of booleans one per each channel
 /// \param nChannelGroup array of group number for each channel
 /// \return true if properly created
-Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup) {
   /* let's build the histograms names and titles */
   TString histoName = GetName();
   TString histoTitle = GetTitle();
@@ -897,7 +897,7 @@ Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogram
 /// \param bUsedChannel array of booleans one per each channel
 /// \param nChannelGroup array of group number for each channel
 /// \return true if properly attached else false
-Bool_t QnCorrectionsProfileChannelized::AttachHistograms(TList *histogramList, Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+Bool_t QnCorrectionsProfileChannelized::AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup) {
   /* let's build the histograms names */
   TString histoName = GetName();
   TString entriesHistoName = GetName(); entriesHistoName += szEntriesHistoSuffix;
@@ -953,7 +953,7 @@ Bool_t QnCorrectionsProfileChannelized::AttachHistograms(TList *histogramList, B
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileChannelized::GetBin(Float_t *variableContainer, Int_t nChannel) {
+Int_t QnCorrectionsProfileChannelized::GetBin(const Float_t *variableContainer, Int_t nChannel) {
   FillBinAxesValues(variableContainer);
   /* store the channel number */
   fBinAxesValues[fEventClassVariables.GetEntriesFast()] = fChannelMap[nChannel];
@@ -1010,7 +1010,7 @@ Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \param weight the increment in the bin content
-void QnCorrectionsProfileChannelized::Fill(Float_t *variableContainer, Int_t nChannel, Float_t weight) {
+void QnCorrectionsProfileChannelized::Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight) {
   /* keep the total entries in fValues updated */
   Double_t nEntries = fValues->GetEntries();
 
@@ -1284,7 +1284,7 @@ Bool_t QnCorrectionsComponentsProfile::AttachHistograms(TList *histogramList) {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsComponentsProfile::GetBin(Float_t *variableContainer) {
+Int_t QnCorrectionsComponentsProfile::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
@@ -1416,7 +1416,7 @@ Float_t QnCorrectionsComponentsProfile::GetYBinError(Int_t harmonic, Int_t bin) 
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fXValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
@@ -1459,7 +1459,7 @@ void QnCorrectionsComponentsProfile::FillX(Int_t harmonic, Float_t *variableCont
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsComponentsProfile::FillY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsComponentsProfile::FillY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fYValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
@@ -1814,7 +1814,7 @@ Bool_t QnCorrectionsCorrelationComponentsProfile::AttachHistograms(TList *histog
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsCorrelationComponentsProfile::GetBin(Float_t *variableContainer) {
+Int_t QnCorrectionsCorrelationComponentsProfile::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
 }
@@ -2062,7 +2062,7 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinError(Int_t harmonic,
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fXXValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
@@ -2109,7 +2109,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXX(Int_t harmonic, Float_t *
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fXYValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
@@ -2156,7 +2156,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillXY(Int_t harmonic, Float_t *
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fYXValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));
@@ -2203,7 +2203,7 @@ void QnCorrectionsCorrelationComponentsProfile::FillYX(Int_t harmonic, Float_t *
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsCorrelationComponentsProfile::FillYY(Int_t harmonic, Float_t *variableContainer, Float_t weight) {
+void QnCorrectionsCorrelationComponentsProfile::FillYY(Int_t harmonic, const Float_t *variableContainer, Float_t weight) {
   /* first the sanity checks */
   if (fYYValues[harmonic] == NULL) {
     QnCorrectionsFatal(Form("Accessing non allocated harmonic %d in correlation component histogram %s. FIX IT, PLEASE.", harmonic, GetName()));

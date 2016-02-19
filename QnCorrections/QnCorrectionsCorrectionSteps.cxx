@@ -41,6 +41,8 @@ ClassImp(QnCorrectionsCorrectionStepBase);
 /// Default constructor
 QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase() : TNamed() {
 
+  fState = QCORRSTEP_calibration;
+  fDetectorConfiguration = NULL;
   fKey = "";
 }
 
@@ -50,6 +52,8 @@ QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase() : TNamed() {
 QnCorrectionsCorrectionStepBase::QnCorrectionsCorrectionStepBase(const char *name, const char *key) :
     TNamed(name,name) {
 
+  fState = QCORRSTEP_calibration;
+  fDetectorConfiguration = NULL;
   fKey = key;
 }
 

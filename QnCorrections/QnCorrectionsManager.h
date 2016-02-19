@@ -90,7 +90,7 @@ inline void QnCorrectionsManager::AddDataVector(Int_t detectorId, Double_t phi, 
 /// have been incorporated to the framework.
 inline void QnCorrectionsManager::ProcessEvent() {
   for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
-    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->ProcessCorrections();
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->ProcessCorrections(fDataContainer);
   }
   ClearEvent();
 }

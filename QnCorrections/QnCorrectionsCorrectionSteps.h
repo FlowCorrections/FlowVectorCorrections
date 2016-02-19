@@ -18,6 +18,8 @@
 #include <TNamed.h>
 #include <TList.h>
 
+class QnCorrectionsDetectorConfigurationBase;
+
 /// \class QnCorrectionsCorrectionStepBase
 /// \brief Base class for correction steps
 ///
@@ -32,6 +34,22 @@
 
 class QnCorrectionsCorrectionStepBase : public TNamed {
 public:
+  /// \typedef QnCorrectionStepStatus
+  /// \brief The class of the id of the correction steps states
+  ///
+  /// Actually it is not a class because the C++ level of implementation.
+  /// But full protection will be reached when were possible declaring it
+  /// as a class.
+  ///
+  /// When referring as "data being collected" means that the needed data
+  /// for producing new correction parameters are being collected.
+  typedef enum {
+    QCORRSTEP_calibration,         ///< the correction step is in calibration mode collecting data
+    QCORRSTEP_apply,               ///< the correction step is being applied
+    QCORRSTEP_applyCollect,        ///< the correction step is being applied and data are being collected
+  } QnCorrectionStepStatus;
+
+  friend class QnCorrectionsDetectorConfigurationBase;
   QnCorrectionsCorrectionStepBase();
   QnCorrectionsCorrectionStepBase(const char *name, const char *key);
   virtual ~QnCorrectionsCorrectionStepBase();
@@ -56,12 +74,19 @@ public:
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
-  virtual Bool_t Process() = 0;
+  virtual Bool_t Process(const Float_t *variableContainer) = 0;
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
 protected:
-  TString fKey; ///< the correction key that codifies order information
+  /// Stores the detector configuration owner
+  /// \param detectorConfiguration the detector configuration owner
+  void SetConfigurationOwner(QnCorrectionsDetectorConfigurationBase *detectorConfiguration)
+  { fDetectorConfiguration = detectorConfiguration; }
+
+  QnCorrectionStepStatus fState;                                  /// the state in which the correction step is
+  QnCorrectionsDetectorConfigurationBase *fDetectorConfiguration; ///< pointer to the detector configuration owner
+  TString fKey;                                                   ///< the correction key that codifies order information
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionStepBase, 1);
 /// \endcond
@@ -97,7 +122,7 @@ public:
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
-  virtual Bool_t Process() = 0;
+  virtual Bool_t Process(const Float_t *variableContainer) = 0;
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
@@ -136,7 +161,7 @@ public:
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
-  virtual Bool_t Process() = 0;
+  virtual Bool_t Process(const Float_t *variableContainer) = 0;
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;

@@ -46,7 +46,7 @@ public:
   virtual Float_t Weight() { return 1.0; }
   /// Gets the equalized weight for the data vector
   /// \return defaults to 1.0
-  virtual Float_t EgualizedWeight() { return 1.0; }
+  virtual Float_t EqualizedWeight() { return 1.0; }
 
 protected:
   Float_t fPhi;                                   ///< the azimuthal angle of the data vector
@@ -75,6 +75,9 @@ public:
   QnCorrectionsChannelizedDataVector(Int_t channelId, Float_t phi, Float_t weight);
   virtual ~QnCorrectionsChannelizedDataVector();
 
+  /// Gets the channel id associated with the data vector
+  /// \return the channel id
+  Int_t GetId() { return fId; }
   /// Sets the channel id associated with the data vector
   /// \param id channel id
   void SetId(Int_t id) { fId = id; }
