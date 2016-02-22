@@ -88,13 +88,25 @@ protected:
   QnCorrectionsEventClassVariablesSet &GetEventClassVariablesSet()
   { return *fEventClassVariables; }
 public:
-  virtual Bool_t CreateSupportHistograms(TList *list);
+  /// Asks for support histograms creation
+  ///
+  /// The request is transmitted to the different corrections.
+  /// Pure virtual function
+  /// \param list list where the histograms should be incorporated for its persistence
+  /// \return kTRUE if everything went OK
+  virtual Bool_t CreateSupportHistograms(TList *list) = 0;
 
-  virtual Bool_t AttachCorrectionInputs(TList *list);
+  /// Asks for attaching the needed input information to the correction steps
+  ///
+  /// The request is transmitted to the different corrections.
+  /// Pure virtual function
+  /// \param list list where the input information should be found
+  /// \return kTRUE if everything went OK
+  virtual Bool_t AttachCorrectionInputs(TList *list) = 0;
   /// Ask for processing corrections for the involved detector configuration
   ///
   /// Pure virtual function.
-  /// The request is transmitted to the incoming data correction steps
+  /// The request is transmitted to the correction steps
   /// and to then to Q vector correction steps
   /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer) = 0;
@@ -162,6 +174,9 @@ public:
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
   virtual ~QnCorrectionsTrackDetectorConfiguration();
+
+  virtual Bool_t CreateSupportHistograms(TList *list);
+  virtual Bool_t AttachCorrectionInputs(TList *list);
 
   /// Ask for processing corrections for the involved detector configuration
   ///
@@ -235,7 +250,7 @@ public:
 
   virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
 
-  virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+  virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId);
 
   virtual void BuildQnVector();
   void BuildRawQnVector();
@@ -425,12 +440,13 @@ inline Bool_t QnCorrectionsTrackDetectorConfiguration::ProcessCorrections(const 
 inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
   if (fUsedChannel[channelId]) {
-    if (IsSelected(variableContainer, channelId)) {
-      /// add the data vector to the bank
-      QnCorrectionsChannelizedDataVector *channelizedDataVector =
-          new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-            QnCorrectionsChannelizedDataVector(channelId, phi, weight);
-    }
+    if (fCuts!= NULL)
+      if (!fCuts->IsSelected(variableContainer))
+        return;
+    /// add the data vector to the bank
+    QnCorrectionsChannelizedDataVector *channelizedDataVector =
+        new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
+          QnCorrectionsChannelizedDataVector(channelId, phi, weight);
   }
 }
 

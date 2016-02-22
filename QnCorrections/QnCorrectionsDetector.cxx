@@ -67,7 +67,6 @@ QnCorrectionsDetector::~QnCorrectionsDetector() {
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetector::CreateSupportHistograms(TList *list) {
-  /* TODO: do we need to fine tune the list passed according to the detector? */
   Bool_t retValue = kTRUE;
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
     retValue = retValue && (fConfigurations.At(ixConfiguration)->CreateSupportHistograms(list));
@@ -163,34 +162,6 @@ QnCorrectionsDetectorConfigurationBase::~QnCorrectionsDetectorConfigurationBase(
   }
 }
 
-/// Asks for support histograms creation
-///
-/// The request is transmitted, as per a base class, to the Q vector corrections.
-/// \param list list where the histograms should be incorporated for its persistence
-/// \return kTRUE if everything went OK
-Bool_t QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(TList *list) {
-  /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kTRUE;
-  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(list));
-  }
-  return retValue;
-}
-
-/// Asks for attaching the needed input information to the correction steps
-///
-/// The request is transmitted, as per a base class, to the Q vector corrections.
-/// \param list list where the input information should be found
-/// \return kTRUE if everything went OK
-Bool_t QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(TList *list) {
-  /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kTRUE;
-  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->AttachInput(list));
-  }
-  return retValue;
-}
-
 /// Incorporates the passed correction to the set of Q vector corrections
 /// \param correctionOnQn the correction to add
 void QnCorrectionsDetectorConfigurationBase::AddCorrectionOnQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) {
@@ -276,6 +247,44 @@ QnCorrectionsTrackDetectorConfiguration::~QnCorrectionsTrackDetectorConfiguratio
 
 }
 
+/// Asks for support histograms creation
+///
+/// The request is transmitted to the Q vector corrections.
+///
+/// A new histograms list is created for the detector and incorporated
+/// to the passed list. Then the new list is passed to the corrections.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsTrackDetectorConfiguration::CreateSupportHistograms(TList *list) {
+  Bool_t retValue = kTRUE;
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kTRUE);
+  list->Add(detectorConfigurationList);
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
+  }
+  return retValue;
+}
+
+/// Asks for attaching the needed input information to the correction steps
+///
+/// The detector list is extracted from the passed list and then
+/// the request is transmitted to the Q vector corrections with the found list.
+/// \param list list where the input information should be found
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsTrackDetectorConfiguration::AttachCorrectionInputs(TList *list) {
+  TList *detectorConfigurationList = (TList *) list->FindObject(this->GetName());
+  if (detectorConfigurationList != NULL) {
+    Bool_t retValue = kTRUE;
+    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->AttachInput(detectorConfigurationList));
+    }
+    return retValue;
+  }
+  return kFALSE;
+}
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsChannelDetectorConfiguration);
 /// \endcond
@@ -336,42 +345,52 @@ void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedC
 
 /// Asks for support histograms creation
 ///
-/// The request is transmitted, as per a base class, to the input data corrections
-/// then to the base clase to propagate it to the Q vector corrections
+/// A new histograms list is created for the detector and incorporated
+/// to the passed list. Then the new list is passed first to the input data corrections
+/// and then to the Q vector corrections.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList *list) {
-  /* TODO: do we need to fine tune the list passed according to the detector? */
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kTRUE);
+  list->Add(detectorConfigurationList);
   Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(list));
+    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
   }
 
-  /* if everything right propagate it to Q vector corrections via base class */
+  /* if everything right propagate it to Q vector corrections */
   if (retValue) {
-    return QnCorrectionsDetectorConfigurationBase::CreateSupportHistograms(list);
+    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
+    }
   }
   return retValue;
 }
 
 /// Asks for attaching the needed input information to the correction steps
 ///
-/// The request is transmitted, as per a base class, to the input data corrections
-/// then to the base clase to propagate it to the Q vector corrections
+/// The detector list is extracted from the passed list and then
+/// the request is transmitted to the input data corrections
+/// and then propagated to the Q vector corrections
 /// \param list list where the input information should be found
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *list) {
-  /* TODO: do we need to fine tune the list passed according to the detector? */
-  Bool_t retValue = kTRUE;
-  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->AttachInput(list));
-  }
+  TList *detectorConfigurationList = (TList *) list->FindObject(this->GetName());
+  if (detectorConfigurationList != NULL) {
+    Bool_t retValue = kTRUE;
+    for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fInputDataCorrections.At(ixCorrection)->AttachInput(detectorConfigurationList));
+    }
 
-  /* if everything right propagate it to Q vector corrections via base class */
-  if (retValue) {
-    QnCorrectionsDetectorConfigurationBase::AttachCorrectionInputs(list);
+    /* now propagate it to Q vector corrections */
+    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->AttachInput(detectorConfigurationList));
+    }
+    return retValue;
   }
-  return retValue;
+  return kFALSE;
 }
 
 /// Incorporates the passed correction to the set of input data corrections
