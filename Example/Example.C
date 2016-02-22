@@ -111,6 +111,12 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 
   QnCorrectionsManager* QnMan = new QnCorrectionsManager();
 
+  TFile* inputFile = TFile::Open(inputFileName,"READ");
+  TFile* outputFile = TFile::Open(outputFileName,"RECREATE");
+
+  QnMan->SetCalibrationHistogramsList(inputFile);
+
+
 #ifdef MAKEEVENTTEXTOUTPUT
   bProduceTextEventFile = bTextEventFile;
 #endif
@@ -139,7 +145,10 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 
   Finish(QnMan);
 
-
+  outputFile->cd();
+  QnMan->GetOutputHistogramsList()->Write(QnMan->GetOutputHistogramsList()->GetName(),TObject::kSingleKey);
+  if (inputFile) inputFile->Close();
+  if (outputFile) outputFile->Close();
 }
 
 /// The routine to initialize our test framework before the events loop
@@ -156,9 +165,6 @@ void Setup(QnCorrectionsManager* QnMan){
     nEventNo = 0;
   }
 #endif
-
-  /* initialize the corrections framework */
-  QnMan->InitializeQnCorrectionsFramework();
 
   /* our event classes variables: vertexZ and centrality */
   const Int_t nEventClassesDimensions = 2;
@@ -278,6 +284,10 @@ void Setup(QnCorrectionsManager* QnMan){
   QnMan->AddDetector(myDetectorTwo);
 
   /* here we should be able to store produced data vectors */
+  QnMan->SetCurrentProcessListName("Example");
+
+  /* initialize the corrections framework */
+  QnMan->InitializeQnCorrectionsFramework();
 }
 
 /// the final output and clean up routine
