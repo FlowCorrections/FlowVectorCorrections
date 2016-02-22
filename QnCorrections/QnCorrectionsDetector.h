@@ -439,10 +439,7 @@ inline Bool_t QnCorrectionsTrackDetectorConfiguration::ProcessCorrections(const 
 /// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
 inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
-  if (fUsedChannel[channelId]) {
-    if (fCuts!= NULL)
-      if (!fCuts->IsSelected(variableContainer))
-        return;
+  if (IsSelected(variableContainer, channelId)) {
     /// add the data vector to the bank
     QnCorrectionsChannelizedDataVector *channelizedDataVector =
         new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
@@ -512,17 +509,15 @@ inline Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections(cons
     BuildQnVector();
 
     /* now lt's propagate it to Q vector corrections */
-    if (retValue) {
-      for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-        retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer));
-        if (retValue)
-          continue;
-        else
-          break;
-      }
+    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer));
+      if (retValue)
+        continue;
+      else
+        break;
     }
-    return retValue;
   }
+  return retValue;
 }
 
 /// Clean the configuration to accept a new event
@@ -569,8 +564,10 @@ inline void QnCorrectionsDetector::AddDataVector(const Float_t *variableContaine
 /// \return kTRUE if everything went OK
 inline Bool_t QnCorrectionsDetector::ProcessCorrections(const Float_t *variableContainer) {
   Bool_t retValue = kTRUE;
+
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
-    retValue = retValue && (fConfigurations.At(ixConfiguration)->ProcessCorrections(variableContainer));
+    Bool_t ret = fConfigurations.At(ixConfiguration)->ProcessCorrections(variableContainer);
+    retValue = retValue && ret;
   }
   return retValue;
 }
