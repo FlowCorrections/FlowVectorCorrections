@@ -31,6 +31,9 @@
 /// \file QnCorrectionsManager.cxx
 /// \brief Implementation of the class QnCorrectionsManager
 
+#include <TFile.h>
+#include <TList.h>
+#include <TKey.h>
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsLog.h"
 
@@ -42,14 +45,18 @@ ClassImp(QnCorrectionsManager);
 const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
 /// the maximum number of variables currently supported by the framework
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
-
+///< the name of the key under which calibration histograms lists are stored
+const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
 /// Default constructor.
 /// The class owns the detectors and will be destroyed with it
-QnCorrectionsManager::QnCorrectionsManager() : TObject(), fDetectorsSet() {
+QnCorrectionsManager::QnCorrectionsManager() :
+    TObject(), fDetectorsSet(), fProcessListName() {
 
   fDetectorsSet.SetOwner(kTRUE);
   fDetectorsIdMap = new QnCorrectionsDetector *[nMaxNoOfDetectors];
   fDataContainer = new Float_t[nMaxNoOfDataVariables];
+  fCalibrationHistogramsList = NULL;
+  fSupportHistogramsList = NULL;
 }
 
 /// Default destructor
@@ -59,6 +66,18 @@ QnCorrectionsManager::~QnCorrectionsManager() {
   delete fDetectorsIdMap;
   delete fDataContainer;
 }
+
+/// Sets the base list that will own the input calibration histograms
+/// \param calibtationFile the file
+void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) {
+  if (calibrationFile) {
+    if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {
+      fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject(szCalibrationHistogramsKeyName))->ReadObj()->Clone();
+    }
+  }
+}
+
+
 
 /// Adds a new detector
 /// Checks for an already added detector and for a detector id
@@ -128,11 +147,46 @@ QnCorrectionsDetectorConfigurationBase *QnCorrectionsManager::FindDetectorConfig
 /// Initializes the correction framework
 void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 
-}
+  /* build the support histograms list */
+  fSupportHistogramsList = new TList();
+  fSupportHistogramsList->SetName(szCalibrationHistogramsKeyName);
+  fSupportHistogramsList->SetOwner(kTRUE);
 
-/// Set the list of histograms associated to the current run of the framework
-void QnCorrectionsManager::SetWorkingHistogramList(TList *) {
+  /* build the support histograms list associated to this process */
+  /* and pass it to the detectors for support histograms creation */
+  if (fProcessListName.Length() != 0) {
+    TList *processList = new TList();
+    processList->SetName((const char *) fProcessListName);
+    processList->SetOwner(kTRUE);
+    fSupportHistogramsList->Add(processList);
+    /* now transfer the order to the defined detectors */
+    Bool_t retvalue = kTRUE;
+    for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+      retvalue = retvalue && ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(processList);
+      if (!retvalue)
+        break;
+    }
+    if (!retvalue) {
+      QnCorrectionsFatal("Failed to build the necessary support histograms.");
+    }
+  }
+  else {
+    QnCorrectionsFatal("The process label is missing.");
+  }
 
+  /* now get the process list on the calibration histograms list if any */
+  /* and pass it to the detectors for input calibration histograms attachment, */
+  /* we accept no calibration histograms list and no process list in case we */
+  /* are in calibratin phase. We should TODO this. */
+  if (fCalibrationHistogramsList != NULL) {
+    TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
+    if (processList != NULL) {
+      /* now transfer the order to the defined detectors */
+      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
+      }
+    }
+  }
 }
 
 /// Produce the final output and release the framework

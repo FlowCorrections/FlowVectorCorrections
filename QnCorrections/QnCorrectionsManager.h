@@ -28,6 +28,19 @@
 /// To improve performance a mapping between internal detector address
 /// and external detector id is maintained.
 ///
+/// When the framework is in the calibration phase there are no complete
+/// calibration information available to fully implement the desired
+/// correction on the input data and on the subsequent Q vector. During
+/// this phase a list of support histograms is kept to build the
+/// needed quantities to produce the intended calibration information.
+/// At the same time a list of the available calibration histograms is
+/// as well kept to perform the feasible corrections.
+///
+/// When, finally, the whole calibration information were available the
+/// support histograms list will not need to be present and the framework
+/// will be performing just the intended corrections on input data and on
+/// the subsequent Q vector.
+///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
@@ -42,6 +55,13 @@ public:
   QnCorrectionsManager();
   virtual ~QnCorrectionsManager();
 
+  /// Set the name of the list that should be considered as assigned to the current process
+  /// \param name the name of the list
+  void SetCurrentProcessListName(const char *name)
+  { fProcessListName = name; }
+
+  void SetCalibrationHistogramsList(TFile *calibrationFile);
+
   void AddDetector(QnCorrectionsDetector *detector);
 
   QnCorrectionsDetector *FindDetector(const char *name) const;
@@ -52,8 +72,10 @@ public:
   /// \return the pointer to the data container
   Float_t *GetDataContainer() { return fDataContainer; }
 
+  /// Gets the output histograms list
+  TList *GetOutputHistogramsList() const { return fSupportHistogramsList; }
+
   void InitializeQnCorrectionsFramework();
-  void SetWorkingHistogramList(TList *);
   void AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
   void ProcessEvent();
   void FinalizeQnCorrectionsFramework();
@@ -63,9 +85,13 @@ private:
 
   static const Int_t nMaxNoOfDetectors; ///< the highest detector id currently supported by the framework
   static const Int_t nMaxNoOfDataVariables; ///< the maximum number of variables currently supported by the framework
+  static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored
   TList fDetectorsSet;                  ///< the list of detectors
   QnCorrectionsDetector **fDetectorsIdMap; ///< map between external detector Id and internal detector
   Float_t *fDataContainer;              ///< the data variables bank
+  TList *fCalibrationHistogramsList;    ///< the list of the calibration histograms
+  TList *fSupportHistogramsList;        ///< the list of the support histograms
+  TString fProcessListName;             ///< the name of the list associated to the current process
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);
 /// \endcond
