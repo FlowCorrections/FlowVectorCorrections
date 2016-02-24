@@ -495,8 +495,9 @@ inline Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections(cons
   BuildRawQnVector();
 
   /* then we transfer the request to the input data correction steps */
-  Bool_t retValue = kTRUE;
+  Bool_t retValue = kFALSE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    retValue = kTRUE;
     retValue = retValue && (fInputDataCorrections.At(ixCorrection)->Process(variableContainer));
     if (retValue)
       continue;
