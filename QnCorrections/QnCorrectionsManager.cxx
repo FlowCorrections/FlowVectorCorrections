@@ -68,7 +68,7 @@ QnCorrectionsManager::~QnCorrectionsManager() {
 }
 
 /// Sets the base list that will own the input calibration histograms
-/// \param calibtationFile the file
+/// \param calibrationFile the file
 void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) {
   if (calibrationFile) {
     if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {

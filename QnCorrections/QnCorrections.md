@@ -1,4 +1,4 @@
-QnCorrections framework description (v0.4) {#mainpage}
+QnCorrections framework description (v0.5) {#mainpage}
 ===================================
 
 ## Event classes

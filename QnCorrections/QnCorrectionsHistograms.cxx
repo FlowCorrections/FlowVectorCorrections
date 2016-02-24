@@ -571,8 +571,8 @@ void QnCorrectionsHistogramBase::FillYY(Int_t harmonic, const Float_t *variableC
 ///
 /// Creates a value / error multidimensional histogram from
 /// a values and entries multidimensional histograms
-/// \param values the values multidimensional histogram
-/// \param entries the entries multidimensional histogram
+/// \param hValues the values multidimensional histogram
+/// \param hEntries the entries multidimensional histogram
 /// \return the values / error multidimensional histogram
 THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
 
@@ -610,11 +610,31 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
   return hResult;
 }
 
+/// Starts the copy of two THnF histograms.
+///
+/// Source should not have channel/group structure (axis)
+/// while dest should. The channel/group involved in dest
+/// should be stored in binsArray[nVariables].
+/// \param hDest the histogram that will receive the copy
+/// \param hSource the histogram to copy
+/// \param binsArray the array to build the bin numbers on each dimension
 void QnCorrectionsHistogramBase::CopyTHnF(THnF *hDest, THnF *hSource, Int_t *binsArray) {
 
   CopyTHnFDimension(hDest, hSource, binsArray, 0);
 }
 
+/// Process a dimension in the copy of two THnF histograms process.
+///
+/// Source should not have channel/group structure (axis)
+/// while dest should. The channel/group involved in dest
+/// should be stored in binsArray[nVariables].
+/// It is called in a recursive way until the number of
+/// event class variables (dimensions in the source) is
+/// exhausted then, the corresponding bins are copied.
+/// \param hDest the histogram that will receive the copy
+/// \param hSource the histogram to copy
+/// \param binsArray the array to build the bin numbers on each dimension
+/// \param dimension the current dimension being handled
 void QnCorrectionsHistogramBase::CopyTHnFDimension(THnF *hDest, THnF *hSource, Int_t *binsArray, Int_t dimension) {
 
   /* are all variables settled */

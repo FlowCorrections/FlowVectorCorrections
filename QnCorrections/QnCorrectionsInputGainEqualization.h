@@ -64,7 +64,8 @@ typedef enum {
   QEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
 } QnGainEqualizationMethod;
 
-
+/// \class QnCorrectionsInputGainEqualization
+/// \brief Encapsulates the gain equalization step on input data
 
 class QnCorrectionsInputGainEqualization : public QnCorrectionsCorrectionOnInputData {
 public:

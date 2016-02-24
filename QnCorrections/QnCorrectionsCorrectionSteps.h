@@ -84,7 +84,7 @@ protected:
   void SetConfigurationOwner(QnCorrectionsDetectorConfigurationBase *detectorConfiguration)
   { fDetectorConfiguration = detectorConfiguration; }
 
-  QnCorrectionStepStatus fState;                                  /// the state in which the correction step is
+  QnCorrectionStepStatus fState;                                  ///< the state in which the correction step is
   QnCorrectionsDetectorConfigurationBase *fDetectorConfiguration; ///< pointer to the detector configuration owner
   TString fKey;                                                   ///< the correction key that codifies order information
 /// \cond CLASSIMP
