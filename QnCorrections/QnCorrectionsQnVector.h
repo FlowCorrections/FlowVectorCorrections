@@ -182,8 +182,8 @@ inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
   if (weight < fMinimumSignificantValue) return;
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
     if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
-      fQnX[h] += weight * TMath::Cos(h*phi);
-      fQnY[h] += weight * TMath::Sin(h*phi);
+      fQnX[h] += (weight * TMath::Cos(h*phi));
+      fQnY[h] += (weight * TMath::Sin(h*phi));
     }
   }
   fSumW += weight;

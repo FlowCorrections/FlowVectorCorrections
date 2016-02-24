@@ -64,7 +64,8 @@ ClassImp(QnCorrectionsChannelizedDataVector);
 QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector() :
     QnCorrectionsDataVector() {
   fId = -1;
-  fWeight = fEqualizedWeight = 1.0;
+  fWeight = 1.0;
+  fEqualizedWeight = 1.0;
 }
 
 /// Normal constructor
