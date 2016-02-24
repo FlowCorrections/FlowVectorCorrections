@@ -98,7 +98,7 @@ private:
   static const Float_t  fMinimumSignificantValue;     ///< the minimum value that will be considered as meaningful for processing
   static const char *szCorrectionName;               ///< the name of the correction step
   static const char *szKey;                          ///< the key of the correction step for ordering purpose
-  QnCorrectionsProfileChannelized *fInputHistograms; ///< the histogram with calibration information
+  QnCorrectionsProfileChannelizedIngress *fInputHistograms; ///< the histogram with calibration information
   QnCorrectionsProfileChannelized *fCalibrationHistograms; ///< the histogram for building calibration information
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
 
