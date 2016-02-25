@@ -93,7 +93,7 @@ public:
   virtual Float_t Weight() { return fWeight; }
   /// Gets the equalized weight for the data vector
   /// \return the equalized weight
-  virtual Float_t EgualizedWeight() { return fEqualizedWeight; }
+  virtual Float_t EqualizedWeight() { return fEqualizedWeight; }
 
 private:
   Int_t   fId;                    ///< the channel id associated with the data vector

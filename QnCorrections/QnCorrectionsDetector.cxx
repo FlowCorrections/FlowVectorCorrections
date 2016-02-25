@@ -313,7 +313,7 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap),
-          fRawQnVector(),
+          fRawQnVector(nNoOfHarmonics, harmonicMap),
           fInputDataCorrections() {
   fUsedChannel = NULL;
   fChannelGroup = NULL;
