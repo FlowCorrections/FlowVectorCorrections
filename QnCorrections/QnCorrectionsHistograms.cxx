@@ -905,7 +905,11 @@ QnCorrectionsProfileChannelized::~QnCorrectionsProfileChannelized() {
 /// Both histograms are added to the passed histogram list
 ///
 /// The actual number of channels is stored and a mask from
-/// external channel number to histogram channel number.
+/// external channel number to histogram channel number. If
+/// bUsedChannel is NULL all channels
+/// within fNoOfChannels are assigned to this profile.
+/// If nChannelGroup is NULL all channels assigned to this
+/// profile are allocated to the same group.
 /// \param histogramList list where the histograms have to be added
 /// \param bUsedChannel array of booleans one per each channel
 /// \param nChannelGroup array of group number for each channel
@@ -946,7 +950,7 @@ Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogram
       fChannelGroup[ixChannel] = 0;
     }
 
-    if (bUsedChannel[ixChannel]) {
+    if (fUsedChannel[ixChannel]) {
       fChannelMap[ixChannel] = fActualNoOfChannels;
       fActualNoOfChannels++;
     }
@@ -974,6 +978,16 @@ Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogram
   /* and now the channel axis */
   fValues->GetAxis(nVariables)->SetTitle(szChannelAxisTitle);
   fEntries->GetAxis(nVariables)->SetTitle(szChannelAxisTitle);
+
+  /* and now set the proper channel labels if needed */
+  if (fActualNoOfChannels != fNoOfChannels) {
+    for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
+      if (fUsedChannel[ixChannel]) {
+        fValues->GetAxis(nVariables)->SetBinLabel(fChannelMap[ixChannel]+1, Form("%d", ixChannel));
+        fEntries->GetAxis(nVariables)->SetBinLabel(fChannelMap[ixChannel]+1, Form("%d", ixChannel));
+      }
+    }
+  }
 
   fValues->Sumw2();
 
@@ -1141,7 +1155,11 @@ QnCorrectionsProfileChannelizedIngress::~QnCorrectionsProfileChannelizedIngress(
 /// Channel information is used to build internal structures such as
 /// the channel map and the actual number of channels and the channels groups
 /// and the actual number of groups. The information
-/// is matched with the found histogram to validate it.
+/// is matched with the found histogram to validate it. If
+/// bUsedChannel is NULL all channels
+/// within fNoOfChannels are assigned to this profile.
+/// If nChannelGroup is NULL all channels assigned to this
+/// profile are allocated to the same group.
 ///
 /// Once the histograms are found and validated, a unique value / error channel histogram
 /// is created for efficient access and a potential unique value / error channels group
@@ -1191,6 +1209,8 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
     }
     else {
       fChannelGroup[ixChannel] = 0;
+      nMinGroup = 0;
+      nMaxGroup = 0;
     }
     if (fUsedChannel[ixChannel]) {
       fChannelMap[ixChannel] = fActualNoOfChannels;
