@@ -146,7 +146,7 @@ protected:
   TClonesArray *fDataVectorBank;        ///< input data for the current process / event
   QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
-  QnCorrectionsSetOfCorrectionsOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
+  QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   QnCorrectionsEventClassVariablesSet    *fEventClassVariables; ///< set of variables that define event classes
 
 /// \cond CLASSIMP
@@ -154,7 +154,7 @@ protected:
 /// \endcond
 };
 
-/// \class QnCorrectionsTrackDetectorConfiguration
+/// \class QnCorrectionsDetectorConfigurationTracks
 /// \brief Track detector configuration within Q vector correction framework
 ///
 /// A track detector within the Q vector correction framework is defined
@@ -169,15 +169,15 @@ protected:
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Feb 08, 2016
 
-class QnCorrectionsTrackDetectorConfiguration :
+class QnCorrectionsDetectorConfigurationTracks :
     public QnCorrectionsDetectorConfigurationBase {
 public:
-  QnCorrectionsTrackDetectorConfiguration();
-  QnCorrectionsTrackDetectorConfiguration(const char *name,
+  QnCorrectionsDetectorConfigurationTracks();
+  QnCorrectionsDetectorConfigurationTracks(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
-  virtual ~QnCorrectionsTrackDetectorConfiguration();
+  virtual ~QnCorrectionsDetectorConfigurationTracks();
 
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t AttachCorrectionInputs(TList *list);
@@ -204,11 +204,11 @@ public:
   virtual void ClearConfiguration();
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsTrackDetectorConfiguration, 1);
+  ClassDef(QnCorrectionsDetectorConfigurationTracks, 1);
 /// \endcond
 };
 
-/// \class QnCorrectionsChannelDetectorConfiguration
+/// \class QnCorrectionsDetectorConfigurationChannels
 /// \brief Channel detector configuration within Q vector correction framework
 ///
 /// A channel detector within the Q vector correction framework is defined
@@ -223,16 +223,16 @@ public:
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Feb 08, 2016
 
-class QnCorrectionsChannelDetectorConfiguration :
+class QnCorrectionsDetectorConfigurationChannels :
     public QnCorrectionsDetectorConfigurationBase {
 public:
-  QnCorrectionsChannelDetectorConfiguration();
-  QnCorrectionsChannelDetectorConfiguration(const char *name,
+  QnCorrectionsDetectorConfigurationChannels();
+  QnCorrectionsDetectorConfigurationChannels(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
-  virtual ~QnCorrectionsChannelDetectorConfiguration();
+  virtual ~QnCorrectionsDetectorConfigurationChannels();
 
   /// Gets the number of channels
   /// \return the number of channels of the associated detector
@@ -276,10 +276,10 @@ private:
   Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
   Int_t *fChannelGroup; ///< array, the group to which the channel pertains
   Int_t fNoOfChannels;  ///< The number of channels associated
-  QnCorrectionsSetOfCorrectionsOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
+  QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsChannelDetectorConfiguration, 1);
+  ClassDef(QnCorrectionsDetectorConfigurationChannels, 1);
 /// \endcond
 };
 
@@ -371,7 +371,7 @@ private:
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector. Ignored for track detector configurations.
 /// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
+inline void QnCorrectionsDetectorConfigurationTracks::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
   if (IsSelected(variableContainer)) {
     /// add the data vector to the bank
@@ -386,7 +386,7 @@ inline void QnCorrectionsTrackDetectorConfiguration::AddDataVector(
 /// Transfers the order to the Q vector correction steps and
 /// cleans the own Q vector and the input data vector bank
 /// for accepting the next event.
-inline void QnCorrectionsTrackDetectorConfiguration::ClearConfiguration() {
+inline void QnCorrectionsDetectorConfigurationTracks::ClearConfiguration() {
   /* transfer the order to the Q vector corrections */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->ClearCorrectionStep();
@@ -402,7 +402,7 @@ inline void QnCorrectionsTrackDetectorConfiguration::ClearConfiguration() {
 /// Remember, this configuration does not have a channelized
 /// approach so, the built Q vector is the one to be used for
 /// subsequent corrections.
-inline void QnCorrectionsTrackDetectorConfiguration::BuildQnVector() {
+inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
   QnCorrectionsQnVectorBuild qVectorTemp(fQnVector);
   qVectorTemp.Reset();
 
@@ -419,7 +419,7 @@ inline void QnCorrectionsTrackDetectorConfiguration::BuildQnVector() {
 ///
 /// The request is transmitted to the Q vector correction steps.
 /// \return kTRUE if everything went OK
-inline Bool_t QnCorrectionsTrackDetectorConfiguration::ProcessCorrections(const Float_t *variableContainer) {
+inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessCorrections(const Float_t *variableContainer) {
   /* first we build the Q vector with the chosen calibration */
   BuildQnVector();
 
@@ -440,13 +440,13 @@ inline Bool_t QnCorrectionsTrackDetectorConfiguration::ProcessCorrections(const 
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector. Ignored for track detector configurations.
 /// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
+inline void QnCorrectionsDetectorConfigurationChannels::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
   if (IsSelected(variableContainer, channelId)) {
     /// add the data vector to the bank
-    QnCorrectionsChannelizedDataVector *channelizedDataVector =
+    QnCorrectionsDataVectorChannelized *channelizedDataVector =
         new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-          QnCorrectionsChannelizedDataVector(channelId, phi, weight);
+          QnCorrectionsDataVectorChannelized(channelId, phi, weight);
   }
 }
 
@@ -454,12 +454,12 @@ inline void QnCorrectionsChannelDetectorConfiguration::AddDataVector(
 /// data corrections but considering the chosen calibration method.
 /// This is a channelized configuration so this Q vector will NOT be
 /// the one to be used for subsequent Q vector corrections.
-inline void QnCorrectionsChannelDetectorConfiguration::BuildRawQnVector() {
+inline void QnCorrectionsDetectorConfigurationChannels::BuildRawQnVector() {
   QnCorrectionsQnVectorBuild qVectorTemp(fRawQnVector);
   qVectorTemp.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
-    QnCorrectionsChannelizedDataVector *dataVector = static_cast<QnCorrectionsChannelizedDataVector *>(fDataVectorBank->At(ixData));
+    QnCorrectionsDataVectorChannelized *dataVector = static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
     qVectorTemp.Add(dataVector->Phi(), dataVector->Weight());
   }
   qVectorTemp.Calibrate(fQnCalibrationMethod);
@@ -474,12 +474,12 @@ inline void QnCorrectionsChannelDetectorConfiguration::BuildRawQnVector() {
 /// and considering the chosen calibration method.
 /// The built Q vector is the one to be used for
 /// subsequent Q vector corrections.
-inline void QnCorrectionsChannelDetectorConfiguration::BuildQnVector() {
+inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
   QnCorrectionsQnVectorBuild qVectorTemp(fQnVector);
   qVectorTemp.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
-    QnCorrectionsChannelizedDataVector *dataVector = static_cast<QnCorrectionsChannelizedDataVector *>(fDataVectorBank->At(ixData));
+    QnCorrectionsDataVectorChannelized *dataVector = static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
     qVectorTemp.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
   qVectorTemp.Calibrate(fQnCalibrationMethod);
@@ -492,7 +492,7 @@ inline void QnCorrectionsChannelDetectorConfiguration::BuildQnVector() {
 /// The request is transmitted to the incoming data correction steps
 /// and to then to Q vector correction steps via
 /// \return kTRUE if everything went OK
-inline Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections(const Float_t *variableContainer) {
+inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(const Float_t *variableContainer) {
 
   /* first we build the raw Q vector with the chosen calibration */
   BuildRawQnVector();
@@ -530,7 +530,7 @@ inline Bool_t QnCorrectionsChannelDetectorConfiguration::ProcessCorrections(cons
 /// to the input data correction steps and finally
 /// cleans the own Q vector and the input data vector bank
 /// for accepting the next event.
-inline void QnCorrectionsChannelDetectorConfiguration::ClearConfiguration() {
+inline void QnCorrectionsDetectorConfigurationChannels::ClearConfiguration() {
   /* transfer the order to the Q vector corrections */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->ClearCorrectionStep();

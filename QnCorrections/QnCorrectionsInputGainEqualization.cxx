@@ -73,8 +73,8 @@ QnCorrectionsInputGainEqualization::~QnCorrectionsInputGainEqualization() {
 /// \param list list where the inputs should be found
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
-  QnCorrectionsChannelDetectorConfiguration *ownerConfiguration =
-      static_cast<QnCorrectionsChannelDetectorConfiguration *>(fDetectorConfiguration);
+  QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
+      static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
   if (fInputHistograms->AttachHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups())) {
     fState = QCORRSTEP_applyCollect;
@@ -90,8 +90,8 @@ Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) {
-  QnCorrectionsChannelDetectorConfiguration *ownerConfiguration =
-      static_cast<QnCorrectionsChannelDetectorConfiguration *>(fDetectorConfiguration);
+  QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
+      static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
   fInputHistograms = new QnCorrectionsProfileChannelizedIngress("TODOcal", "TODOcal",
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms = new QnCorrectionsProfileChannelized("TODOcal", "TODOcal",
@@ -109,8 +109,8 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
   case QCORRSTEP_calibration:
     /* collect the data needed to further produce equalization parameters */
     for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-      QnCorrectionsChannelizedDataVector *dataVector =
-          static_cast<QnCorrectionsChannelizedDataVector *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+      QnCorrectionsDataVectorChannelized *dataVector =
+          static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
       fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
     }
     return kFALSE;
@@ -118,8 +118,8 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
   case QCORRSTEP_applyCollect:
     /* collect the data needed to further produce equalization parameters */
     for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-      QnCorrectionsChannelizedDataVector *dataVector =
-          static_cast<QnCorrectionsChannelizedDataVector *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+      QnCorrectionsDataVectorChannelized *dataVector =
+          static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
       fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
     }
     /* and proceed to ... */
@@ -128,15 +128,15 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
     switch (fEqualizationMethod) {
     case QEQUAL_noEqualization:
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-        QnCorrectionsChannelizedDataVector *dataVector =
-            static_cast<QnCorrectionsChannelizedDataVector *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
         dataVector->SetEqualizedWeight(dataVector->Weight());
       }
       break;
     case QEQUAL_averageEqualization:
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-        QnCorrectionsChannelizedDataVector *dataVector =
-            static_cast<QnCorrectionsChannelizedDataVector *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
         Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
         Float_t width = fInputHistograms->GetBinError(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
         Float_t groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
@@ -148,8 +148,8 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
       break;
     case QEQUAL_widthEqualization:
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-        QnCorrectionsChannelizedDataVector *dataVector =
-            static_cast<QnCorrectionsChannelizedDataVector *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
         Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
         Float_t groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
         if (fMinimumSignificantValue < average)

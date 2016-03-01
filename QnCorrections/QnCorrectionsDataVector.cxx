@@ -57,11 +57,11 @@ QnCorrectionsDataVector::~QnCorrectionsDataVector() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsChannelizedDataVector);
+ClassImp(QnCorrectionsDataVectorChannelized);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector() :
+QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized() :
     QnCorrectionsDataVector() {
   fId = -1;
   fWeight = 1.0;
@@ -72,7 +72,7 @@ QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector() :
 /// \param channelId channel number
 /// \param phi the azimuthal angle
 /// \param weight the data vector weight
-QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector(Int_t channelId, Float_t phi, Float_t weight) :
+QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight) :
     QnCorrectionsDataVector(phi) {
   fId = channelId;
   fWeight = weight;
@@ -80,7 +80,7 @@ QnCorrectionsChannelizedDataVector::QnCorrectionsChannelizedDataVector(Int_t cha
 }
 
 /// Default destructor
-QnCorrectionsChannelizedDataVector::~QnCorrectionsChannelizedDataVector() {
+QnCorrectionsDataVectorChannelized::~QnCorrectionsDataVectorChannelized() {
 
 }
 

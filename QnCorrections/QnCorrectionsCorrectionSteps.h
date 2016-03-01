@@ -170,7 +170,7 @@ public:
 /// \endcond
 };
 
-/// \class QnCorrectionsSetOfCorrectionsOnInputData
+/// \class QnCorrectionsCorrectionsSetOnInputData
 /// \brief Encapsulate the set of corrections over input data
 ///
 /// Order matters so, the list must be built with the order in which
@@ -184,10 +184,10 @@ public:
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Feb 05, 2016
 
-class QnCorrectionsSetOfCorrectionsOnInputData: public TList {
+class QnCorrectionsCorrectionsSetOnInputData: public TList {
 public:
-  QnCorrectionsSetOfCorrectionsOnInputData();
-  virtual ~QnCorrectionsSetOfCorrectionsOnInputData();
+  QnCorrectionsCorrectionsSetOnInputData();
+  virtual ~QnCorrectionsCorrectionsSetOnInputData();
 
   /// Access the correction step at the passed position
   /// \param i position in the list (starting at zero)
@@ -197,11 +197,11 @@ public:
 
   void AddCorrection(QnCorrectionsCorrectionOnInputData *correction);
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsSetOfCorrectionsOnInputData, 1);
+  ClassDef(QnCorrectionsCorrectionsSetOnInputData, 1);
 /// \endcond
 };
 
-/// \class QnCorrectionsSetOfCorrectionsOnQvector
+/// \class QnCorrectionsCorrectionsSetOnQvector
 /// \brief Encapsulate the set of corrections to apply on Q vectors
 ///
 /// Order matters so, the list must be built with the order in which
@@ -215,10 +215,10 @@ public:
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Feb 05, 2016
 
-class QnCorrectionsSetOfCorrectionsOnQvector: public TList {
+class QnCorrectionsCorrectionsSetOnQvector: public TList {
 public:
-  QnCorrectionsSetOfCorrectionsOnQvector();
-  virtual ~QnCorrectionsSetOfCorrectionsOnQvector();
+  QnCorrectionsCorrectionsSetOnQvector();
+  virtual ~QnCorrectionsCorrectionsSetOnQvector();
 
   /// Access the correction step at the passed position
   /// \param i position in the list (starting at zero)
@@ -228,7 +228,7 @@ public:
 
   void AddCorrection(QnCorrectionsCorrectionOnQvector *correction);
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsSetOfCorrectionsOnQvector, 1);
+  ClassDef(QnCorrectionsCorrectionsSetOnQvector, 1);
 /// \endcond
 };
 

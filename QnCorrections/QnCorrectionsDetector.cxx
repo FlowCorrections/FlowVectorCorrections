@@ -216,11 +216,11 @@ Bool_t QnCorrectionsDetectorConfigurationBase::IsSelected(const Float_t *variabl
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsTrackDetectorConfiguration);
+ClassImp(QnCorrectionsDetectorConfigurationTracks);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration() : QnCorrectionsDetectorConfigurationBase() {
+QnCorrectionsDetectorConfigurationTracks::QnCorrectionsDetectorConfigurationTracks() : QnCorrectionsDetectorConfigurationBase() {
 
 }
 
@@ -230,7 +230,7 @@ QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration
 /// \param eventClassesVariables the set of event classes variables
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
-QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration(const char *name,
+QnCorrectionsDetectorConfigurationTracks::QnCorrectionsDetectorConfigurationTracks(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
@@ -241,7 +241,7 @@ QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration
 
 /// Default destructor
 /// Memory taken is released by the parent class destructor
-QnCorrectionsTrackDetectorConfiguration::~QnCorrectionsTrackDetectorConfiguration() {
+QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTracks() {
 
 }
 
@@ -253,7 +253,7 @@ QnCorrectionsTrackDetectorConfiguration::~QnCorrectionsTrackDetectorConfiguratio
 /// to the passed list. Then the new list is passed to the corrections.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
-Bool_t QnCorrectionsTrackDetectorConfiguration::CreateSupportHistograms(TList *list) {
+Bool_t QnCorrectionsDetectorConfigurationTracks::CreateSupportHistograms(TList *list) {
   Bool_t retValue = kTRUE;
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
@@ -271,7 +271,7 @@ Bool_t QnCorrectionsTrackDetectorConfiguration::CreateSupportHistograms(TList *l
 /// the request is transmitted to the Q vector corrections with the found list.
 /// \param list list where the input information should be found
 /// \return kTRUE if everything went OK
-Bool_t QnCorrectionsTrackDetectorConfiguration::AttachCorrectionInputs(TList *list) {
+Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *list) {
   TList *detectorConfigurationList = (TList *) list->FindObject(this->GetName());
   if (detectorConfigurationList != NULL) {
     Bool_t retValue = kTRUE;
@@ -284,11 +284,11 @@ Bool_t QnCorrectionsTrackDetectorConfiguration::AttachCorrectionInputs(TList *li
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsChannelDetectorConfiguration);
+ClassImp(QnCorrectionsDetectorConfigurationChannels);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration() :
+QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationChannels() :
     QnCorrectionsDetectorConfigurationBase(), fRawQnVector(), fInputDataCorrections() {
 
   fUsedChannel = NULL;
@@ -303,7 +303,7 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
 /// \param nNoOfChannels the number of channels of the associated detector
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
-QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration(const char *name,
+QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationChannels(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
@@ -314,12 +314,12 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
   fUsedChannel = NULL;
   fChannelGroup = NULL;
   fNoOfChannels = nNoOfChannels;
-  fDataVectorBank = new TClonesArray("QnCorrectionsChannelizedDataVector", INITIALDATAVECTORBANKSIZE);
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
 }
 
 /// Default destructor
 /// Releases the memory taken
-QnCorrectionsChannelDetectorConfiguration::~QnCorrectionsChannelDetectorConfiguration() {
+QnCorrectionsDetectorConfigurationChannels::~QnCorrectionsDetectorConfigurationChannels() {
 
   if (fUsedChannel != NULL) delete fUsedChannel;
   if (fChannelGroup != NULL) delete fChannelGroup;
@@ -328,7 +328,7 @@ QnCorrectionsChannelDetectorConfiguration::~QnCorrectionsChannelDetectorConfigur
 /// Incorporates the channels scheme to the detector configuration
 /// \param bUsedChannel array of booleans one per each channel
 /// \param nChannelGroup array of group number for each channel
-void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup) {
   /* TODO: there should be smart procedures on how to improve the channels scan for actual data */
   fUsedChannel = new Bool_t[fNoOfChannels];
   fChannelGroup = new Int_t[fNoOfChannels];
@@ -346,7 +346,7 @@ void QnCorrectionsChannelDetectorConfiguration::SetChannelsScheme(Bool_t *bUsedC
 /// and then to the Q vector corrections.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
-Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList *list) {
+Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList *list) {
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
@@ -372,7 +372,7 @@ Bool_t QnCorrectionsChannelDetectorConfiguration::CreateSupportHistograms(TList 
 /// and then propagated to the Q vector corrections
 /// \param list list where the input information should be found
 /// \return kTRUE if everything went OK
-Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *list) {
+Bool_t QnCorrectionsDetectorConfigurationChannels::AttachCorrectionInputs(TList *list) {
   TList *detectorConfigurationList = (TList *) list->FindObject(this->GetName());
   if (detectorConfigurationList != NULL) {
     Bool_t retValue = kTRUE;
@@ -391,7 +391,7 @@ Bool_t QnCorrectionsChannelDetectorConfiguration::AttachCorrectionInputs(TList *
 
 /// Incorporates the passed correction to the set of input data corrections
 /// \param correctionOnInputData the correction to add
-void QnCorrectionsChannelDetectorConfiguration::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
+void QnCorrectionsDetectorConfigurationChannels::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
   correctionOnInputData->SetConfigurationOwner(this);
   fInputDataCorrections.AddCorrection(correctionOnInputData);
 }

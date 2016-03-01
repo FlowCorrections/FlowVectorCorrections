@@ -119,16 +119,16 @@ QnCorrectionsCorrectionOnQvector::~QnCorrectionsCorrectionOnQvector() {
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsSetOfCorrectionsOnInputData);
+ClassImp(QnCorrectionsCorrectionsSetOnInputData);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsSetOfCorrectionsOnInputData::QnCorrectionsSetOfCorrectionsOnInputData() : TList() {
+QnCorrectionsCorrectionsSetOnInputData::QnCorrectionsCorrectionsSetOnInputData() : TList() {
 
 }
 
 /// Default destructor
-QnCorrectionsSetOfCorrectionsOnInputData::~QnCorrectionsSetOfCorrectionsOnInputData() {
+QnCorrectionsCorrectionsSetOnInputData::~QnCorrectionsCorrectionsSetOnInputData() {
 
 }
 
@@ -136,7 +136,7 @@ QnCorrectionsSetOfCorrectionsOnInputData::~QnCorrectionsSetOfCorrectionsOnInputD
 ///
 /// The correction is incorporated in its proper place according to
 /// its key
-void QnCorrectionsSetOfCorrectionsOnInputData::AddCorrection(QnCorrectionsCorrectionOnInputData *correction) {
+void QnCorrectionsCorrectionsSetOnInputData::AddCorrection(QnCorrectionsCorrectionOnInputData *correction) {
   if (IsEmpty()) {
     AddFirst(correction);
   }
@@ -156,16 +156,16 @@ void QnCorrectionsSetOfCorrectionsOnInputData::AddCorrection(QnCorrectionsCorrec
 }
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsSetOfCorrectionsOnQvector);
+ClassImp(QnCorrectionsCorrectionsSetOnQvector);
 /// \endcond
 
 /// Default constructor
-QnCorrectionsSetOfCorrectionsOnQvector::QnCorrectionsSetOfCorrectionsOnQvector() : TList() {
+QnCorrectionsCorrectionsSetOnQvector::QnCorrectionsCorrectionsSetOnQvector() : TList() {
 
 }
 
 /// Default destructor
-QnCorrectionsSetOfCorrectionsOnQvector::~QnCorrectionsSetOfCorrectionsOnQvector() {
+QnCorrectionsCorrectionsSetOnQvector::~QnCorrectionsCorrectionsSetOnQvector() {
 
 }
 
@@ -173,7 +173,7 @@ QnCorrectionsSetOfCorrectionsOnQvector::~QnCorrectionsSetOfCorrectionsOnQvector(
 ///
 /// The correction is incorporated in its proper place according to
 /// its key
-void QnCorrectionsSetOfCorrectionsOnQvector::AddCorrection(QnCorrectionsCorrectionOnQvector *correction) {
+void QnCorrectionsCorrectionsSetOnQvector::AddCorrection(QnCorrectionsCorrectionOnQvector *correction) {
   if (IsEmpty()) {
     AddFirst(correction);
   }

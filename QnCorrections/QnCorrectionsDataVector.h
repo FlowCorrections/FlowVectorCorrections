@@ -58,7 +58,7 @@ protected:
 /// \endcond
 };
 
-/// \class QnCorrectionsChannelizedDataVector
+/// \class QnCorrectionsDataVectorChannelized
 /// \brief Data vector class from a channelized detector
 ///
 /// The class expands the data vector one to incorporate channel id and
@@ -68,12 +68,12 @@ protected:
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 27, 2016
-class QnCorrectionsChannelizedDataVector : public QnCorrectionsDataVector{
+class QnCorrectionsDataVectorChannelized : public QnCorrectionsDataVector{
 public:
 
-  QnCorrectionsChannelizedDataVector();
-  QnCorrectionsChannelizedDataVector(Int_t channelId, Float_t phi, Float_t weight);
-  virtual ~QnCorrectionsChannelizedDataVector();
+  QnCorrectionsDataVectorChannelized();
+  QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight);
+  virtual ~QnCorrectionsDataVectorChannelized();
 
   /// Gets the channel id associated with the data vector
   /// \return the channel id
@@ -101,7 +101,7 @@ private:
   Float_t fEqualizedWeight;       ///< equalized weight after channel equalization
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsChannelizedDataVector, 1);
+  ClassDef(QnCorrectionsDataVectorChannelized, 1);
 /// \endcond
 };
 

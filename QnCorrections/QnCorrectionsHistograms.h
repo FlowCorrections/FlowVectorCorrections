@@ -352,7 +352,7 @@ private:
   /// \endcond
 };
 
-/// \class QnCorrectionsComponentsProfile
+/// \class QnCorrectionsProfileComponents
 /// \brief Base class for the components based set of profiles
 ///
 /// Provides profile histograms for storing component, X, Y, based
@@ -385,14 +385,14 @@ private:
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 15, 2016
-class QnCorrectionsComponentsProfile : public QnCorrectionsHistogramBase {
+class QnCorrectionsProfileComponents : public QnCorrectionsHistogramBase {
 public:
-  QnCorrectionsComponentsProfile();
-  QnCorrectionsComponentsProfile(const char *name,
+  QnCorrectionsProfileComponents();
+  QnCorrectionsProfileComponents(const char *name,
       const char *title,
       QnCorrectionsEventClassVariablesSet &ecvs,
       Option_t *option="");
-  virtual ~QnCorrectionsComponentsProfile();
+  virtual ~QnCorrectionsProfileComponents();
 
   Bool_t CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
@@ -420,11 +420,11 @@ private:
   UInt_t fFullFilled;         ///< mask for the fully filled condition
   THnI  *fEntries;  ///< Cumulates the number on each of the event classes
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsComponentsProfile, 1);
+  ClassDef(QnCorrectionsProfileComponents, 1);
   /// \endcond
 };
 
-/// \class QnCorrectionsCorrelationComponentsProfile
+/// \class QnCorrectionsProfileCorrelationComponents
 /// \brief Base class for the correlation components based set of profiles
 ///
 /// Provides profile histograms for storing component, XX, XY, YX, YY, based
@@ -451,15 +451,15 @@ private:
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 19, 2016
-class QnCorrectionsCorrelationComponentsProfile : public QnCorrectionsHistogramBase {
+class QnCorrectionsProfileCorrelationComponents : public QnCorrectionsHistogramBase {
 public:
-  QnCorrectionsCorrelationComponentsProfile();
-  QnCorrectionsCorrelationComponentsProfile(
+  QnCorrectionsProfileCorrelationComponents();
+  QnCorrectionsProfileCorrelationComponents(
       const char *name,
       const char *title,
       QnCorrectionsEventClassVariablesSet &ecvs,
       Option_t *option="");
-  virtual ~QnCorrectionsCorrelationComponentsProfile();
+  virtual ~QnCorrectionsProfileCorrelationComponents();
 
   Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
@@ -497,7 +497,7 @@ private:
   UInt_t fFullFilled;         ///< mask for the fully filled condition
   THnI  *fEntries;  ///< Cumulates the number on each of the event classes
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCorrelationComponentsProfile, 1);
+  ClassDef(QnCorrectionsProfileCorrelationComponents, 1);
   /// \endcond
 };
 

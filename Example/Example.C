@@ -196,8 +196,8 @@ void Setup(QnCorrectionsManager* QnMan){
   QnCorrectionsDetector *myDetectorTwo = new QnCorrectionsDetector(DetectorNames[kDetector2], kDetector2);
 
   /* and our detector configurations for the track detector */
-  QnCorrectionsTrackDetectorConfiguration *myDetectorOnePositive =
-      new QnCorrectionsTrackDetectorConfiguration(
+  QnCorrectionsDetectorConfigurationTracks *myDetectorOnePositive =
+      new QnCorrectionsDetectorConfigurationTracks(
           "Det1pos",
           CorrEventClasses,
           nNoOfHarmonics,
@@ -205,8 +205,8 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorOnePositive->SetCuts(myPositiveCuts);
   myDetectorOnePositive->SetQVectorCalibrationMethod(QCALIB_QoverM);
 
-  QnCorrectionsTrackDetectorConfiguration *myDetectorOneNegative =
-      new QnCorrectionsTrackDetectorConfiguration(
+  QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
+      new QnCorrectionsDetectorConfigurationTracks(
           "Det1neg",
           CorrEventClasses,
           nNoOfHarmonics,
@@ -243,8 +243,8 @@ void Setup(QnCorrectionsManager* QnMan){
     nChannelGroupDetectorTwoA[ixChannel] = Int_t(ixChannel / 8);
   }
 
-  QnCorrectionsChannelDetectorConfiguration *myDetectorTwoA =
-      new QnCorrectionsChannelDetectorConfiguration(
+  QnCorrectionsDetectorConfigurationChannels *myDetectorTwoA =
+      new QnCorrectionsDetectorConfigurationChannels(
           "Det2A",
           CorrEventClasses,
           nDetectorTwoNoOfChannels,
@@ -259,8 +259,8 @@ void Setup(QnCorrectionsManager* QnMan){
   eqA->SetEqualizationMethod(QEQUAL_widthEqualization);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
 
-  QnCorrectionsChannelDetectorConfiguration *myDetectorTwoC =
-      new QnCorrectionsChannelDetectorConfiguration(
+  QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
+      new QnCorrectionsDetectorConfigurationChannels(
           "Det2C",
           CorrEventClasses,
           nDetectorTwoNoOfChannels,
@@ -553,7 +553,7 @@ void TestComponentsHistograms(Option_t *option) {
   Int_t nNoOfHarmonics = 1;
   Int_t harmonicsMap[] = {2};
   Int_t myHarmonic = 2;
-  QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet, option);
+  QnCorrectionsProfileComponents *myProfile = new QnCorrectionsProfileComponents("QnCorrectionsProfileComponents", "myComponentsProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
@@ -647,7 +647,7 @@ void TestComponentsHistograms(Option_t *option) {
   delete myProfile;       /* should not delete the histograms owned by the list */
 
   /* we create it back */
-  myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet, option);
+  myProfile = new QnCorrectionsProfileComponents("QnCorrectionsProfileComponents", "myComponentsProfile", evtClassSet, option);
   if(myProfile->AttachHistograms(myList))
     cout << "OK: histograms properly attached to the Components Profile object\n";
   else
@@ -754,8 +754,8 @@ void TestCorrelationComponentsHistograms(Option_t *option) {
   Int_t nNoOfHarmonics = 1;
   Int_t harmonicsMap[] = {2};
   Int_t myHarmonic = 2;
-  QnCorrectionsCorrelationComponentsProfile *myProfile =
-      new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet, option);
+  QnCorrectionsProfileCorrelationComponents *myProfile =
+      new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateCorrelationComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
@@ -893,7 +893,7 @@ void TestCorrelationComponentsHistograms(Option_t *option) {
   delete myProfile;       /* should not delete the histograms owned by the list */
 
   /* we create it back */
-  myProfile = new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet, option);
+  myProfile = new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
   if(myProfile->AttachHistograms(myList))
     cout << "OK: histograms properly attached to the Components Profile object\n";
   else
@@ -1125,7 +1125,7 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
   /// the data vectors bank
   TClonesArray *dataVectorsBank = new TClonesArray("QnCorrectionsDataVector", 100000);
   /// the channelized data vectors bank
-  TClonesArray *channelizedDataVectorsBank = new TClonesArray("QnCorrectionsChannelizedDataVector", 100000);
+  TClonesArray *channelizedDataVectorsBank = new TClonesArray("QnCorrectionsDataVectorChannelized", 100000);
 
   /// the Q vectors we are going to use
   Int_t nHarmonics = 3;
@@ -1154,15 +1154,15 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
       weight = gRandom->Rndm()*((200.+ich)/200.)*(100-centrality)*(1+flowV2*TMath::Cos(2*(phiSector[ich%8]-PsiRP)));
 
       /// add the data vector to the bank
-      QnCorrectionsChannelizedDataVector *channelizedDataVector =
+      QnCorrectionsDataVectorChannelized *channelizedDataVector =
           new (channelizedDataVectorsBank->ConstructedAt(channelizedDataVectorsBank->GetEntriesFast()))
-            QnCorrectionsChannelizedDataVector(ich, phiSector[ich%8]+rotation, weight);
+            QnCorrectionsDataVectorChannelized(ich, phiSector[ich%8]+rotation, weight);
     }
 
     /// let's fill the Q vector
     for (Int_t ixdata = 0; ixdata < channelizedDataVectorsBank->GetEntriesFast(); ixdata++) {
-      QnCorrectionsChannelizedDataVector *dataVector =
-          dynamic_cast<QnCorrectionsChannelizedDataVector*>(channelizedDataVectorsBank->At(ixdata));
+      QnCorrectionsDataVectorChannelized *dataVector =
+          dynamic_cast<QnCorrectionsDataVectorChannelized*>(channelizedDataVectorsBank->At(ixdata));
       myChannelizedDetectorQnVector.Add(dataVector->Phi(), dataVector->Weight());
       cout << Form("channel: d, phi: %f, weight: %f\n", dataVector->Phi(), dataVector->Weight());
       cout << Form("X(2) comp: %f; X(4) comp: %f; X(6) comp: %f\n",

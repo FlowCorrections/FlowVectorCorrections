@@ -70,7 +70,7 @@ now you are able to access to your event classes variables and their access memb
 ## Histograms
 The correction framework makes an extensive use of profile histograms in order to provide the proper scope to the different averages needed to elaborate the intended Q vector corrections. As was previouslly described one of the key components of the correction framework is its concept of multidimensional event classes: you decide to define your event classes based on a concrete set of variables usually greather than one. This goes straight on to multidimensional profiles. 
 
-So far ROOT only supports up to tridimensional profiles, but we wanted to give more flexibility and, due to the fact we expect not that much bins per variable you will use to define your event classes, we decided to build multidimensional profiles functionality. With this aim we provide a base class, QnCorrectionsHistogramBase, that should not be instantiated, and which declares the whole interface for the correction framework histogram classes, a single multidimensional histogram profile class, QnCorrectionsProfile, a components oriented multidimensional histogram profile class, QnCorrectionsComponentsProfile, which provide support for both components, X and Y, for a set of selected harmonics, and a correlation components oriented multidimenional histogram profile class, QnCorrectionsCorrelationComponentsProfile, which provide support for the correlation components, XX, XY, YX and YY, for a set of selected harmonics. 
+So far ROOT only supports up to tridimensional profiles, but we wanted to give more flexibility and, due to the fact we expect not that much bins per variable you will use to define your event classes, we decided to build multidimensional profiles functionality. With this aim we provide a base class, QnCorrectionsHistogramBase, that should not be instantiated, and which declares the whole interface for the correction framework histogram classes, a single multidimensional histogram profile class, QnCorrectionsProfile, a components oriented multidimensional histogram profile class, QnCorrectionsProfileComponents, which provide support for both components, X and Y, for a set of selected harmonics, and a correlation components oriented multidimenional histogram profile class, QnCorrectionsProfileCorrelationComponents, which provide support for the correlation components, XX, XY, YX and YY, for a set of selected harmonics. 
 
 ### QnCorrectionsHistogramBase
 Is the base for the whole set of histogram classes and declares their interfaces for the basic methods. It is not oriented to be instantiated and as an additional development support will include run time error messages that will orient you when you are not doing a proper use of its descendant classes.
@@ -94,12 +94,12 @@ Example:
     Double_t myProfileBinError = myProfile->GetBinError(myProfile->GetBin(varContainer));
 ~~~
 
-### QnCorrectionsComponentsProfile
+### QnCorrectionsProfileComponents
 Implements a multidimensional histogram profile for each of the components X and Y for each of the selected harmonics. The harmonic number is handled in the expected way, i.e., if you are interested in the second harmonic, you will always address it as the second (2) harmonic. But you have to provide some help at histogram creation time.
 
 At construction time you provide the same information as for any other histogram profile within the framework: an event classs variable set
 ~~~{.cxx}
-    QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", fEventClasses);
+    QnCorrectionsProfileComponents *myProfile = new QnCorrectionsProfileComponents("QnCorrectionsProfileComponents", "myComponentsProfile", fEventClasses);
 ~~~
 But at creation time, if you want full support for your criteria of numbering harmonics you have to provide a map to indicate so to the framework. For instance, suppose you need support for three harmonics, the even ones, 2, 4 and 6. Then you write
 ~~~{.cxx}
@@ -130,11 +130,11 @@ Accessing the content of your profile is straight forward, as you expected,
     Double_t myProfile2YBinError = myProfile->GetYBinError(myHarmonic, myProfile->GetBin(varContainer));
 ~~~
  
-### QnCorrectionsCorrelationComponentsProfile
-Implements a multidimensional histogram profile for each of the correlation components XX, XY, YX and YY for each of the selected harmonics. The overall behavior matches the QnCorrectionsComponentsProfile one so, we just include the adapted code snipets
+### QnCorrectionsProfileCorrelationComponents
+Implements a multidimensional histogram profile for each of the correlation components XX, XY, YX and YY for each of the selected harmonics. The overall behavior matches the QnCorrectionsProfileComponents one so, we just include the adapted code snipets
 ~~~{.cxx}
-    QnCorrectionsCorrelationComponentsProfile *myProfile = 
-        new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myComponentsCorrelationProfile", fEventClasses);
+    QnCorrectionsProfileCorrelationComponents *myProfile = 
+        new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myComponentsCorrelationProfile", fEventClasses);
 ~~~
 ~~~{.cxx}
   Int_t nNoOfHarmonics = 1;
