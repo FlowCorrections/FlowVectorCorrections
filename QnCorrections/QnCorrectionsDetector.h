@@ -56,9 +56,9 @@ class QnCorrectionsDetector;
 class QnCorrectionsDetectorConfigurationBase : public TNamed {
 public:
   friend class QnCorrectionsCorrectionStepBase;
+  friend class QnCorrectionsDetector;
   QnCorrectionsDetectorConfigurationBase();
   QnCorrectionsDetectorConfigurationBase(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
@@ -72,6 +72,11 @@ public:
   void SetQVectorCalibrationMethod(QnVectorCalibrationMethod method)
   { fQnCalibrationMethod = method; }
 
+protected:
+  /// Stores the detector reference
+  /// \param detector the detector owner
+  void SetDetectorOwner(QnCorrectionsDetector *detector)
+  { fDetector = detector; }
   /// Gets the detector reference
   ///
   /// \return detector pointer
@@ -169,7 +174,6 @@ class QnCorrectionsTrackDetectorConfiguration :
 public:
   QnCorrectionsTrackDetectorConfiguration();
   QnCorrectionsTrackDetectorConfiguration(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap = NULL);
@@ -224,7 +228,6 @@ class QnCorrectionsChannelDetectorConfiguration :
 public:
   QnCorrectionsChannelDetectorConfiguration();
   QnCorrectionsChannelDetectorConfiguration(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,

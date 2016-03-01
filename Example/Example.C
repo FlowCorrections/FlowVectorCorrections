@@ -196,7 +196,6 @@ void Setup(QnCorrectionsManager* QnMan){
   QnCorrectionsTrackDetectorConfiguration *myDetectorOnePositive =
       new QnCorrectionsTrackDetectorConfiguration(
           "Det1pos",
-          myDetectorOne,
           CorrEventClasses,
           nNoOfHarmonics,
           harmonicsMap);
@@ -206,7 +205,6 @@ void Setup(QnCorrectionsManager* QnMan){
   QnCorrectionsTrackDetectorConfiguration *myDetectorOneNegative =
       new QnCorrectionsTrackDetectorConfiguration(
           "Det1neg",
-          myDetectorOne,
           CorrEventClasses,
           nNoOfHarmonics,
           harmonicsMap);
@@ -245,7 +243,6 @@ void Setup(QnCorrectionsManager* QnMan){
   QnCorrectionsChannelDetectorConfiguration *myDetectorTwoA =
       new QnCorrectionsChannelDetectorConfiguration(
           "Det2A",
-          myDetectorTwo,
           CorrEventClasses,
           nDetectorTwoNoOfChannels,
           nNoOfHarmonics,
@@ -262,7 +259,6 @@ void Setup(QnCorrectionsManager* QnMan){
   QnCorrectionsChannelDetectorConfiguration *myDetectorTwoC =
       new QnCorrectionsChannelDetectorConfiguration(
           "Det2C",
-          myDetectorTwo,
           CorrEventClasses,
           nDetectorTwoNoOfChannels,
           nNoOfHarmonics,

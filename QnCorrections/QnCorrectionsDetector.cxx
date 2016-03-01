@@ -91,23 +91,25 @@ Bool_t QnCorrectionsDetector::AttachCorrectionInputs(TList *list) {
 /// Adds a new detector configuration to the current detector
 ///
 /// Raise an execution error if the configuration detector reference
-/// does not match the current detector and if the detector configuration
+/// is not empty and if the detector configuration
 /// is already incorporated to the detector.
 /// \param detectorConfiguration pointer to the configuration to be added
 void QnCorrectionsDetector::AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration) {
-  if (this != detectorConfiguration->GetDetector()) {
+  if (detectorConfiguration->GetDetector() != NULL) {
     QnCorrectionsFatal(Form("You are adding %s detector configuration of detector Id %d to detector Id %d. FIX IT, PLEASE.",
         detectorConfiguration->GetName(),
         detectorConfiguration->GetDetector()->GetId(),
         GetId()));
     return;
   }
+
   if (fConfigurations.FindObject(detectorConfiguration->GetName())) {
     QnCorrectionsFatal(Form("You are trying to add twice %s detector configuration to detector Id %d. FIX IT, PLEASE.",
         detectorConfiguration->GetName(),
         GetId()));
     return;
   }
+  detectorConfiguration->SetDetectorOwner(this);
   fConfigurations.Add(detectorConfiguration);
 }
 
@@ -140,14 +142,13 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase()
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           TNamed(name,name),
           fQnVector(nNoOfHarmonics, harmonicMap), fQnVectorCorrections() {
 
-  fDetector = detector;
+  fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
   fQnCalibrationMethod = QCALIB_noCalibration;
@@ -232,11 +233,10 @@ QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
 QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
-          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
+          QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
 
   fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
 }
@@ -307,12 +307,11 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
 QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfiguration(const char *name,
-      QnCorrectionsDetector *detector,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
       Int_t nNoOfChannels,
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
-          QnCorrectionsDetectorConfigurationBase(name, detector, eventClassesVariables, nNoOfHarmonics, harmonicMap),
+          QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap),
           fRawQnVector(nNoOfHarmonics, harmonicMap),
           fInputDataCorrections() {
   fUsedChannel = NULL;
