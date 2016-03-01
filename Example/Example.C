@@ -83,9 +83,9 @@ Int_t nEventNo;
 
 /* the prepared tests */
 void TestEventClasses();
-void TestProfileHistograms();
-void TestComponentsHistograms();
-void TestCorrelationComponentsHistograms();
+void TestProfileHistograms(Option_t *option="");
+void TestComponentsHistograms(Option_t *option="");
+void TestCorrelationComponentsHistograms(Option_t *option="");
 void TestCuts();
 void TestDataVectorsAndQnVectors(Int_t nEvents = 20);
 
@@ -130,8 +130,11 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
   /* run the tests */
   /* TestEventClasses();
   TestProfileHistograms();
+  TestProfileHistograms("s");
   TestComponentsHistograms();
+  TestComponentsHistograms("s");
   TestCorrelationComponentsHistograms();
+  TestCorrelationComponentsHistograms("s");
   TestCuts();
   TestDataVectorsAndQnVectors(2); */
 
@@ -441,9 +444,10 @@ void TestEventClasses() {
 }
 
 /// Test for the profile function support
-void TestProfileHistograms() {
+void TestProfileHistograms(Option_t *option) {
   /* let's test now the profile functions */
   cout << "\n\nPROFILE HISTOGRAMS TESTS\n========================\n";
+  cout << "ERROR OPTION: " << option << "\n\n";
   Int_t nBins = 40;
   Double_t min = -4.0;
   Double_t max = 4.0;
@@ -451,7 +455,7 @@ void TestProfileHistograms() {
   Double_t binmiddle[nBins]; for (Int_t bin = 0; bin < nBins; bin++) binmiddle[bin] = min + binwidth / 2 + bin * binwidth;
 
   /* the ROOT 2D profile */
-  TProfile2D *hprof2d  = new TProfile2D("hprof2d","Profile of pz versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+  TProfile2D *hprof2d  = new TProfile2D("hprof2d","Profile of pz versus px and py",nBins,min,max,nBins,min,max,0,20, option);
 
   Float_t px, py, pz;
   /* now let's build our event class variables */
@@ -464,7 +468,7 @@ void TestProfileHistograms() {
   Float_t varContainer[kNVars];
 
   /* and now our histogram */
-  QnCorrectionsProfile *myProfile = new QnCorrectionsProfile("QnCorrectionsProfile", "myProfile", evtClassSet);
+  QnCorrectionsProfile *myProfile = new QnCorrectionsProfile("QnCorrectionsProfile", "myProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateProfileHistograms(myList);
@@ -521,9 +525,10 @@ void TestProfileHistograms() {
 }
 
 /// Test for the components profile function support
-void TestComponentsHistograms() {
+void TestComponentsHistograms(Option_t *option) {
   /* let's test now the components profile functions */
   cout << "\n\nCOMPONENTS PROFILE HISTOGRAMS TESTS\n===================================\n";
+  cout << "ERROR OPTION: " << option << "\n\n";
   Int_t nBins = 40;
   Double_t min = -4.0;
   Double_t max = 4.0;
@@ -531,8 +536,8 @@ void TestComponentsHistograms() {
   Double_t binmiddle[nBins]; for (Int_t bin = 0; bin < nBins; bin++) binmiddle[bin] = min + binwidth / 2 + bin * binwidth;
 
   /* the ROOT 2D profiles */
-  TProfile2D *hprofX2d  = new TProfile2D("hprofX2d","Profile of pz*|cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
-  TProfile2D *hprofY2d  = new TProfile2D("hprofY2d","Profile of pz*|sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+  TProfile2D *hprofX2d  = new TProfile2D("hprofX2d","Profile of pz*|cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
+  TProfile2D *hprofY2d  = new TProfile2D("hprofY2d","Profile of pz*|sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
 
   Float_t px, py, pz;
   /* now let's build our event class variables */
@@ -548,7 +553,7 @@ void TestComponentsHistograms() {
   Int_t nNoOfHarmonics = 1;
   Int_t harmonicsMap[] = {2};
   Int_t myHarmonic = 2;
-  QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet);
+  QnCorrectionsComponentsProfile *myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
@@ -638,11 +643,11 @@ void TestComponentsHistograms() {
   hprofX2d->Print();
   hprofY2d->Print();
 
-  /* Check now we are able to attach to a new constructed object the hsitograms existing in the list */
+  /* Check now we are able to attach to a new constructed object the histograms existing in the list */
   delete myProfile;       /* should not delete the histograms owned by the list */
 
   /* we create it back */
-  myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet);
+  myProfile = new QnCorrectionsComponentsProfile("QnCorrectionsComponentsProfile", "myComponentsProfile", evtClassSet, option);
   if(myProfile->AttachHistograms(myList))
     cout << "OK: histograms properly attached to the Components Profile object\n";
   else
@@ -715,9 +720,10 @@ void TestComponentsHistograms() {
 }
 
 /// Test for the correlations components profile function support
-void TestCorrelationComponentsHistograms() {
+void TestCorrelationComponentsHistograms(Option_t *option) {
   /* let's test now the correlation components profile functions */
   cout << "\n\nCORRELATION COMPONENTS PROFILE HISTOGRAMS TESTS\n===============================================\n";
+  cout << "ERROR OPTION: " << option << "\n\n";
   Int_t nBins = 40;
   Double_t min = -4.0;
   Double_t max = 4.0;
@@ -726,13 +732,13 @@ void TestCorrelationComponentsHistograms() {
 
   /* the ROOT 2D profiles */
   TProfile2D *hprofXX2d  =
-      new TProfile2D("hprofXX2d","Profile of pz*|cos 2#phi * cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+      new TProfile2D("hprofXX2d","Profile of pz*|cos 2#phi * cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
   TProfile2D *hprofXY2d  =
-      new TProfile2D("hprofXY2d","Profile of pz*|cos 2#phi * sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+      new TProfile2D("hprofXY2d","Profile of pz*|cos 2#phi * sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
   TProfile2D *hprofYX2d  =
-      new TProfile2D("hprofYX2d","Profile of pz*|sin 2#phi * cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+      new TProfile2D("hprofYX2d","Profile of pz*|sin 2#phi * cos 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
   TProfile2D *hprofYY2d  =
-      new TProfile2D("hprofYY2d","Profile of pz*|sin 2#phi * sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, "s");
+      new TProfile2D("hprofYY2d","Profile of pz*|sin 2#phi * sin 2#phi| versus px and py",nBins,min,max,nBins,min,max,0,20, option);
 
   Float_t px, py, pz;
   /* now let's build our event class variables */
@@ -749,7 +755,7 @@ void TestCorrelationComponentsHistograms() {
   Int_t harmonicsMap[] = {2};
   Int_t myHarmonic = 2;
   QnCorrectionsCorrelationComponentsProfile *myProfile =
-      new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet);
+      new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateCorrelationComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
@@ -887,7 +893,7 @@ void TestCorrelationComponentsHistograms() {
   delete myProfile;       /* should not delete the histograms owned by the list */
 
   /* we create it back */
-  myProfile = new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet);
+  myProfile = new QnCorrectionsCorrelationComponentsProfile("QnCorrectionsCorrelationComponentsProfile", "myCorrelationComponentsProfile", evtClassSet, option);
   if(myProfile->AttachHistograms(myList))
     cout << "OK: histograms properly attached to the Components Profile object\n";
   else
