@@ -50,7 +50,10 @@ protected:
   } QnCorrectionHistogramErrorMode;
 public:
   QnCorrectionsHistogramBase();
-  QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
+  QnCorrectionsHistogramBase(const char *name,
+      const char *title,
+      QnCorrectionsEventClassVariablesSet &ecvs,
+      Option_t *option="");
   virtual ~QnCorrectionsHistogramBase();
 
   virtual Bool_t AttachHistograms(TList *histogramList);
@@ -158,7 +161,10 @@ inline void QnCorrectionsHistogramBase::FillBinAxesValues(const Float_t *variabl
 class QnCorrectionsProfile : public QnCorrectionsHistogramBase {
 public:
   QnCorrectionsProfile();
-  QnCorrectionsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
+  QnCorrectionsProfile(const char *name,
+      const char *title,
+      QnCorrectionsEventClassVariablesSet &ecvs,
+      Option_t *option="");
   virtual ~QnCorrectionsProfile();
 
   Bool_t CreateProfileHistograms(TList *histogramList);
@@ -382,7 +388,10 @@ private:
 class QnCorrectionsComponentsProfile : public QnCorrectionsHistogramBase {
 public:
   QnCorrectionsComponentsProfile();
-  QnCorrectionsComponentsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
+  QnCorrectionsComponentsProfile(const char *name,
+      const char *title,
+      QnCorrectionsEventClassVariablesSet &ecvs,
+      Option_t *option="");
   virtual ~QnCorrectionsComponentsProfile();
 
   Bool_t CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);

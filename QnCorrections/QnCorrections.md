@@ -1,5 +1,7 @@
-QnCorrections framework description (v0.5) {#mainpage}
+QnCorrections framework description (v0.6) {#mainpage}
 ===================================
+![Framework functional diagram](Framework.png "Framework functional diagram")
+
 
 ## Event classes
 If you are interesting in doing Flow analysis most probably you want to classify your events under different event classes. For supporting that, the correction framework defines two classes: QnCorrectionEventClassVariable and QnCorrectionEventClassVariablesSet.

@@ -137,7 +137,6 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase()
 
 /// Normal constructor
 /// \param name the name of the detector configuration
-/// \param detector the detector object that will own the detector configuration
 /// \param eventClassesVariables the set of event classes variables
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
@@ -228,7 +227,6 @@ QnCorrectionsTrackDetectorConfiguration::QnCorrectionsTrackDetectorConfiguration
 /// Normal constructor
 /// Allocates the data vector bank.
 /// \param name the name of the detector configuration
-/// \param detector the detector object that will own the detector configuration
 /// \param eventClassesVariables the set of event classes variables
 /// \param nNoOfHarmonics the number of harmonics that must be handled
 /// \param harmonicMap an optional ordered array with the harmonic numbers
@@ -301,7 +299,6 @@ QnCorrectionsChannelDetectorConfiguration::QnCorrectionsChannelDetectorConfigura
 /// Normal constructor
 /// Allocates the data vector bank.
 /// \param name the name of the detector configuration
-/// \param detector the detector object that will own the detector configuration
 /// \param eventClassesVariables the set of event classes variables
 /// \param nNoOfChannels the number of channels of the associated detector
 /// \param nNoOfHarmonics the number of harmonics that must be handled
