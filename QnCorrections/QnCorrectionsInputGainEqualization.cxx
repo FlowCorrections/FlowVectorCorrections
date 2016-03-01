@@ -85,15 +85,17 @@ Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
 /// Asks for support histograms creation
 ///
 /// Allocates the histogram objects and creates the calibration histograms.
+/// The histograms are constructed with standard deviation error calculation
+/// for the proper behavior of the gain equalization.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) {
   QnCorrectionsChannelDetectorConfiguration *ownerConfiguration =
       static_cast<QnCorrectionsChannelDetectorConfiguration *>(fDetectorConfiguration);
   fInputHistograms = new QnCorrectionsProfileChannelizedIngress("TODOcal", "TODOcal",
-      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
+      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms = new QnCorrectionsProfileChannelized("TODOcal", "TODOcal",
-      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
+      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
   return kTRUE;

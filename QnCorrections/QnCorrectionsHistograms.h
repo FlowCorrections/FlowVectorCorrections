@@ -17,6 +17,15 @@ class QnCorrectionsEventClassVariablesSet;
 /// parent) the base name and base title for the different
 /// histograms it will encapsulate.
 ///
+/// The passed at construction option parameter is the option for the
+/// the computation of the  errors in the descendant profiles. Possible
+/// values for the options are:
+///
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
+///
+///     's'            the bin are the standard deviation of of the bin values
+///
 /// The encapsulated bin axes values provide an efficient
 /// runtime storage for computing bin numbers.
 ///
@@ -28,9 +37,20 @@ class QnCorrectionsEventClassVariablesSet;
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 11, 2016
 class QnCorrectionsHistogramBase : public TNamed {
+protected:
+  /// \typedef QnCorrectionHistogramErrorMode
+  /// \brief The type of bin errors supported by the framework histograms.
+  ///
+  /// Actually it is not a class because the C++ level of implementation.
+  /// But full protection will be reached when were possible declaring it
+  /// as a class.
+  typedef enum {
+    kERRORMEAN = 0,                 ///< the bin errors are the standard error on the mean
+    kERRORSPREAD                    ///< the bin errors are the standard deviation
+  } QnCorrectionHistogramErrorMode;
 public:
   QnCorrectionsHistogramBase();
-  QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
+  QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
   virtual ~QnCorrectionsHistogramBase();
 
   virtual Bool_t AttachHistograms(TList *histogramList);
@@ -70,7 +90,8 @@ protected:
   void CopyTHnFDimension(THnF *hDest, THnF *hSource, Int_t *binsArray, Int_t dimension);
 
   QnCorrectionsEventClassVariablesSet fEventClassVariables;  ///< The variables set that determines the event classes
-  Double_t *fBinAxesValues; ///< Runtime place holder for computing bin number
+  Double_t *fBinAxesValues;                                  ///< Runtime place holder for computing bin number
+  QnCorrectionHistogramErrorMode fErrorMode;                 ///< The error type for the current instance
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsHistogramBase, 1);
   /// \endcond
@@ -137,7 +158,7 @@ inline void QnCorrectionsHistogramBase::FillBinAxesValues(const Float_t *variabl
 class QnCorrectionsProfile : public QnCorrectionsHistogramBase {
 public:
   QnCorrectionsProfile();
-  QnCorrectionsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
+  QnCorrectionsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
   virtual ~QnCorrectionsProfile();
 
   Bool_t CreateProfileHistograms(TList *histogramList);
@@ -192,7 +213,14 @@ private:
 /// \f[
 ///    \frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}
 /// \f]
-/// while GetBinError returns the standard deviation of the values
+/// while depending on the option passed at construction GetBinError returns
+/// * "" the standard error on the mean of the values in the interested bin
+/// \f[
+///    \frac{\sqrt{\frac{\Sigma \mbox{fValues}^2\mbox{(bin)}}{\mbox{fEntries(bin)}}
+///          - \left(\frac{\Sigma \mbox{fValues(bin)}}{\mbox{fEntries(bin)}}\right)^2}}
+///         {\sqrt{\mbox{fEntries(bin)}}}
+/// \f]
+/// * "s" the standard deviation of the values
 /// in the interested bin
 /// \f[
 ///    \sqrt{\frac{\Sigma \mbox{fValues}^2\mbox{(bin)}}{\mbox{fEntries(bin)}}
@@ -209,7 +237,8 @@ public:
   QnCorrectionsProfileChannelized(const char *name,
       const char *title,
       QnCorrectionsEventClassVariablesSet &ecvs,
-      Int_t nNoOfChannels);
+      Int_t nNoOfChannels,
+      Option_t *option="");
   virtual ~QnCorrectionsProfileChannelized();
 
   Bool_t CreateProfileHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup);
@@ -278,7 +307,8 @@ public:
   QnCorrectionsProfileChannelizedIngress(const char *name,
       const char *title,
       QnCorrectionsEventClassVariablesSet &ecvs,
-      Int_t nNoOfChannels);
+      Int_t nNoOfChannels,
+      Option_t *option="");
   virtual ~QnCorrectionsProfileChannelizedIngress();
 
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup);
@@ -352,7 +382,7 @@ private:
 class QnCorrectionsComponentsProfile : public QnCorrectionsHistogramBase {
 public:
   QnCorrectionsComponentsProfile();
-  QnCorrectionsComponentsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs);
+  QnCorrectionsComponentsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs, Option_t *option="");
   virtual ~QnCorrectionsComponentsProfile();
 
   Bool_t CreateComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
@@ -418,7 +448,8 @@ public:
   QnCorrectionsCorrelationComponentsProfile(
       const char *name,
       const char *title,
-      QnCorrectionsEventClassVariablesSet &ecvs);
+      QnCorrectionsEventClassVariablesSet &ecvs,
+      Option_t *option="");
   virtual ~QnCorrectionsCorrelationComponentsProfile();
 
   Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);

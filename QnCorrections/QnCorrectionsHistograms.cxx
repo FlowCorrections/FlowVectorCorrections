@@ -37,6 +37,7 @@ QnCorrectionsHistogramBase::QnCorrectionsHistogramBase() :
   fEventClassVariables(),
   fBinAxesValues(NULL) {
 
+  fErrorMode = kERRORMEAN;
 }
 
 /// Default destructor
@@ -60,14 +61,26 @@ QnCorrectionsHistogramBase::~QnCorrectionsHistogramBase() {
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
 ///
-QnCorrectionsHistogramBase::QnCorrectionsHistogramBase(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs) :
+///     's'            the bin are the standard deviation of of the bin values
+QnCorrectionsHistogramBase::QnCorrectionsHistogramBase(const char *name,
+    const char *title,
+    QnCorrectionsEventClassVariablesSet &ecvs,
+    Option_t *option) :
   TNamed(name, title),
   fEventClassVariables(ecvs),
   fBinAxesValues(NULL) {
 
   /* one place more for storing the channel number by inherited classes */
   fBinAxesValues = new Double_t[fEventClassVariables.GetEntries() + 1];
+
+  TString opt = option;
+  opt.ToLower();
+  fErrorMode = kERRORMEAN;
+  if (opt.Contains("s")) fErrorMode = kERRORSPREAD;
 }
 
 /// Attaches existing histograms as the supporting histograms
@@ -595,9 +608,19 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
     }
     else {
       Double_t average = value / nEntries;
-      Double_t error = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
-      hResult->SetBinContent(bin, average);
-      hResult->SetBinError(bin, error);
+      Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+      switch (fErrorMode) {
+      case kERRORMEAN:
+        /* standard error on the mean of the bin values */
+        hResult->SetBinContent(bin, average);
+        hResult->SetBinError(bin, serror / TMath::Sqrt(nEntries));
+        break;
+      case kERRORSPREAD:
+        /* standard deviation of the bin values */
+        hResult->SetBinContent(bin, average);
+        hResult->SetBinError(bin, serror);
+        break;
+      }
     }
     hResult->SetEntries(hValues->GetEntries());
   }
@@ -674,9 +697,16 @@ QnCorrectionsProfile::QnCorrectionsProfile(): QnCorrectionsHistogramBase() {
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
 ///
-QnCorrectionsProfile::QnCorrectionsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs):
-    QnCorrectionsHistogramBase(name, title, ecvs) {
+///     's'            the bin are the standard deviation of of the bin values
+QnCorrectionsProfile::QnCorrectionsProfile(const char *name,
+    const char *title,
+    QnCorrectionsEventClassVariablesSet &ecvs,
+    Option_t *option):
+    QnCorrectionsHistogramBase(name, title, ecvs, option) {
   fValues = NULL;
   fEntries = NULL;
 }
@@ -786,26 +816,28 @@ Int_t QnCorrectionsProfile::GetBin(const Float_t *variableContainer) {
 /// Get the bin content for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// is requested.If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
   Int_t nEntries = fEntries->GetBinContent(bin);
 
-  if (nEntries > 1) {
-    return fValues->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
 /// Get the bin content error for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param bin the interested bin number
@@ -813,14 +845,24 @@ Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
 Float_t QnCorrectionsProfile::GetBinError(Int_t bin) {
   Int_t nEntries = fEntries->GetBinContent(bin);
   Float_t values = fValues->GetBinContent(bin);
-  Float_t sumsqvalues = fValues->GetBinError2(bin);
+  Float_t error2 = fValues->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -870,10 +912,16 @@ QnCorrectionsProfileChannelized::QnCorrectionsProfileChannelized() :
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
 /// \param nNoOfChannels the number of channels associated
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
+///
+///     's'            the bin are the standard deviation of of the bin values
 QnCorrectionsProfileChannelized::QnCorrectionsProfileChannelized(const char *name,
     const char *title,
     QnCorrectionsEventClassVariablesSet &ecvs,
-    Int_t nNoOfChannels) : QnCorrectionsHistogramBase(name, title, ecvs) {
+    Int_t nNoOfChannels,
+    Option_t *option) : QnCorrectionsHistogramBase(name, title, ecvs, option) {
 
   fValues = NULL;
   fEntries = NULL;
@@ -1020,8 +1068,9 @@ Int_t QnCorrectionsProfileChannelized::GetBin(const Float_t *variableContainer, 
 /// Get the bin content for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// is requested.If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// is requested.If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
@@ -1029,34 +1078,44 @@ Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
 
   Int_t nEntries = fEntries->GetBinContent(bin);
 
-  if (nEntries > 1) {
-    return fValues->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
 /// Get the bin content error for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
 Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
-
   Int_t nEntries = fEntries->GetBinContent(bin);
   Float_t values = fValues->GetBinContent(bin);
-  Float_t sumsqvalues = fValues->GetBinError2(bin);
+  Float_t error2 = fValues->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -1113,10 +1172,16 @@ QnCorrectionsProfileChannelizedIngress::QnCorrectionsProfileChannelizedIngress()
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
 /// \param nNoOfChannels the number of channels associated
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
+///
+///     's'            the bin are the standard deviation of of the bin values
 QnCorrectionsProfileChannelizedIngress::QnCorrectionsProfileChannelizedIngress(const char *name,
     const char *title,
     QnCorrectionsEventClassVariablesSet &ecvs,
-    Int_t nNoOfChannels) : QnCorrectionsHistogramBase(name, title, ecvs) {
+    Int_t nNoOfChannels,
+    Option_t *option) : QnCorrectionsHistogramBase(name, title, ecvs, option) {
 
   fValues = NULL;
   fGroupValues = NULL;
@@ -1473,8 +1538,16 @@ QnCorrectionsComponentsProfile::QnCorrectionsComponentsProfile() :
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
-QnCorrectionsComponentsProfile::QnCorrectionsComponentsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs) :
-    QnCorrectionsHistogramBase(name, title, ecvs) {
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
+///
+///     's'            the bin are the standard deviation of of the bin values
+QnCorrectionsComponentsProfile::QnCorrectionsComponentsProfile(const char *name,
+    const char *title,
+    QnCorrectionsEventClassVariablesSet &ecvs,
+    Option_t *option) :
+    QnCorrectionsHistogramBase(name, title, ecvs, option) {
 
   fXValues = NULL;
   fYValues = NULL;
@@ -1717,8 +1790,9 @@ Int_t QnCorrectionsComponentsProfile::GetBin(const Float_t *variableContainer) {
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -1732,11 +1806,11 @@ Float_t QnCorrectionsComponentsProfile::GetXBinContent(Int_t harmonic, Int_t bin
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -1744,8 +1818,9 @@ Float_t QnCorrectionsComponentsProfile::GetXBinContent(Int_t harmonic, Int_t bin
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -1759,11 +1834,11 @@ Float_t QnCorrectionsComponentsProfile::GetYBinContent(Int_t harmonic, Int_t bin
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -1771,7 +1846,8 @@ Float_t QnCorrectionsComponentsProfile::GetYBinContent(Int_t harmonic, Int_t bin
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -1787,14 +1863,24 @@ Float_t QnCorrectionsComponentsProfile::GetXBinError(Int_t harmonic, Int_t bin) 
   }
 
   Float_t values = fXValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fXValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fXValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -1802,7 +1888,8 @@ Float_t QnCorrectionsComponentsProfile::GetXBinError(Int_t harmonic, Int_t bin) 
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -1818,14 +1905,24 @@ Float_t QnCorrectionsComponentsProfile::GetYBinError(Int_t harmonic, Int_t bin) 
   }
 
   Float_t values = fYValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fYValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fYValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -1945,8 +2042,16 @@ QnCorrectionsCorrelationComponentsProfile::QnCorrectionsCorrelationComponentsPro
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
 /// \param ecvs the event classes variables set
-QnCorrectionsCorrelationComponentsProfile::QnCorrectionsCorrelationComponentsProfile(const char *name, const char *title, QnCorrectionsEventClassVariablesSet &ecvs) :
-    QnCorrectionsHistogramBase(name, title, ecvs) {
+/// \param option option for errors computation
+///     ' '  (Default) the bin errors are the standard error on the mean of the
+///          bin values
+///
+///     's'            the bin are the standard deviation of of the bin values
+QnCorrectionsCorrelationComponentsProfile::QnCorrectionsCorrelationComponentsProfile(const char *name,
+    const char *title,
+    QnCorrectionsEventClassVariablesSet &ecvs,
+    Option_t *option) :
+        QnCorrectionsHistogramBase(name, title, ecvs, option) {
 
   fXXValues = NULL;
   fXYValues = NULL;
@@ -2247,8 +2352,9 @@ Int_t QnCorrectionsCorrelationComponentsProfile::GetBin(const Float_t *variableC
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -2262,11 +2368,11 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinContent(Int_t harmoni
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fXXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fXXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -2274,8 +2380,9 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinContent(Int_t harmoni
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -2289,11 +2396,11 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinContent(Int_t harmoni
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fXYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fXYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -2301,8 +2408,9 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinContent(Int_t harmoni
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -2316,11 +2424,11 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinContent(Int_t harmoni
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fYXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fYXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -2328,8 +2436,9 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinContent(Int_t harmoni
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is one or lower
-/// the bin is not considered valid and zero is returned
+/// requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
@@ -2343,11 +2452,11 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinContent(Int_t harmoni
     return 0.0;
   }
 
-  if (nEntries > 1) {
-    return fYYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    return fYYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
 
@@ -2355,7 +2464,8 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinContent(Int_t harmoni
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -2371,14 +2481,24 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinError(Int_t harmonic,
   }
 
   Float_t values = fXXValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fXXValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fXXValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -2386,7 +2506,8 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXXBinError(Int_t harmonic,
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -2402,14 +2523,24 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinError(Int_t harmonic,
   }
 
   Float_t values = fXYValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fXYValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fXYValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -2417,7 +2548,8 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetXYBinError(Int_t harmonic,
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -2433,14 +2565,24 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinError(Int_t harmonic,
   }
 
   Float_t values = fYXValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fYXValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fYXValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
@@ -2448,7 +2590,8 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYXBinError(Int_t harmonic,
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is one or lower
+/// error is requested. If the number of entries is lower
+/// than the minimum number of entries to validate it
 /// the bin is not considered valid and zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
@@ -2464,14 +2607,24 @@ Float_t QnCorrectionsCorrelationComponentsProfile::GetYYBinError(Int_t harmonic,
   }
 
   Float_t values = fYYValues[harmonic]->GetBinContent(bin);
-  Float_t sumsqvalues = fYYValues[harmonic]->GetBinError2(bin);
+  Float_t error2 = fYYValues[harmonic]->GetBinError2(bin);
 
-  if (nEntries > 1) {
-    return TMath::Sqrt(TMath::Abs(sumsqvalues / nEntries
-        - (values / nEntries)*(values / nEntries)));
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return 0.0;
   }
   else {
-    return 0.0;
+    Double_t average = values / nEntries;
+    Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
+    switch (fErrorMode) {
+    case kERRORMEAN:
+      /* standard error on the mean of the bin values */
+      return serror / TMath::Sqrt(nEntries);
+      break;
+    case kERRORSPREAD:
+      /* standard deviation of the bin values */
+      return serror;
+      break;
+    }
   }
 }
 
