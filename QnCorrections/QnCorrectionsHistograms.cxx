@@ -594,6 +594,7 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
   Double_t value, error2;
   Int_t nEntries;
   Bool_t bErrorMessage = kFALSE;
+  Int_t nNotValidatedBins = 0;
 
   for (Int_t bin = 0; bin < hResult->GetNbins(); bin++){
     value = hValues->GetBinContent(bin);
@@ -604,7 +605,10 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
       /* bin content not validated */
       hResult->SetBinContent(bin, 0.0);
       hResult->SetBinError(bin, 0.0);
-      bErrorMessage = kTRUE;
+      if (value != 0.0) {
+        bErrorMessage = kTRUE;
+        nNotValidatedBins++;
+      }
     }
     else {
       Double_t average = value / nEntries;
@@ -625,8 +629,9 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
     hResult->SetEntries(hValues->GetEntries());
   }
   if (bErrorMessage) {
-    QnCorrectionsError(Form("There are bins whose bin content were not validated! histogram: %s.\n" \
+    QnCorrectionsError(Form("There are %d bins whose bin content were not validated! histogram: %s.\n" \
         "   Minimum number of entries to validate: %d.",
+        nNotValidatedBins,
         hValues->GetName(),
         nMinNoOfEntriesValidated));
   }
@@ -1264,20 +1269,20 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
     else {
       fUsedChannel[ixChannel] = kTRUE;
     }
-    if (nChannelGroup != NULL) {
-      fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
-      /* update min max group number */
-      if (nChannelGroup[ixChannel] < nMinGroup)
-        nMinGroup = nChannelGroup[ixChannel];
-      if (nMaxGroup < nChannelGroup[ixChannel])
-        nMaxGroup = nChannelGroup[ixChannel];
-    }
-    else {
-      fChannelGroup[ixChannel] = 0;
-      nMinGroup = 0;
-      nMaxGroup = 0;
-    }
     if (fUsedChannel[ixChannel]) {
+      if (nChannelGroup != NULL) {
+        fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+        /* update min max group number */
+        if (nChannelGroup[ixChannel] < nMinGroup)
+          nMinGroup = nChannelGroup[ixChannel];
+        if (nMaxGroup < nChannelGroup[ixChannel])
+          nMaxGroup = nChannelGroup[ixChannel];
+      }
+      else {
+        fChannelGroup[ixChannel] = 0;
+        nMinGroup = 0;
+        nMaxGroup = 0;
+      }
       fChannelMap[ixChannel] = fActualNoOfChannels;
       fActualNoOfChannels++;
     }
@@ -1335,6 +1340,10 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
       histoGroupName += GetName();
       TString histoGroupTitle = szGroupHistoPrefix;
       histoGroupTitle += GetTitle();
+      TString histoGroupNameEntries = histoGroupName;
+      histoGroupNameEntries += szEntriesHistoSuffix;
+      TString histoGroupTitleEntries = histoGroupTitle;
+      histoGroupTitleEntries += szEntriesHistoSuffix;
 
       /* we open space for channel variable as well */
       Int_t nVariables = fEventClassVariables.GetEntriesFast();
@@ -1354,17 +1363,26 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
 
       /* create the values and entries multidimensional histograms */
       fGroupValues = new THnF((const char *) histoGroupName, (const char *) histoGroupTitle,nVariables+1,nbins,minvals,maxvals);
+      THnF *tempGroupValues = new THnF((const char *) histoGroupName, (const char *) histoGroupTitle,nVariables+1,nbins,minvals,maxvals);
+      THnI *tempGroupEntries = new THnI((const char *) histoGroupNameEntries, (const char *) histoGroupTitleEntries, nVariables+1, nbins, minvals, maxvals);
 
       /* now let's set the proper binning and label on each axis */
       for (Int_t var = 0; var < nVariables; var++) {
         fGroupValues->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+        tempGroupValues->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
+        tempGroupEntries->GetAxis(var)->Set(fEventClassVariables.At(var)->GetNBins(),fEventClassVariables.At(var)->GetBins());
         fGroupValues->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetVariableLabel());
+        tempGroupValues->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetVariableLabel());
+        tempGroupEntries->GetAxis(var)->SetTitle(fEventClassVariables.At(var)->GetVariableLabel());
       }
 
       /* and now the channel axis */
       fGroupValues->GetAxis(nVariables)->SetTitle(szGroupAxisTitle);
+      tempGroupValues->GetAxis(nVariables)->SetTitle(szGroupAxisTitle);
+      tempGroupEntries->GetAxis(nVariables)->SetTitle(szGroupAxisTitle);
 
       fGroupValues->Sumw2();
+      tempGroupValues->Sumw2();
 
       /* now let's build its content */
       /* the procedure is as follow: we will project and add together the values histogram */
@@ -1379,37 +1397,50 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
         if (fUsedGroup[ixGroup]) {
           /* new group, let's add its contributor channels */
           THnF *hCumProjected = NULL;
+          THnI *hCumProjectedEntries = NULL;
           for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
             if (fUsedChannel[ixChannel]) {
               if (fChannelGroup[ixChannel] == ixGroup) {
                 /* channel within the group found let's add its content */
                 /* first filter the projection */
                 fValues->GetAxis(nVariables)->SetRange(fChannelMap[ixChannel]+1, fChannelMap[ixChannel]+1);
+                origEntries->GetAxis(nVariables)->SetRange(fChannelMap[ixChannel]+1, fChannelMap[ixChannel]+1);
                 if (hCumProjected != NULL) {
                   /* let's accumulate the new channel */
                   THnF *hProjected = (THnF *) fValues->Projection(nVariables,dimToProject, "E");
+                  THnI *hProjectedEntries = (THnI *) origEntries->Projection(nVariables,dimToProject);
                   hCumProjected->Add(hProjected);
+                  hCumProjectedEntries->Add(hProjectedEntries);
                   delete hProjected;
+                  delete hProjectedEntries;
                 }
                 else {
                   /* first channel in the group */
                   hCumProjected = (THnF *) fValues->Projection(nVariables,dimToProject, "E");
+                  hCumProjectedEntries = (THnI *) origEntries->Projection(nVariables,dimToProject);
                 }
               }
             }
           }
+          /* this should not be the final stuff but just for testing */
+          /* let's build the final group weight */
+          THnF *hChannelsGroupWeights = DivideTHnF(hCumProjected, hCumProjectedEntries);
+
           /* let's store the channels contribution to the group values for the group */
           /* we have to go through the multidimensional structure */
           /* the group we are storing values */
           for (Int_t var = 0; var < nVariables; var++)
             binsArray[var] = 0;
           binsArray[nVariables] = fGroupMap[ixGroup] + 1;
-          CopyTHnF(fGroupValues, hCumProjected, binsArray);
+          CopyTHnF(fGroupValues, hChannelsGroupWeights, binsArray);
           delete hCumProjected;
+          delete hCumProjectedEntries;
+          delete hChannelsGroupWeights;
         }
       }
       /* reset the range */
       fValues->GetAxis(nVariables)->SetRange(0, 0);
+      origEntries->GetAxis(nVariables)->SetRange(0, 0);
       delete dimToProject;
       delete binsArray;
     }
