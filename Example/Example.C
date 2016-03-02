@@ -257,6 +257,8 @@ void Setup(QnCorrectionsManager* QnMan){
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
   eqA->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqA->SetAandB(1.0, 0.1);
+  eqA->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
 
   QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
@@ -273,6 +275,8 @@ void Setup(QnCorrectionsManager* QnMan){
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
   eqC->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqC->SetAandB(1.0, 0.1);
+  eqC->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoC->AddCorrectionOnInputData(eqC);
 
   /* add the configurations to the detector */

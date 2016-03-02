@@ -243,8 +243,11 @@ public:
   /// Gets the channels groups
   /// \return the group associated to each channel
   const Int_t *GetChannelsGroups() const { return fChannelGroup; }
+  /// Gets the hard coded group weights
+  /// \return the groups hard coded weights
+  const Float_t *GetHardCodedGroupWeights() const { return fHardCodedGroupWeights; }
 
-  void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup);
+  void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup, Float_t *hardCodedGroupWeights = NULL);
 
   virtual Bool_t CreateSupportHistograms(TList *list);
 
@@ -273,9 +276,10 @@ public:
 
 private:
   QnCorrectionsQnVector fRawQnVector;     ///< Q vector from input data before pre-processing
-  Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
-  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
-  Int_t fNoOfChannels;  ///< The number of channels associated
+  Bool_t *fUsedChannel;                   ///< array, which of the detector channels is used for this configuration
+  Int_t *fChannelGroup;                   ///< array, the group to which the channel pertains
+  Int_t fNoOfChannels;                    ///< The number of channels associated
+  Float_t *fHardCodedGroupWeights;         ///< array, group hard coded weight
   QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
 
 /// \cond CLASSIMP

@@ -60,6 +60,8 @@ QnCorrectionsInputGainEqualization::QnCorrectionsInputGainEqualization() :
   fEqualizationMethod = QEQUAL_noEqualization;
   fA = 0.0;
   fB = 1.0;
+  fUseChannelGroupsWeights = kFALSE;
+  fHardCodedWeights = NULL;
 }
 
 /// Default destructor
@@ -73,7 +75,8 @@ QnCorrectionsInputGainEqualization::~QnCorrectionsInputGainEqualization() {
 
 /// Attaches the needed input information to the correction step
 ///
-/// Pure virtual function
+/// If the attachment succeeded asks for hard coded group weights to
+/// the detector configuration
 /// \param list list where the inputs should be found
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
@@ -82,6 +85,7 @@ Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
   if (fInputHistograms->AttachHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups())) {
     fState = QCORRSTEP_applyCollect;
+    fHardCodedWeights = ownerConfiguration->GetHardCodedGroupWeights();
     return kTRUE;
   }
   return kFALSE;
@@ -142,7 +146,16 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
         QnCorrectionsDataVectorChannelized *dataVector =
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
         Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
-        Float_t groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        /* let's handle the potential group weights usage */
+        Float_t groupweight = 1.0;
+        if (fUseChannelGroupsWeights) {
+          groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        }
+        else {
+          if (fHardCodedWeights != NULL) {
+            groupweight = fHardCodedWeights[dataVector->GetId()];
+          }
+        }
         if (fMinimumSignificantValue < average)
           dataVector->SetEqualizedWeight((dataVector->Weight() / average) * groupweight);
         else
@@ -155,7 +168,16 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
         Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
         Float_t width = fInputHistograms->GetBinError(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
-        Float_t groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        /* let's handle the potential group weights usage */
+        Float_t groupweight = 1.0;
+        if (fUseChannelGroupsWeights) {
+          groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        }
+        else {
+          if (fHardCodedWeights != NULL) {
+            groupweight = fHardCodedWeights[dataVector->GetId()];
+          }
+        }
         if (fMinimumSignificantValue < average)
           dataVector->SetEqualizedWeight((fA + fB * (dataVector->Weight() - average) / width) * groupweight);
         else

@@ -300,6 +300,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
   fUsedChannel = NULL;
   fChannelGroup = NULL;
   fNoOfChannels = 0;
+  fHardCodedGroupWeights = NULL;
 }
 
 /// Normal constructor
@@ -320,6 +321,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
   fUsedChannel = NULL;
   fChannelGroup = NULL;
   fNoOfChannels = nNoOfChannels;
+  fHardCodedGroupWeights = NULL;
   fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
 }
 
@@ -333,15 +335,56 @@ QnCorrectionsDetectorConfigurationChannels::~QnCorrectionsDetectorConfigurationC
 
 /// Incorporates the channels scheme to the detector configuration
 /// \param bUsedChannel array of booleans one per each channel
+///        If NULL all channels in fNoOfChannels are allocated to the detector configuration
 /// \param nChannelGroup array of group number for each channel
-void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup) {
+///        If NULL all channels in fNoOfChannels are assigned to a unique group
+/// \param hardCodedGroupWeights array with hard coded weight for each group
+///        If NULL no hard coded weight is assigned (i.e. weight = 1)
+void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(
+    Bool_t *bUsedChannel,
+    Int_t *nChannelGroup,
+    Float_t *hardCodedGroupWeights) {
   /* TODO: there should be smart procedures on how to improve the channels scan for actual data */
   fUsedChannel = new Bool_t[fNoOfChannels];
   fChannelGroup = new Int_t[fNoOfChannels];
 
+  Int_t nMinGroup = 0xFFFF;
+  Int_t nMaxGroup = 0x0000;
   for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
-    fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
-    fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+    if (bUsedChannel != NULL)
+      fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
+    else
+      fUsedChannel[ixChannel] = kTRUE;
+    if (fUsedChannel[ixChannel]) {
+      if (nChannelGroup != NULL) {
+        fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
+        /* update min max group number */
+        if (nChannelGroup[ixChannel] < nMinGroup)
+          nMinGroup = nChannelGroup[ixChannel];
+        if (nMaxGroup < nChannelGroup[ixChannel])
+          nMaxGroup = nChannelGroup[ixChannel];
+      }
+      else {
+        fChannelGroup[ixChannel] = 0;
+        nMinGroup = 0;
+        nMaxGroup = 0;
+      }
+    }
+  }
+  Bool_t bUseGroups = (hardCodedGroupWeights != NULL) && (nChannelGroup != NULL) && (nMinGroup != nMaxGroup);
+
+  /* store the hard coded group weights assigned to each channel if applicable */
+  if (bUseGroups) {
+    fHardCodedGroupWeights = new Float_t[fNoOfChannels];
+    for (Int_t i = 0; i < fNoOfChannels; i++) {
+      fHardCodedGroupWeights[i] = 0.0;
+    }
+    for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
+      if (fUsedChannel[ixChannel]) {
+        fHardCodedGroupWeights[ixChannel] =
+            hardCodedGroupWeights[fChannelGroup[ixChannel]];
+      }
+    }
   }
 }
 

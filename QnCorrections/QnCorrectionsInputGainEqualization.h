@@ -82,6 +82,10 @@ public:
   /// \param B the B parameter value
   void SetAandB(Float_t A, Float_t B)
   { fA = A; fB = B; }
+  /// Enable or disable the group weights extracted from channel multiplicity
+  /// \param enable kTRUE / kFALSE for enable / disable it
+  void SetUseChannelGroupsWeights(Bool_t enable)
+  { fUseChannelGroupsWeights = enable; }
 
   /// Attaches the needed input information to the correction step
   ///
@@ -112,6 +116,8 @@ private:
 
   Float_t fA;                                   ///< the A parameter for width equalization
   Float_t fB;                                   ///< the B parameter for width equalization
+  Bool_t fUseChannelGroupsWeights;              ///< use group weights extracted from channel multiplicity
+  const Float_t *fHardCodedWeights;             ///< group hard coded weights stored in the detector configuration
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsInputGainEqualization, 1);
