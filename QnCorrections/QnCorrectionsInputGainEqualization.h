@@ -77,6 +77,12 @@ public:
   void SetEqualizationMethod(QnGainEqualizationMethod method)
   { fEqualizationMethod = method; }
 
+  /// Set the width equalization parameters
+  /// \param A the A parameter value
+  /// \param B the B parameter value
+  void SetAandB(Float_t A, Float_t B)
+  { fA = A; fB = B; }
+
   /// Attaches the needed input information to the correction step
   ///
   /// Pure virtual function
@@ -99,9 +105,13 @@ private:
   static const Float_t  fMinimumSignificantValue;     ///< the minimum value that will be considered as meaningful for processing
   static const char *szCorrectionName;               ///< the name of the correction step
   static const char *szKey;                          ///< the key of the correction step for ordering purpose
+  static const char *szSupportHistogramName;         ///< the name and title for support histograms
   QnCorrectionsProfileChannelizedIngress *fInputHistograms; ///< the histogram with calibration information
   QnCorrectionsProfileChannelized *fCalibrationHistograms; ///< the histogram for building calibration information
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
+
+  Float_t fA;                                   ///< the A parameter for width equalization
+  Float_t fB;                                   ///< the B parameter for width equalization
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsInputGainEqualization, 1);
