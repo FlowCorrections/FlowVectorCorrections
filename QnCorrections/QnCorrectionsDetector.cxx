@@ -258,9 +258,15 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::CreateSupportHistograms(TList *
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
-  list->Add(detectorConfigurationList);
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
+  }
+  /* if list is empty delete it if not incorporate it */
+  if (detectorConfigurationList->GetEntries() != 0) {
+    list->Add(detectorConfigurationList);
+  }
+  else {
+    delete detectorConfigurationList;
   }
   return retValue;
 }
@@ -350,7 +356,6 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
-  list->Add(detectorConfigurationList);
   Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
     retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
@@ -361,6 +366,13 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList
     for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
       retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
     }
+  }
+  /* if list is empty delete it if not incorporate it */
+  if (detectorConfigurationList->GetEntries() != 0) {
+    list->Add(detectorConfigurationList);
+  }
+  else {
+    delete detectorConfigurationList;
   }
   return retValue;
 }
