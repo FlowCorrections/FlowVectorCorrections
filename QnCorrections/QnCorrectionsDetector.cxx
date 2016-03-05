@@ -155,10 +155,13 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
 }
 
 /// Default destructor
-/// Releases the memory which was taken
+/// Releases the memory which was taken or passed
 QnCorrectionsDetectorConfigurationBase::~QnCorrectionsDetectorConfigurationBase() {
   if (fDataVectorBank != NULL) {
     delete fDataVectorBank;
+  }
+  if (fCuts != NULL) {
+    delete fCuts;
   }
 }
 
@@ -297,9 +300,9 @@ ClassImp(QnCorrectionsDetectorConfigurationChannels);
 QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationChannels() :
     QnCorrectionsDetectorConfigurationBase(), fRawQnVector(), fInputDataCorrections() {
 
+  fNoOfChannels = 0;
   fUsedChannel = NULL;
   fChannelGroup = NULL;
-  fNoOfChannels = 0;
   fHardCodedGroupWeights = NULL;
 }
 
@@ -318,9 +321,9 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
           QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap),
           fRawQnVector(nNoOfHarmonics, harmonicMap),
           fInputDataCorrections() {
+  fNoOfChannels = nNoOfChannels;
   fUsedChannel = NULL;
   fChannelGroup = NULL;
-  fNoOfChannels = nNoOfChannels;
   fHardCodedGroupWeights = NULL;
   fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
 }
@@ -331,6 +334,7 @@ QnCorrectionsDetectorConfigurationChannels::~QnCorrectionsDetectorConfigurationC
 
   if (fUsedChannel != NULL) delete fUsedChannel;
   if (fChannelGroup != NULL) delete fChannelGroup;
+  if (fHardCodedGroupWeights != NULL) delete fHardCodedGroupWeights;
 }
 
 /// Incorporates the channels scheme to the detector configuration

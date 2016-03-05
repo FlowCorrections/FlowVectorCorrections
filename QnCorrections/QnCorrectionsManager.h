@@ -87,10 +87,12 @@ private:
   static const Int_t nMaxNoOfDataVariables; ///< the maximum number of variables currently supported by the framework
   static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored
   TList fDetectorsSet;                  ///< the list of detectors
-  QnCorrectionsDetector **fDetectorsIdMap; ///< map between external detector Id and internal detector
-  Float_t *fDataContainer;              ///< the data variables bank
-  TList *fCalibrationHistogramsList;    ///< the list of the calibration histograms
-  TList *fSupportHistogramsList;        ///< the list of the support histograms
+  ///< map between external detector Id and internal detector
+  QnCorrectionsDetector **fDetectorsIdMap; //[nMaxNoOfDetectors]
+  ///< the data variables bank
+  Float_t *fDataContainer;                 //[nMaxNoOfDataVariables]
+  TList *fCalibrationHistogramsList;    //!<! the list of the calibration histograms
+  TList *fSupportHistogramsList;        //!<! the list of the support histograms
   TString fProcessListName;             ///< the name of the list associated to the current process
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);

@@ -50,6 +50,7 @@ QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable() :
 TObject(),
 fVarId(-1),
 fNBins(0),
+fNBinsPlusOne(0),
 fBins(NULL),
 fLabel("") {
 
@@ -60,6 +61,7 @@ QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(const QnCorrect
 TObject(ecv),
 fVarId(ecv.fVarId),
 fNBins(ecv.fNBins),
+fNBinsPlusOne(ecv.fNBinsPlusOne),
 fBins(NULL),
 fLabel(ecv.fLabel) {
 
@@ -82,6 +84,7 @@ QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, co
 TObject(),
 fVarId(varId),
 fNBins(nbins),
+fNBinsPlusOne(nbins+1),
 fBins(NULL),
 fLabel(varname) {
 
@@ -107,6 +110,7 @@ QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, co
 TObject(),
 fVarId(varId),
 fNBins(nbins),
+fNBinsPlusOne(nbins+1),
 fBins(NULL),
 fLabel(varname) {
 
@@ -133,12 +137,14 @@ QnCorrectionsEventClassVariable::QnCorrectionsEventClassVariable(Int_t varId, co
 TObject(),
 fVarId(varId),
 fNBins(0),
+fNBinsPlusOne(0),
 fBins(NULL),
 fLabel(varname) {
 
   for(Int_t section = 1; section < (Int_t) binArray[0][1]; section++)
     fNBins += binArray[section][1];
 
+  fNBinsPlusOne = fNBins+1;
   fBins = new Double_t [fNBins+1];
 
   Double_t low = binArray[0][0];

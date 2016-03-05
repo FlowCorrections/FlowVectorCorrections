@@ -92,25 +92,25 @@ protected:
   void CopyTHnF(THnF *hDest, THnF *hSource, Int_t *binsArray);
   void CopyTHnFDimension(THnF *hDest, THnF *hSource, Int_t *binsArray, Int_t dimension);
 
-  QnCorrectionsEventClassVariablesSet fEventClassVariables;  ///< The variables set that determines the event classes
-  Double_t *fBinAxesValues;                                  ///< Runtime place holder for computing bin number
-  QnCorrectionHistogramErrorMode fErrorMode;                 ///< The error type for the current instance
+  QnCorrectionsEventClassVariablesSet fEventClassVariables;  //!<! The variables set that determines the event classes
+  Double_t *fBinAxesValues;                                  //!<! Runtime place holder for computing bin number
+  QnCorrectionHistogramErrorMode fErrorMode;                 //!<! The error type for the current instance
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsHistogramBase, 1);
   /// \endcond
-  static const char *szChannelAxisTitle;                ///< The title for the channel extra axis
-  static const char *szGroupAxisTitle;                  ///< The title for the channel group extra axis
-  static const char *szGroupHistoPrefix;                ///< The prefix for the name of the group histograms
-  static const char *szEntriesHistoSuffix;              ///< The suffix for the name of the entries histograms
-  static const char *szXComponentSuffix;                ///< The suffix for the name of X component histograms
-  static const char *szYComponentSuffix;                ///< The suffix for the name of Y component histograms
+  static const char *szChannelAxisTitle;                 ///< The title for the channel extra axis
+  static const char *szGroupAxisTitle;                   ///< The title for the channel group extra axis
+  static const char *szGroupHistoPrefix;                 ///< The prefix for the name of the group histograms
+  static const char *szEntriesHistoSuffix;               ///< The suffix for the name of the entries histograms
+  static const char *szXComponentSuffix;                 ///< The suffix for the name of X component histograms
+  static const char *szYComponentSuffix;                 ///< The suffix for the name of Y component histograms
   static const char *szXXCorrelationComponentSuffix;     ///< The suffix for the name of XX correlation component histograms
   static const char *szXYCorrelationComponentSuffix;     ///< The suffix for the name of XY correlation component histograms
   static const char *szYXCorrelationComponentSuffix;     ///< The suffix for the name of YX correlation component histograms
   static const char *szYYCorrelationComponentSuffix;     ///< The suffix for the name of YY correlation component histograms
-  static const Int_t nMaxHarmonicNumberSupported;       ///< The maximum external harmonic number the framework support
-  static const UInt_t harmonicNumberMask[];             ///< Mask for each external harmonic number
-  static const Int_t nMinNoOfEntriesValidated;          ///< The minimum number of entries for validating a bin content
+  static const Int_t nMaxHarmonicNumberSupported;        ///< The maximum external harmonic number the framework support
+  static const UInt_t harmonicNumberMask[];              ///< Mask for each external harmonic number
+  static const Int_t nMinNoOfEntriesValidated;           ///< The minimum number of entries for validating a bin content
 };
 
 /// Fills the axes values for the current passed variable container
@@ -185,8 +185,8 @@ public:
   virtual void Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight)
   { QnCorrectionsHistogramBase::Fill(variableContainer, nChannel, weight); }
 private:
-  THnF *fValues;   ///< Cumulates values for each of the event classes
-  THnI *fEntries;  ///< Cumulates the number on each of the event classes
+  THnF *fValues;   //!<! Cumulates values for each of the event classes
+  THnI *fEntries;  //!<! Cumulates the number on each of the event classes
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsProfile, 1);
   /// \endcond
@@ -261,13 +261,13 @@ public:
   virtual void Fill(const Float_t *variableContainer,Float_t weight)
   { QnCorrectionsHistogramBase::Fill(variableContainer, weight); }
 private:
-  THnF *fValues;   ///< Cumulates values for each of the event classes
-  THnI *fEntries;  ///< Cumulates the number on each of the event classes
-  Bool_t *fUsedChannel;  ///< array, which of the detector channels is used for this configuration
-  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
-  Int_t fNoOfChannels; ///< The number of channels associated to the whole detector
-  Int_t fActualNoOfChannels; ///< The actual number of channels handled by the histogram
-  Int_t *fChannelMap; ///< array, the map from histo to detector channel number
+  THnF *fValues;              //!<! Cumulates values for each of the event classes
+  THnI *fEntries;             //!<! Cumulates the number on each of the event classes
+  Bool_t *fUsedChannel;       //!<! array, which of the detector channels is used for this configuration
+  Int_t *fChannelGroup;       //!<! array, the group to which the channel pertains
+  Int_t fNoOfChannels;        //!<! The number of channels associated to the whole detector
+  Int_t fActualNoOfChannels;  //!<! The actual number of channels handled by the histogram
+  Int_t *fChannelMap;         //!<! array, the map from histo to detector channel number
 
 
   /// \cond CLASSIMP
@@ -333,18 +333,18 @@ public:
   virtual Float_t GetGrpBinError(Int_t bin);
 
 private:
-  THnF *fValues;   ///< the values and errors on each event class and channel
-  THnF *fGroupValues;  ///< the values and errors on each event class and group
-  Bool_t *fUsedChannel;  ///< array, which of the detector channels are used for this configuration
-  Int_t *fChannelGroup; ///< array, the group to which the channel pertains
-  Int_t fNoOfChannels; ///< The number of channels associated to the whole detector
-  Int_t fActualNoOfChannels; ///< The actual number of channels handled by the histogram
-  Int_t *fChannelMap; ///< array, the map from histo to detector channel number
-  Bool_t fUseGroups;  ///< the groups structures must be used
-  Bool_t *fUsedGroup;  ///< array, which of the detector groups are used for this configuration
-  Int_t fNoOfGroups;  ///< the number of groups associated with the whole detector
-  Int_t fActualNoOfGroups; ///< The actual number of groups handled by the histogram
-  Int_t *fGroupMap; ///< array, the map from histo to detector channel group number
+  THnF *fValues;              //!<! the values and errors on each event class and channel
+  THnF *fGroupValues;         //!<! the values and errors on each event class and group
+  Bool_t *fUsedChannel;       //!<! array, which of the detector channels are used for this configuration
+  Int_t *fChannelGroup;       //!<! array, the group to which the channel pertains
+  Int_t fNoOfChannels;        //!<! The number of channels associated to the whole detector
+  Int_t fActualNoOfChannels;  //!<! The actual number of channels handled by the histogram
+  Int_t *fChannelMap;         //!<! array, the map from histo to detector channel number
+  Bool_t fUseGroups;          //!<! the groups structures must be used
+  Bool_t *fUsedGroup;         //!<! array, which of the detector groups are used for this configuration
+  Int_t fNoOfGroups;          //!<! the number of groups associated with the whole detector
+  Int_t fActualNoOfGroups;    //!<! The actual number of groups handled by the histogram
+  Int_t *fGroupMap;           //!<! array, the map from histo to detector channel group number
 
 
   /// \cond CLASSIMP
@@ -413,12 +413,12 @@ public:
   virtual void FillY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
 
 private:
-  THnF **fXValues;            ///< X component histogram for each requested harmonic
-  THnF **fYValues;            ///< Y component histogram for each requested harmonic
-  UInt_t fXharmonicFillMask;  ///< keeps track of harmonic X component filled values
-  UInt_t fYharmonicFillMask;  ///< keeps track of harmonic Y component filled values
-  UInt_t fFullFilled;         ///< mask for the fully filled condition
-  THnI  *fEntries;  ///< Cumulates the number on each of the event classes
+  THnF **fXValues;            //!<! X component histogram for each requested harmonic
+  THnF **fYValues;            //!<! Y component histogram for each requested harmonic
+  UInt_t fXharmonicFillMask;  //!<! keeps track of harmonic X component filled values
+  UInt_t fYharmonicFillMask;  //!<! keeps track of harmonic Y component filled values
+  UInt_t fFullFilled;         //!<! mask for the fully filled condition
+  THnI  *fEntries;            //!<! Cumulates the number on each of the event classes
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsProfileComponents, 1);
   /// \endcond
@@ -486,16 +486,16 @@ public:
   virtual void FillYY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
 
 private:
-  THnF **fXXValues;  ///< XX component histogram for each requested harmonic
-  THnF **fXYValues;  ///< XY component histogram for each requested harmonic
-  THnF **fYXValues;  ///< YX component histogram for each requested harmonic
-  THnF **fYYValues;  ///< YY component histogram for each requested harmonic
-  UInt_t fXXharmonicFillMask;  ///< keeps track of harmonic XX component filled values
-  UInt_t fXYharmonicFillMask;  ///< keeps track of harmonic XY component filled values
-  UInt_t fYXharmonicFillMask;  ///< keeps track of harmonic YX component filled values
-  UInt_t fYYharmonicFillMask;  ///< keeps track of harmonic YY component filled values
-  UInt_t fFullFilled;         ///< mask for the fully filled condition
-  THnI  *fEntries;  ///< Cumulates the number on each of the event classes
+  THnF **fXXValues;            //!<! XX component histogram for each requested harmonic
+  THnF **fXYValues;            //!<! XY component histogram for each requested harmonic
+  THnF **fYXValues;            //!<! YX component histogram for each requested harmonic
+  THnF **fYYValues;            //!<! YY component histogram for each requested harmonic
+  UInt_t fXXharmonicFillMask;  //!<! keeps track of harmonic XX component filled values
+  UInt_t fXYharmonicFillMask;  //!<! keeps track of harmonic XY component filled values
+  UInt_t fYXharmonicFillMask;  //!<! keeps track of harmonic YX component filled values
+  UInt_t fYYharmonicFillMask;  //!<! keeps track of harmonic YY component filled values
+  UInt_t fFullFilled;          //!<! mask for the fully filled condition
+  THnI  *fEntries;             //!<! Cumulates the number on each of the event classes
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsProfileCorrelationComponents, 1);
   /// \endcond

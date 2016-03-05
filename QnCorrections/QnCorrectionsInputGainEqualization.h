@@ -110,14 +110,14 @@ private:
   static const char *szCorrectionName;               ///< the name of the correction step
   static const char *szKey;                          ///< the key of the correction step for ordering purpose
   static const char *szSupportHistogramName;         ///< the name and title for support histograms
-  QnCorrectionsProfileChannelizedIngress *fInputHistograms; ///< the histogram with calibration information
-  QnCorrectionsProfileChannelized *fCalibrationHistograms; ///< the histogram for building calibration information
+  QnCorrectionsProfileChannelizedIngress *fInputHistograms; //!<! the histogram with calibration information
+  QnCorrectionsProfileChannelized *fCalibrationHistograms; //!<! the histogram for building calibration information
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
 
   Float_t fA;                                   ///< the A parameter for width equalization
   Float_t fB;                                   ///< the B parameter for width equalization
   Bool_t fUseChannelGroupsWeights;              ///< use group weights extracted from channel multiplicity
-  const Float_t *fHardCodedWeights;             ///< group hard coded weights stored in the detector configuration
+  const Float_t *fHardCodedWeights;             //!<! group hard coded weights stored in the detector configuration
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsInputGainEqualization, 1);

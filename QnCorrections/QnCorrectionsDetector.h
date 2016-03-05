@@ -142,12 +142,14 @@ public:
 private:
   QnCorrectionsDetector *fDetector;    ///< pointer to the detector that owns the configuration
 protected:
-  QnCorrectionsCutsSet *fCuts;         ///< set of cuts that define the detector configuration
+  ///< set of cuts that define the detector configuration
+  QnCorrectionsCutsSet *fCuts;         //->
   TClonesArray *fDataVectorBank;        ///< input data for the current process / event
   QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
-  QnCorrectionsEventClassVariablesSet    *fEventClassVariables; ///< set of variables that define event classes
+  ///< set of variables that define event classes
+  QnCorrectionsEventClassVariablesSet    *fEventClassVariables; //->
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetectorConfigurationBase, 1);
@@ -276,10 +278,13 @@ public:
 
 private:
   QnCorrectionsQnVector fRawQnVector;     ///< Q vector from input data before pre-processing
-  Bool_t *fUsedChannel;                   ///< array, which of the detector channels is used for this configuration
-  Int_t *fChannelGroup;                   ///< array, the group to which the channel pertains
   Int_t fNoOfChannels;                    ///< The number of channels associated
-  Float_t *fHardCodedGroupWeights;         ///< array, group hard coded weight
+  ///< array, which of the detector channels is used for this configuration
+  Bool_t *fUsedChannel;                   //[fNoOfChannels]
+  ///< array, the group to which the channel pertains
+  Int_t *fChannelGroup;                   //[fNoOfChannels]
+  ///< array, group hard coded weight
+  Float_t *fHardCodedGroupWeights;         //[fNoOfChannels]
   QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
 
 /// \cond CLASSIMP

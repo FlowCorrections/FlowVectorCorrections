@@ -49,7 +49,7 @@ public:
   virtual Float_t EqualizedWeight() { return 1.0; }
 
 protected:
-  Float_t fPhi;                                   ///< the azimuthal angle of the data vector
+  Float_t fPhi;                                   //!<! the azimuthal angle of the data vector
 
   static const Float_t fMinimumSignificantValue;  ///< the minimum value that will be considered as meaningful for processing
 
@@ -96,9 +96,9 @@ public:
   virtual Float_t EqualizedWeight() { return fEqualizedWeight; }
 
 private:
-  Int_t   fId;                    ///< the channel id associated with the data vector
-  Float_t fWeight;                ///< raw weight as from the detector
-  Float_t fEqualizedWeight;       ///< equalized weight after channel equalization
+  Int_t   fId;                    //!<! the channel id associated with the data vector
+  Float_t fWeight;                //!<! raw weight as from the detector
+  Float_t fEqualizedWeight;       //!<! equalized weight after channel equalization
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDataVectorChannelized, 1);
