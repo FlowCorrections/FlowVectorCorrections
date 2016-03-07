@@ -54,17 +54,23 @@ QnCorrectionsManager::QnCorrectionsManager() :
 
   fDetectorsSet.SetOwner(kTRUE);
   fDetectorsIdMap = new QnCorrectionsDetector *[nMaxNoOfDetectors];
-  fDataContainer = new Float_t[nMaxNoOfDataVariables];
+  fDataContainer = NULL;
   fCalibrationHistogramsList = NULL;
   fSupportHistogramsList = NULL;
+  fQAHistogramsList = NULL;
+  fQnVectorTree = NULL;
+  fQnVectorList = NULL;
+  fFillOutputHistograms = kFALSE;
+  fFillQAHistograms = kFALSE;
+  fFillQnVectorTree = kFALSE;
 }
 
 /// Default destructor
 /// Deletes the memory taken
 QnCorrectionsManager::~QnCorrectionsManager() {
 
-  delete fDetectorsIdMap;
-  delete fDataContainer;
+  if (fDetectorsIdMap != NULL) delete fDetectorsIdMap;
+  if (fDataContainer != NULL) delete fDataContainer;
 }
 
 /// Sets the base list that will own the input calibration histograms
@@ -146,6 +152,9 @@ QnCorrectionsDetectorConfigurationBase *QnCorrectionsManager::FindDetectorConfig
 
 /// Initializes the correction framework
 void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
+
+  /* the data bank */
+  fDataContainer = new Float_t[nMaxNoOfDataVariables];
 
   /* build the support histograms list */
   fSupportHistogramsList = new TList();

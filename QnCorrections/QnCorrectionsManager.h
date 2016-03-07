@@ -61,6 +61,15 @@ public:
   { fProcessListName = name; }
 
   void SetCalibrationHistogramsList(TFile *calibrationFile);
+  /// Enables disables the filling of histograms for building correction parameters
+  /// \param enable kTRUE for enabling histograms filling
+  void SetShouldFillOutputHistograms(Bool_t enable = kTRUE) const { fFillOutputHistograms = enable; }
+  /// Enables disables the filling of QA histograms
+  /// \param enable kTRUE for enabling QA histograms filling
+  void SetShouldFillQAHistograms(Bool_t enable = kTRUE) const { fFillQAHistograms = enable; }
+  /// Enables disables the output of Qn vector on a TTree structure
+  /// \param enable kTRUE for enabling Qn vector output into a TTree
+  void SetShouldFillQnVectorTree(Bool_t enable = kTRUE) const { fFillQnVectorTree = enable; }
 
   void AddDetector(QnCorrectionsDetector *detector);
 
@@ -73,8 +82,28 @@ public:
   /// \return the pointer to the data container
   Float_t *GetDataContainer() { return fDataContainer; }
 
+  /// Get whether the output histograms should be filled
+  /// \return kTRUE if the output histograms should be filled
+  Bool_t GetShouldFillOutputHistograms() { return fFillOutputHistograms; }
+  /// Get whether the QA histograms should be filled
+  /// \return kTRUE if the QA histograms should be filled
+  Bool_t GetShouldFillQAHistograms() { return fFillQAHistograms; }
+  /// Get whether the Qn vector tree should be populated
+  /// \return kTRUE if the Qn vector should be written into a TTree
+  Bool_t GetShouldFillQnVectorTree() { return fFillQnVectorTree; }
   /// Gets the output histograms list
+  /// \return the list of histograms for building correction parameters
   TList *GetOutputHistogramsList() const { return fSupportHistogramsList; }
+  /// Gets the QA histograms list
+  /// \return the list of QA histograms
+  TList *GetQAHistogramsList() const { return fQAHistogramsList; }
+  /// Gets the Qn vector tree
+  /// \return the tree of histograms for building correction parameters
+  TTree *GetQnVectorTree() const { return fQnVectorTree; }
+  /// Gets the Qn vector tree
+  /// \return the tree of histograms for building correction parameters
+  TList *GetQnVectorList() const { return fQnVectorList; }
+
 
   void InitializeQnCorrectionsFramework();
   Int_t AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
@@ -91,10 +120,15 @@ private:
   TList fDetectorsSet;                  ///< the list of detectors
   ///< map between external detector Id and internal detector
   QnCorrectionsDetector **fDetectorsIdMap; //[nMaxNoOfDetectors]
-  ///< the data variables bank
-  Float_t *fDataContainer;                 //[nMaxNoOfDataVariables]
-  TList *fCalibrationHistogramsList;    //!<! the list of the calibration histograms
+  Float_t *fDataContainer;              //!<! the data variables bank
+  TList *fCalibrationHistogramsList;    ///< the list of the input calibration histograms
   TList *fSupportHistogramsList;        //!<! the list of the support histograms
+  TList *fQAHistogramsList;             //!<! the list of QA histograms
+  TTree *fQnVectorTree;                 //!<! the tree to out Qn vectors
+  TList *fQnVectorList;                 //!<! list that contains the current event corrected Qn vectors
+  Bool_t fFillOutputHistograms;         //!<! kTRUE if output histograms for building correction parameters must be filled
+  Bool_t fFillQAHistograms;             //!<! kTRUE if QA histograms must be filled
+  Bool_t fFillQnVectorTree;             //!<! kTRUE if Qn vectors must be written in a TTree structure
   TString fProcessListName;             ///< the name of the list associated to the current process
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);
