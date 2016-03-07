@@ -130,7 +130,8 @@ public:
   /// \param phi azimuthal angle
   /// \param weight the weight of the data vector
   /// \param channelId the channel Id that originates the data vector
-  virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1) = 0;
+  /// \return kTRUE if the data vector was accepted and stored
+  virtual Bool_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1) = 0;
 
   virtual Bool_t IsSelected(const Float_t *variableContainer);
   virtual Bool_t IsSelected(const Float_t *variableContainer, Int_t nChannel);
@@ -189,7 +190,7 @@ public:
   /// The request is transmitted to the Q vector correction steps
   /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
-  virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+  virtual Bool_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
   virtual void BuildQnVector();
 
@@ -258,7 +259,7 @@ public:
 
   virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
 
-  virtual void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId);
+  virtual Bool_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId);
 
   virtual void BuildQnVector();
   void BuildRawQnVector();
@@ -357,16 +358,23 @@ public:
   Bool_t AttachCorrectionInputs(TList *list);
   Bool_t ProcessCorrections(const Float_t *variableContainer);
 
+  /// Gets the name of the detector configuration at index that accepted last data vector
+  /// \param index the position in the list of accepted data vector configuration
+  /// \return the configuration name
+  const char *GetAcceptedDataDetectorConfigurationName(Int_t index) const
+  { return fDataVectorAcceptedConfigurations.At(index)->GetName(); }
+
   void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
   QnCorrectionsDetectorConfigurationBase *FindDetectorConfiguration(const char *name);
 
-  void AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+  Int_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
   virtual void ClearDetector();
 
 private:
   Int_t fDetectorId;            ///< detector Id
   QnCorrectionsDetectorConfigurationSet fConfigurations;  ///< the set of configurations defined for this detector
+  QnCorrectionsDetectorConfigurationSet fDataVectorAcceptedConfigurations; ///< the set of configurations that accepted a data vector
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetector, 1);
@@ -380,14 +388,17 @@ private:
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector. Ignored for track detector configurations.
 /// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsDetectorConfigurationTracks::AddDataVector(
+/// \return kTRUE if the data vector was accepted and stored
+inline Bool_t QnCorrectionsDetectorConfigurationTracks::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
   if (IsSelected(variableContainer)) {
     /// add the data vector to the bank
     QnCorrectionsDataVector *dataVector =
         new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
             QnCorrectionsDataVector(phi);
+    return kTRUE;
   }
+  return kFALSE;
 }
 
 /// Clean the configuration to accept a new event
@@ -449,14 +460,17 @@ inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessCorrections(const
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector. Ignored for track detector configurations.
 /// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
-inline void QnCorrectionsDetectorConfigurationChannels::AddDataVector(
+/// \return kTRUE if the data vector was accepted and stored
+inline Bool_t QnCorrectionsDetectorConfigurationChannels::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
   if (IsSelected(variableContainer, channelId)) {
     /// add the data vector to the bank
     QnCorrectionsDataVectorChannelized *channelizedDataVector =
         new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
           QnCorrectionsDataVectorChannelized(channelId, phi, weight);
+    return kTRUE;
   }
+  return kFALSE;
 }
 
 /// Builds raw Qn vector before Q vector corrections and before input
@@ -565,10 +579,16 @@ inline void QnCorrectionsDetectorConfigurationChannels::ClearConfiguration() {
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector
 /// \param channelId the channel Id that originates the data vector
-inline void QnCorrectionsDetector::AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
+/// \return the number of detector configurations that accepted and stored the data vector
+inline Int_t QnCorrectionsDetector::AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
+  fDataVectorAcceptedConfigurations.Clear();
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
-    fConfigurations.At(ixConfiguration)->AddDataVector(variableContainer, phi, weight, channelId);
+    Bool_t ret = fConfigurations.At(ixConfiguration)->AddDataVector(variableContainer, phi, weight, channelId);
+    if (ret) {
+      fDataVectorAcceptedConfigurations.Add(fConfigurations.At(ixConfiguration));
+    }
   }
+  return fDataVectorAcceptedConfigurations.GetEntries();
 }
 
 /// Ask for processing corrections for the involved detector

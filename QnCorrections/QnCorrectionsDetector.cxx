@@ -43,16 +43,24 @@ ClassImp(QnCorrectionsDetector);
 
 
 /// Default constructor
-QnCorrectionsDetector::QnCorrectionsDetector() : TNamed() {
+QnCorrectionsDetector::QnCorrectionsDetector() : TNamed(),
+    fConfigurations(),
+    fDataVectorAcceptedConfigurations() {
+
   fDetectorId = -1;
+  fDataVectorAcceptedConfigurations.SetOwner(kFALSE);
 }
 
 /// Normal constructor
 /// \param name the name of the detector
 /// \param id detector Id
 QnCorrectionsDetector::QnCorrectionsDetector(const char *name, Int_t id) :
-    TNamed(name,name) {
+    TNamed(name,name),
+    fConfigurations(),
+    fDataVectorAcceptedConfigurations() {
+
   fDetectorId = id;
+  fDataVectorAcceptedConfigurations.SetOwner(kFALSE);
 }
 
 /// Default destructor

@@ -68,6 +68,7 @@ public:
   QnCorrectionsDetector *FindDetector(Int_t id) const;
   QnCorrectionsDetectorConfigurationBase *FindDetectorConfiguration(const char *name) const;
 
+
   /// Gets a pointer to the data variables bank
   /// \return the pointer to the data container
   Float_t *GetDataContainer() { return fDataContainer; }
@@ -76,7 +77,8 @@ public:
   TList *GetOutputHistogramsList() const { return fSupportHistogramsList; }
 
   void InitializeQnCorrectionsFramework();
-  void AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+  Int_t AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
+  const char *GetAcceptedDataDetectorConfigurationName(Int_t detectorId, Int_t index) const;
   void ProcessEvent();
   void FinalizeQnCorrectionsFramework();
 
@@ -106,8 +108,17 @@ private:
 /// \param phi azimuthal angle
 /// \param weight the weight of the data vector
 /// \param channelId the channel Id that originates the data vector
-inline void QnCorrectionsManager::AddDataVector(Int_t detectorId, Double_t phi, Double_t weight, Int_t channelId) {
-  fDetectorsIdMap[detectorId]->AddDataVector(fDataContainer, phi, weight, channelId);
+/// \return the number of detector configurations that accepted and stored the data vector
+inline Int_t QnCorrectionsManager::AddDataVector(Int_t detectorId, Double_t phi, Double_t weight, Int_t channelId) {
+  return fDetectorsIdMap[detectorId]->AddDataVector(fDataContainer, phi, weight, channelId);
+}
+
+/// Gets the name of the detector configuration at index that accepted last data vector
+/// \param detectorId id of the involved detector
+/// \param index the position in the list of accepted data vector configuration
+/// \return the configuration name
+inline const char *QnCorrectionsManager::GetAcceptedDataDetectorConfigurationName(Int_t detectorId, Int_t index) const {
+  return fDetectorsIdMap[detectorId]->GetAcceptedDataDetectorConfigurationName(index);
 }
 
 /// Process the current event
