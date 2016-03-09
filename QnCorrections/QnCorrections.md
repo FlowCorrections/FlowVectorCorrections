@@ -1,4 +1,4 @@
-QnCorrections framework description (v0.6) {#mainpage}
+QnCorrections framework description (v0.7) {#mainpage}
 ===================================
 ![Framework functional diagram](Framework.png "Framework functional diagram")
 
