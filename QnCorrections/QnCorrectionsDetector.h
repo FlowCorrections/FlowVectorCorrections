@@ -149,7 +149,7 @@ protected:
   QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
-  ///< set of variables that define event classes
+  /// set of variables that define event classes
   QnCorrectionsEventClassVariablesSet    *fEventClassVariables; //->
 
 /// \cond CLASSIMP
@@ -280,11 +280,11 @@ public:
 private:
   QnCorrectionsQnVector fRawQnVector;     ///< Q vector from input data before pre-processing
   Int_t fNoOfChannels;                    ///< The number of channels associated
-  ///< array, which of the detector channels is used for this configuration
+  /// array, which of the detector channels is used for this configuration
   Bool_t *fUsedChannel;                   //[fNoOfChannels]
-  ///< array, the group to which the channel pertains
+  /// array, the group to which the channel pertains
   Int_t *fChannelGroup;                   //[fNoOfChannels]
-  ///< array, group hard coded weight
+  /// array, group hard coded weight
   Float_t *fHardCodedGroupWeights;         //[fNoOfChannels]
   QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
 

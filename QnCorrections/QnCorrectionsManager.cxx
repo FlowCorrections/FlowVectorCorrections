@@ -47,10 +47,12 @@ const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
 ///< the name of the key under which calibration histograms lists are stored
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
+///< accepted temporary name before getting the definitive one
+const char *QnCorrectionsManager::szDummyProcessListName = "dummyprocess";
 /// Default constructor.
 /// The class owns the detectors and will be destroyed with it
 QnCorrectionsManager::QnCorrectionsManager() :
-    TObject(), fDetectorsSet(), fProcessListName() {
+    TObject(), fDetectorsSet(), fProcessListName(szDummyProcessListName) {
 
   fDetectorsSet.SetOwner(kTRUE);
   fDetectorsIdMap = new QnCorrectionsDetector *[nMaxNoOfDetectors];
@@ -186,7 +188,7 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
   /* now get the process list on the calibration histograms list if any */
   /* and pass it to the detectors for input calibration histograms attachment, */
   /* we accept no calibration histograms list and no process list in case we */
-  /* are in calibratin phase. We should TODO this. */
+  /* are in calibrating phase. We should TODO this. */
   if (fCalibrationHistogramsList != NULL) {
     TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
     if (processList != NULL) {
@@ -195,6 +197,37 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
       }
     }
+  }
+}
+
+/// Set the name of the list that should be considered as assigned to the current process
+/// If the stored process list name is the default one and the support histograms are
+/// already created, change the list name and store the new name and get the new process
+/// list on the calibration histograms list if any and pass it to the detectors for input
+/// calibration histograms attachment.
+/// Changing process list name on the fly during a  running process is not supported.
+/// \param name the name of the list
+void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
+  if (fProcessListName.EqualTo(szDummyProcessListName)) {
+    if (fSupportHistogramsList != NULL) {
+      TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
+      processList->SetName(name);
+
+      fProcessListName = name;
+      if (fCalibrationHistogramsList != NULL) {
+        TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
+        if (processList != NULL) {
+          /* now transfer the order to the defined detectors */
+          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
+          }
+        }
+      }
+    }
+  }
+  else {
+    QnCorrectionsFatal(Form("Changing process list name on the fly is not supported." \
+        " Current name: %s, new name: %s", (const char *)fProcessListName, name));
   }
 }
 

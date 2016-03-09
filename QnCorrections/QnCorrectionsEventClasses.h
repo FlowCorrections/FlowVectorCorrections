@@ -61,12 +61,12 @@ class QnCorrectionsEventClassVariable : public TObject {
   Double_t        GetUpperEdge() {return fBins[fNBins]; }
 
  private:
-  Int_t         fVarId;       ///< The external Id for the variable in the data bank
-  Int_t         fNBins;       ///< The number of bins for the variable when shown in a histogram
-  Int_t         fNBinsPlusOne ///< the number of bins plus one. Needed for object persistence
-  ///< Bin edges array for the variable when shown in a histogram
-  Double_t     *fBins;        //[fNBinsPlusOne]
-  TString       fLabel;       ///< Label to use in an axis that shows the variable
+  Int_t         fVarId;        ///< The external Id for the variable in the data bank
+  Int_t         fNBins;        ///< The number of bins for the variable when shown in a histogram
+  Int_t         fNBinsPlusOne; ///< the number of bins plus one. Needed for object persistence
+  /// Bin edges array for the variable when shown in a histogram
+  Double_t     *fBins;         //[fNBinsPlusOne]
+  TString       fLabel;        ///< Label to use in an axis that shows the variable
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsEventClassVariable, 1);
