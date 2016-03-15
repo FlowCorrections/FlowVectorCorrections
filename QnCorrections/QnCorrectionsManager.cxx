@@ -55,7 +55,7 @@ QnCorrectionsManager::QnCorrectionsManager() :
     TObject(), fDetectorsSet(), fProcessListName(szDummyProcessListName) {
 
   fDetectorsSet.SetOwner(kTRUE);
-  fDetectorsIdMap = new QnCorrectionsDetector *[nMaxNoOfDetectors];
+  fDetectorsIdMap = NULL;
   fDataContainer = NULL;
   fCalibrationHistogramsList = NULL;
   fSupportHistogramsList = NULL;
@@ -100,7 +100,6 @@ void QnCorrectionsManager::AddDetector(QnCorrectionsDetector *detector) {
       return;
     }
     fDetectorsSet.Add(detector);
-    fDetectorsIdMap[detector->GetId()] = detector;
   }
   else {
     QnCorrectionsFatal(Form("You are trying to add %s detector with detector Id %d " \
@@ -157,6 +156,15 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 
   /* the data bank */
   fDataContainer = new Float_t[nMaxNoOfDataVariables];
+
+  /* let's build the detectors map */
+  fDetectorsIdMap = new QnCorrectionsDetector *[nMaxNoOfDetectors];
+  QnCorrectionsDetector *detector = NULL;
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    detector = (QnCorrectionsDetector *) fDetectorsSet.At(ixDetector);
+    fDetectorsIdMap[detector->GetId()] = detector;
+  }
+
 
   /* build the support histograms list */
   fSupportHistogramsList = new TList();

@@ -117,17 +117,16 @@ private:
   static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored
   static const char *szDummyProcessListName;         ///< accepted temporary name before getting the definitive one
   TList fDetectorsSet;                  ///< the list of detectors
-  /// map between external detector Id and internal detector
-  QnCorrectionsDetector **fDetectorsIdMap; //[nMaxNoOfDetectors]
+  QnCorrectionsDetector **fDetectorsIdMap; //!<! map between external detector Id and internal detector
   Float_t *fDataContainer;              //!<! the data variables bank
   TList *fCalibrationHistogramsList;    ///< the list of the input calibration histograms
   TList *fSupportHistogramsList;        //!<! the list of the support histograms
   TList *fQAHistogramsList;             //!<! the list of QA histograms
   TTree *fQnVectorTree;                 //!<! the tree to out Qn vectors
   TList *fQnVectorList;                 //!<! list that contains the current event corrected Qn vectors
-  Bool_t fFillOutputHistograms;         //!<! kTRUE if output histograms for building correction parameters must be filled
-  Bool_t fFillQAHistograms;             //!<! kTRUE if QA histograms must be filled
-  Bool_t fFillQnVectorTree;             //!<! kTRUE if Qn vectors must be written in a TTree structure
+  Bool_t fFillOutputHistograms;         ///< kTRUE if output histograms for building correction parameters must be filled
+  Bool_t fFillQAHistograms;             ///< kTRUE if QA histograms must be filled
+  Bool_t fFillQnVectorTree;             ///< kTRUE if Qn vectors must be written in a TTree structure
   TString fProcessListName;             ///< the name of the list associated to the current process
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);
