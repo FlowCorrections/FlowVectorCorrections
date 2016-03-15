@@ -152,6 +152,14 @@ protected:
   /// set of variables that define event classes
   QnCorrectionsEventClassVariablesSet    *fEventClassVariables; //->
 
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsDetectorConfigurationBase(const QnCorrectionsDetectorConfigurationBase &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsDetectorConfigurationBase& operator= (const QnCorrectionsDetectorConfigurationBase &);
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetectorConfigurationBase, 1);
 /// \endcond
@@ -287,6 +295,14 @@ private:
   /// array, group hard coded weight
   Float_t *fHardCodedGroupWeights;         //[fNoOfChannels]
   QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
+
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsDetectorConfigurationChannels(const QnCorrectionsDetectorConfigurationChannels &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsDetectorConfigurationChannels& operator= (const QnCorrectionsDetectorConfigurationChannels &);
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetectorConfigurationChannels, 1);

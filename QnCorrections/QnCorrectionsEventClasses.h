@@ -68,6 +68,10 @@ class QnCorrectionsEventClassVariable : public TObject {
   Double_t     *fBins;         //[fNBinsPlusOne]
   TString       fLabel;        ///< Label to use in an axis that shows the variable
 
+ private:
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsEventClassVariable& operator= (const QnCorrectionsEventClassVariable &);
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsEventClassVariable, 1);
 /// \endcond

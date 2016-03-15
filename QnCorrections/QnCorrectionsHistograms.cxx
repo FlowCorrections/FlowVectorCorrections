@@ -598,7 +598,7 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
 
   for (Int_t bin = 0; bin < hResult->GetNbins(); bin++){
     value = hValues->GetBinContent(bin);
-    nEntries = hEntries->GetBinContent(bin);
+    nEntries = Int_t(hEntries->GetBinContent(bin));
     error2 = hValues->GetBinError2(bin);
 
     if (nEntries < nMinNoOfEntriesValidated) {
@@ -828,7 +828,7 @@ Int_t QnCorrectionsProfile::GetBin(const Float_t *variableContainer) {
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   if (nEntries < nMinNoOfEntriesValidated) {
     return 0.0;
@@ -848,7 +848,7 @@ Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
 /// \param bin the interested bin number
 /// \return the bin number content error
 Float_t QnCorrectionsProfile::GetBinError(Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
   Float_t values = fValues->GetBinContent(bin);
   Float_t error2 = fValues->GetBinError2(bin);
 
@@ -1081,7 +1081,7 @@ Int_t QnCorrectionsProfileChannelized::GetBin(const Float_t *variableContainer, 
 /// \return the bin number content
 Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
 
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   if (nEntries < nMinNoOfEntriesValidated) {
     return 0.0;
@@ -1101,7 +1101,7 @@ Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
 /// \param bin the interested bin number
 /// \return the bin number content error
 Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
   Float_t values = fValues->GetBinContent(bin);
   Float_t error2 = fValues->GetBinError2(bin);
 
@@ -1828,7 +1828,7 @@ Int_t QnCorrectionsProfileComponents::GetBin(const Float_t *variableContainer) {
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXValues[harmonic] == NULL) {
@@ -1856,7 +1856,7 @@ Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Int_t bin
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYValues[harmonic] == NULL) {
@@ -1884,7 +1884,7 @@ Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Int_t bin
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXValues[harmonic] == NULL) {
@@ -1926,7 +1926,7 @@ Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) 
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileComponents::GetYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYValues[harmonic] == NULL) {
@@ -2390,7 +2390,7 @@ Int_t QnCorrectionsProfileCorrelationComponents::GetBin(const Float_t *variableC
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
@@ -2418,7 +2418,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinContent(Int_t harmoni
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
@@ -2446,7 +2446,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinContent(Int_t harmoni
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
@@ -2474,7 +2474,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinContent(Int_t harmoni
 /// \param bin the interested bin number
 /// \return the bin number content
 Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {
@@ -2502,7 +2502,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinContent(Int_t harmoni
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
@@ -2544,7 +2544,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Int_t harmonic,
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
@@ -2586,7 +2586,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Int_t harmonic,
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
@@ -2628,7 +2628,7 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Int_t harmonic,
 /// \param bin the interested bin number
 /// \return the bin content error
 Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = fEntries->GetBinContent(bin);
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {

@@ -46,7 +46,7 @@ UInt_t nLoggingLevel = kError; ///< the current logging level
 ///
 /// \param level the desired logging level
 void QnCorrectionsSetTracingLevel(UInt_t level) {
-  if (level < kError)
+  if (level < UInt_t(kError))
     /* don't mask errors */
     nLoggingLevel = level;
 }

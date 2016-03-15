@@ -142,7 +142,7 @@ fBins(NULL),
 fLabel(varname) {
 
   for(Int_t section = 1; section < (Int_t) binArray[0][1]; section++)
-    fNBins += binArray[section][1];
+    fNBins += Int_t(binArray[section][1]);
 
   fNBinsPlusOne = fNBins+1;
   fBins = new Double_t [fNBins+1];

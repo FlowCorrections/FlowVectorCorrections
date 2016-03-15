@@ -128,6 +128,15 @@ private:
   Bool_t fFillQAHistograms;             ///< kTRUE if QA histograms must be filled
   Bool_t fFillQnVectorTree;             ///< kTRUE if Qn vectors must be written in a TTree structure
   TString fProcessListName;             ///< the name of the list associated to the current process
+
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsManager(const QnCorrectionsManager &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsManager& operator= (const QnCorrectionsManager &);
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);
 /// \endcond

@@ -87,6 +87,15 @@ protected:
   QnCorrectionStepStatus fState;                                  ///< the state in which the correction step is
   QnCorrectionsDetectorConfigurationBase *fDetectorConfiguration; ///< pointer to the detector configuration owner
   TString fKey;                                                   ///< the correction key that codifies order information
+
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsCorrectionStepBase(QnCorrectionsCorrectionStepBase &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsCorrectionStepBase& operator= (const QnCorrectionsCorrectionStepBase &);
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionStepBase, 1);
 /// \endcond
