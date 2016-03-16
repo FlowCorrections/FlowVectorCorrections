@@ -101,6 +101,10 @@ public:
   /// Gets the Qn vector tree
   /// \return the tree of histograms for building correction parameters
   TList *GetQnVectorList() const { return fQnVectorList; }
+  /// Gets the name of the calibration histograms container
+  /// \return the calibration histograms container name
+  const char *GetCalibrationHistogramsContainerName() const
+  { return szCalibrationHistogramsKeyName; }
 
 
   void InitializeQnCorrectionsFramework();

@@ -73,6 +73,7 @@ QnCorrectionsManager::~QnCorrectionsManager() {
 
   if (fDetectorsIdMap != NULL) delete fDetectorsIdMap;
   if (fDataContainer != NULL) delete fDataContainer;
+  if (fCalibrationHistogramsList != NULL) delete fCalibrationHistogramsList;
 }
 
 /// Sets the base list that will own the input calibration histograms
@@ -80,7 +81,10 @@ QnCorrectionsManager::~QnCorrectionsManager() {
 void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) {
   if (calibrationFile) {
     if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {
-      fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject(szCalibrationHistogramsKeyName))->ReadObj()->Clone();
+      fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject("CalibrationHistos"))->ReadObj()->Clone();
+      if (fCalibrationHistogramsList != NULL)
+        /* we need the histograms ownership once we go to the GRID */
+        fCalibrationHistogramsList->SetOwner(kTRUE);
     }
   }
 }
