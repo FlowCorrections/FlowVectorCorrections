@@ -1,5 +1,9 @@
-QnCorrections framework description (v0.7) {#mainpage}
+QnCorrections framework description (v0.8) {#mainpage}
 ===================================
+# Introduction
+Measuring collective phenomena in heavy-ion collisions requires an estimate of the collision symmetry plane for different flow harmonics. The orientation of each plane is estimated from the azimutal distribution of produced particles. Detectors with nonuniform azimuthal acceptance distort such distribution. The goal of the correction framework is to provide an environment that is able to implement a set of corrections that compensates nonuniform azimuthal detector responses but also is flexible enough to try out new or additional correction approaches with a minimum incremental design effort.
+
+The framework functional model is presented in the figure below. 
 ![Framework functional diagram](Framework.png "Framework functional diagram")
 
 
