@@ -45,6 +45,8 @@ const char *QnCorrectionsInputGainEqualization::szCorrectionName = "Gain equaliz
 const char *QnCorrectionsInputGainEqualization::szKey = "CCCC";
 ///< the name and title for support histograms
 const char *QnCorrectionsInputGainEqualization::szSupportHistogramName = "Multiplicity";
+///< the name and title for QA histograms
+const char *QnCorrectionsInputGainEqualization::szQAHistogramName = "QA Multiplicity";
 
 
 /// \cond CLASSIMP
@@ -57,6 +59,8 @@ QnCorrectionsInputGainEqualization::QnCorrectionsInputGainEqualization() :
     QnCorrectionsCorrectionOnInputData() {
   fInputHistograms = NULL;
   fCalibrationHistograms = NULL;
+  fQAMultiplicityBefore = NULL;
+  fQAMultiplicityAfter = NULL;
   fEqualizationMethod = QEQUAL_noEqualization;
   fA = 0.0;
   fB = 1.0;
@@ -71,6 +75,10 @@ QnCorrectionsInputGainEqualization::~QnCorrectionsInputGainEqualization() {
     delete fInputHistograms;
   if (fCalibrationHistograms != NULL)
     delete fCalibrationHistograms;
+  if (fQAMultiplicityBefore != NULL)
+    delete fQAMultiplicityBefore;
+  if (fQAMultiplicityAfter != NULL)
+    delete fQAMultiplicityAfter;
 }
 
 /// Attaches the needed input information to the correction step
@@ -90,6 +98,7 @@ Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
   }
   return kFALSE;
 }
+
 /// Asks for support histograms creation
 ///
 /// Allocates the histogram objects and creates the calibration histograms.
@@ -108,6 +117,38 @@ Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) 
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
   return kTRUE;
 }
+
+/// Asks for QA histograms creation
+///
+/// Allocates the histogram objects and creates the QA histograms.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
+  TString beforeName = szSupportHistogramName;
+  beforeName += "Before";
+  TString beforeTitle = szSupportHistogramName;
+  beforeTitle += " before gain equalization";
+  TString afterName = szSupportHistogramName;
+  afterName += "After";
+  TString afterTitle = szSupportHistogramName;
+  afterTitle += " after gain equalization";
+  QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
+      static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
+  fQAMultiplicityBefore = new QnCorrectionsProfileChannelized(
+      (const char *) beforeName,
+      (const char *) beforeTitle,
+      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
+  fQAMultiplicityBefore->CreateProfileHistograms(list,
+      ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
+  fQAMultiplicityAfter = new QnCorrectionsProfileChannelized(
+      (const char *) afterName,
+      (const char *) afterTitle,
+      ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
+  fQAMultiplicityAfter->CreateProfileHistograms(list,
+      ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
+  return kTRUE;
+}
+
 /// Processes the correction step
 ///
 /// Pure virtual function
@@ -121,6 +162,14 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
       fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
     }
+    /* collect QA data if asked */
+    if (fQAMultiplicityBefore != NULL) {
+      for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        fQAMultiplicityBefore->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
+      }
+    }
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
@@ -132,6 +181,14 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the equalization */
+    /* collect QA data if asked */
+    if (fQAMultiplicityBefore != NULL) {
+      for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        fQAMultiplicityBefore->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
+      }
+    }
     /* store the equalized weights in the data vector bank according to equalization method */
     switch (fEqualizationMethod) {
     case QEQUAL_noEqualization:
@@ -184,8 +241,16 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           dataVector->SetEqualizedWeight(0.0);
       }
       break;
-    break;
     }
+    /* collect QA data if asked */
+    if (fQAMultiplicityAfter != NULL) {
+      for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
+        QnCorrectionsDataVectorChannelized *dataVector =
+            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
+        fQAMultiplicityAfter->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
+      }
+    }
+    break;
   }
   return kTRUE;
 }

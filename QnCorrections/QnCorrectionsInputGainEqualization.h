@@ -87,18 +87,9 @@ public:
   void SetUseChannelGroupsWeights(Bool_t enable)
   { fUseChannelGroupsWeights = enable; }
 
-  /// Attaches the needed input information to the correction step
-  ///
-  /// Pure virtual function
-  /// \param list list where the inputs should be found
-  /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list);
-  /// Asks for support histograms creation
-  ///
-  /// Pure virtual function
-  /// \param list list where the histograms should be incorporated for its persistence
-  /// \return kTRUE if everything went OK
   virtual Bool_t CreateSupportHistograms(TList *list);
+  virtual Bool_t CreateQAHistograms(TList *list);
 
   virtual Bool_t Process(const Float_t *variableContainer);
   /// Clean the correction to accept a new event
@@ -110,8 +101,11 @@ private:
   static const char *szCorrectionName;               ///< the name of the correction step
   static const char *szKey;                          ///< the key of the correction step for ordering purpose
   static const char *szSupportHistogramName;         ///< the name and title for support histograms
+  static const char *szQAHistogramName;              ///< the name and title for QA histograms
   QnCorrectionsProfileChannelizedIngress *fInputHistograms; //!<! the histogram with calibration information
   QnCorrectionsProfileChannelized *fCalibrationHistograms; //!<! the histogram for building calibration information
+  QnCorrectionsProfileChannelized *fQAMultiplicityBefore;  //!<! the channel multiplicity histogram before gain equalization
+  QnCorrectionsProfileChannelized *fQAMultiplicityAfter;   //!<! the channel multiplicity histogram after gain equalization
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
 
   Float_t fA;                                   ///< the A parameter for width equalization
