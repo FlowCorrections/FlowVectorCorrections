@@ -82,6 +82,19 @@ Bool_t QnCorrectionsDetector::CreateSupportHistograms(TList *list) {
   return retValue;
 }
 
+/// Asks for QA histograms creation
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetector::CreateQAHistograms(TList *list) {
+  Bool_t retValue = kTRUE;
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    retValue = retValue && (fConfigurations.At(ixConfiguration)->CreateQAHistograms(list));
+  }
+  return retValue;
+}
+
 /// Asks for attaching the needed input information to the correction steps
 ///
 /// The request is transmitted to the attached detector configurations
@@ -282,6 +295,32 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::CreateSupportHistograms(TList *
   return retValue;
 }
 
+/// Asks for QA histograms creation
+///
+/// The request is transmitted to the Q vector corrections.
+///
+/// A new histograms list is created for the detector and incorporated
+/// to the passed list. Then the new list is passed to the corrections.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetectorConfigurationTracks::CreateQAHistograms(TList *list) {
+  Bool_t retValue = kTRUE;
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kTRUE);
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
+  }
+  /* if list is empty delete it if not incorporate it */
+  if (detectorConfigurationList->GetEntries() != 0) {
+    list->Add(detectorConfigurationList);
+  }
+  else {
+    delete detectorConfigurationList;
+  }
+  return retValue;
+}
+
 /// Asks for attaching the needed input information to the correction steps
 ///
 /// The detector list is extracted from the passed list and then
@@ -420,6 +459,38 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList
   if (retValue) {
     for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
       retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateSupportHistograms(detectorConfigurationList));
+    }
+  }
+  /* if list is empty delete it if not incorporate it */
+  if (detectorConfigurationList->GetEntries() != 0) {
+    list->Add(detectorConfigurationList);
+  }
+  else {
+    delete detectorConfigurationList;
+  }
+  return retValue;
+}
+
+/// Asks for QA histograms creation
+///
+/// A new histograms list is created for the detector and incorporated
+/// to the passed list. Then the new list is passed first to the input data corrections
+/// and then to the Q vector corrections.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsDetectorConfigurationChannels::CreateQAHistograms(TList *list) {
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kTRUE);
+  Bool_t retValue = kTRUE;
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
+  }
+
+  /* if everything right propagate it to Q vector corrections */
+  if (retValue) {
+    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
     }
   }
   /* if list is empty delete it if not incorporate it */

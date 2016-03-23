@@ -47,6 +47,8 @@ const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
 ///< the name of the key under which calibration histograms lists are stored
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
+///< the name of the key under which QA calibration histograms lists are stored
+const char *QnCorrectionsManager::szCalibrationQAHistogramsKeyName = "CalibrationQAHistograms";
 ///< accepted temporary name before getting the definitive one
 const char *QnCorrectionsManager::szDummyProcessListName = "dummyprocess";
 /// Default constructor.
@@ -83,7 +85,7 @@ QnCorrectionsManager::~QnCorrectionsManager() {
 void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) {
   if (calibrationFile) {
     if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {
-      fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject("CalibrationHistos"))->ReadObj()->Clone();
+      fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject(szCalibrationHistogramsKeyName))->ReadObj()->Clone();
       if (fCalibrationHistogramsList != NULL)
         /* we need the histograms ownership once we go to the GRID */
         fCalibrationHistogramsList->SetOwner(kTRUE);
@@ -228,6 +230,18 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
       }
+    }
+  }
+
+  /* build the QA histograms list if needed */
+  if (GetShouldFillQAHistograms()) {
+    fQAHistogramsList = new TList();
+    fQAHistogramsList->SetName(szCalibrationQAHistogramsKeyName);
+    fQAHistogramsList->SetOwner(kTRUE);
+
+    /* and pass it to the detectors for QA histograms creation */
+    for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+      ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateQAHistograms(fQAHistogramsList);
     }
   }
 }

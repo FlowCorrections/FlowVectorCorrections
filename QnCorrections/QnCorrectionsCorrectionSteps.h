@@ -70,6 +70,12 @@ public:
   /// \param list list where the histograms should be incorporated for its persistence
   /// \return kTRUE if everything went OK
   virtual Bool_t CreateSupportHistograms(TList *list) = 0;
+  /// Asks for QA histograms creation
+  ///
+  /// Pure virtual function
+  /// \param list list where the histograms should be incorporated for its persistence
+  /// \return kTRUE if everything went OK
+  virtual Bool_t CreateQAHistograms(TList *list) = 0;
   /// Processes the correction step
   ///
   /// Pure virtual function

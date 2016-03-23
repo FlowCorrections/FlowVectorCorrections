@@ -114,6 +114,10 @@ public:
   /// \return the calibration histograms container name
   const char *GetCalibrationHistogramsContainerName() const
   { return szCalibrationHistogramsKeyName; }
+  /// Gets the name of the calibration QA histograms container
+  /// \return the calibration QA histograms container name
+  const char *GetCalibrationQAHistogramsContainerName() const
+  { return szCalibrationQAHistogramsKeyName; }
 
 
   void InitializeQnCorrectionsFramework();
@@ -128,6 +132,7 @@ private:
   static const Int_t nMaxNoOfDetectors;              ///< the highest detector id currently supported by the framework
   static const Int_t nMaxNoOfDataVariables;          ///< the maximum number of variables currently supported by the framework
   static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored
+  static const char *szCalibrationQAHistogramsKeyName; ///< the name of the key under which calibration QA histograms lists are stored
   static const char *szDummyProcessListName;         ///< accepted temporary name before getting the definitive one
   TList fDetectorsSet;                  ///< the list of detectors
   QnCorrectionsDetector **fDetectorsIdMap; //!<! map between external detector Id and internal detector
