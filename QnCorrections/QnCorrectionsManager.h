@@ -41,6 +41,12 @@
 /// will be performing just the intended corrections on input data and on
 /// the subsequent Q vector.
 ///
+/// The Qn correction manager supports an optional list of concurrent
+/// processes that will each contribute to the final merged results. Each
+/// process has its own name and it is expected to get contribution of
+/// different running instances. At merging time, only the contributions
+/// from instances of the same process must be merged.
+///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
@@ -57,6 +63,9 @@ public:
   QnCorrectionsManager();
   virtual ~QnCorrectionsManager();
 
+  /// Establishes the list of processes names
+  /// \param names an array containing the processes names
+  void SetListOfProcessesNames(TObjArray *names) { fProcessesNames = names; }
   void SetCurrentProcessListName(const char *name);
   void SetCalibrationHistogramsList(TFile *calibrationFile);
   /// Enables disables the filling of histograms for building correction parameters
@@ -132,6 +141,7 @@ private:
   Bool_t fFillQAHistograms;             ///< kTRUE if QA histograms must be filled
   Bool_t fFillQnVectorTree;             ///< kTRUE if Qn vectors must be written in a TTree structure
   TString fProcessListName;             ///< the name of the list associated to the current process
+  TObjArray *fProcessesNames;           ///< array with the list of processes names
 
 private:
   /// Copy constructor

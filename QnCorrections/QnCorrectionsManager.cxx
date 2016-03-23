@@ -65,6 +65,7 @@ QnCorrectionsManager::QnCorrectionsManager() :
   fFillOutputHistograms = kFALSE;
   fFillQAHistograms = kFALSE;
   fFillQnVectorTree = kFALSE;
+  fProcessesNames = NULL;
 }
 
 /// Default destructor
@@ -74,6 +75,7 @@ QnCorrectionsManager::~QnCorrectionsManager() {
   if (fDetectorsIdMap != NULL) delete fDetectorsIdMap;
   if (fDataContainer != NULL) delete fDataContainer;
   if (fCalibrationHistogramsList != NULL) delete fCalibrationHistogramsList;
+  if (fProcessesNames != NULL) delete fProcessesNames;
 }
 
 /// Sets the base list that will own the input calibration histograms
@@ -175,13 +177,31 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
   fSupportHistogramsList->SetName(szCalibrationHistogramsKeyName);
   fSupportHistogramsList->SetOwner(kTRUE);
 
+  /* build the support for the list of concurrent processes */
+  if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0) {
+    for (Int_t i = 0; i < fProcessesNames->GetEntries(); i++) {
+      TList *newList = new TList();
+      newList->SetName(((TObjString *) fProcessesNames->At(i))->GetName());
+      newList->SetOwner(kTRUE);
+      fSupportHistogramsList->Add(newList);
+    }
+  }
+
   /* build the support histograms list associated to this process */
   /* and pass it to the detectors for support histograms creation */
   if (fProcessListName.Length() != 0) {
-    TList *processList = new TList();
-    processList->SetName((const char *) fProcessListName);
-    processList->SetOwner(kTRUE);
-    fSupportHistogramsList->Add(processList);
+    /* let's see first whether we have the current process name within the processes names list */
+    TList *processList;
+    if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0 && fSupportHistogramsList->FindObject(fProcessListName) != NULL) {
+      processList = (TList *) fSupportHistogramsList->FindObject(fProcessListName);
+    }
+    else {
+      processList = new TList();
+      processList->SetName((const char *) fProcessListName);
+      processList->SetOwner(kTRUE);
+      /* we add it but probably temporarily */
+      fSupportHistogramsList->Add(processList);
+    }
     /* now transfer the order to the defined detectors */
     Bool_t retvalue = kTRUE;
     for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
@@ -218,12 +238,35 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 /// list on the calibration histograms list if any and pass it to the detectors for input
 /// calibration histograms attachment.
 /// Changing process list name on the fly during a  running process is not supported.
+/// If the list of concurrent processes names is not empty, the new process name should be
+/// in the list. If not a run time error is raised.
 /// \param name the name of the list
 void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
   if (fProcessListName.EqualTo(szDummyProcessListName)) {
     if (fSupportHistogramsList != NULL) {
-      TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
-      processList->SetName(name);
+      /* check the list of concurrent processes */
+      if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0) {
+        /* the new process name should be in the list of processes names */
+        if (fSupportHistogramsList->FindObject(name) != NULL) {
+          /* now we have to substitute the provisional process name list with the temporal one but renamed */
+          TList *previousempty = (TList*) fSupportHistogramsList->FindObject(name);
+          Int_t finalindex = fSupportHistogramsList->IndexOf(previousempty);
+          fSupportHistogramsList->RemoveAt(finalindex);
+          delete previousempty;
+          TList *previoustemp = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
+          fSupportHistogramsList->Remove(previoustemp);
+          previoustemp->SetName(name);
+          fSupportHistogramsList->AddAt(previoustemp, finalindex);
+        }
+        else {
+          /* nop! we raise an execution error */
+          QnCorrectionsFatal(Form("The name of the process you want to run: %s, is not in the list of concurrent processes", name));
+        }
+      }
+      else {
+        TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
+        processList->SetName(name);
+      }
 
       fProcessListName = name;
       if (fCalibrationHistogramsList != NULL) {
