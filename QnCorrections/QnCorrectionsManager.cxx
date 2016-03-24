@@ -186,6 +186,14 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       newList->SetName(((TObjString *) fProcessesNames->At(i))->GetName());
       newList->SetOwner(kTRUE);
       fSupportHistogramsList->Add(newList);
+
+      /* build the support histograms list associated to the process */
+      /* leave the selected process list name for a the latter time */
+      if (!fProcessListName.EqualTo(fProcessesNames->At(i)->GetName())) {
+        for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+          ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(newList);
+        }
+      }
     }
   }
 
@@ -205,6 +213,7 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       fSupportHistogramsList->Add(processList);
     }
     /* now transfer the order to the defined detectors */
+    /* so, we always create the histograms to use the latest ones */
     Bool_t retvalue = kTRUE;
     for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
       retvalue = retvalue && ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(processList);
