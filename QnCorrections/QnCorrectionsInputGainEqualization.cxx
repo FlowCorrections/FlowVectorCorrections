@@ -162,14 +162,6 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
       fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
     }
-    /* collect QA data if asked */
-    if (fQAMultiplicityBefore != NULL) {
-      for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
-        QnCorrectionsDataVectorChannelized *dataVector =
-            static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-        fQAMultiplicityBefore->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
-      }
-    }
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
