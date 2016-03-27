@@ -41,16 +41,12 @@
 ClassImp(QnCorrectionsManager);
 /// \endcond
 
-/// the highest detector id currently supported by the framework
 const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
-/// the maximum number of variables currently supported by the framework
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
-///< the name of the key under which calibration histograms lists are stored
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
-///< the name of the key under which QA calibration histograms lists are stored
 const char *QnCorrectionsManager::szCalibrationQAHistogramsKeyName = "CalibrationQAHistograms";
-///< accepted temporary name before getting the definitive one
 const char *QnCorrectionsManager::szDummyProcessListName = "dummyprocess";
+
 /// Default constructor.
 /// The class owns the detectors and will be destroyed with it
 QnCorrectionsManager::QnCorrectionsManager() :

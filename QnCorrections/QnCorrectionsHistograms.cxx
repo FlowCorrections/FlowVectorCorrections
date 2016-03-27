@@ -7,11 +7,8 @@
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsLog.h"
 
-/// The suffix for the name of the entries histograms
 const char *QnCorrectionsHistogramBase::szChannelAxisTitle = "Channel number";
-///< The title for the channel group extra axis
 const char *QnCorrectionsHistogramBase::szGroupAxisTitle = "Channels group";
-///< The prefix for the name of the group histograms
 const char *QnCorrectionsHistogramBase::szGroupHistoPrefix = "Group";
 const char *QnCorrectionsHistogramBase::szEntriesHistoSuffix = "_entries";
 const char *QnCorrectionsHistogramBase::szXComponentSuffix = "X";
@@ -24,7 +21,6 @@ const Int_t QnCorrectionsHistogramBase::nMaxHarmonicNumberSupported = 15;
 const UInt_t QnCorrectionsHistogramBase::harmonicNumberMask[] =
   {0x0000,0x0002,0x0004,0x0008,0x0010,0x0020,0x0040,0x0080,
    0x0100,0x0200,0x0400,0x0800,0x1000,0x2000,0x4000,0x8000};
-///< The minimum number of entries for validating a bin content
 const Int_t QnCorrectionsHistogramBase::nMinNoOfEntriesValidated = 2;
 
 /// \cond CLASSIMP

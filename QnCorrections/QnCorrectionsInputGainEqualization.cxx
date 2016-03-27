@@ -37,15 +37,10 @@
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsInputGainEqualization.h"
 
-///< the minimum value that will be considered as meaningful for processing
 const Float_t  QnCorrectionsInputGainEqualization::fMinimumSignificantValue = 1E-6;
-///< the name of the correction step
 const char *QnCorrectionsInputGainEqualization::szCorrectionName = "Gain equalization";
-///< the key of the correction step for ordering purpose
 const char *QnCorrectionsInputGainEqualization::szKey = "CCCC";
-///< the name and title for support histograms
 const char *QnCorrectionsInputGainEqualization::szSupportHistogramName = "Multiplicity";
-///< the name and title for QA histograms
 const char *QnCorrectionsInputGainEqualization::szQAHistogramName = "QA Multiplicity";
 
 
@@ -152,7 +147,7 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
 /// Processes the correction step
 ///
 /// Pure virtual function
-/// \return kTRUE if everything went OK
+/// \return kTRUE if the correction step was applied
 Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContainer) {
   switch (fState) {
   case QCORRSTEP_calibration:

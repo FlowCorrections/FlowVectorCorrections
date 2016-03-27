@@ -38,7 +38,6 @@
 ClassImp(QnCorrectionsCutBase);
 /// \endcond
 
-/// The highest bit number the framework support
 const Int_t QnCorrectionsCutBase::nHighestBitNumberSupported = 31;
 
 /// Default constructor

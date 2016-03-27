@@ -39,9 +39,7 @@
 ClassImp(QnCorrectionsQnVector);
 /// \endcond
 
-/// the minimum value that will be considered as meaningful for processing
 const Float_t  QnCorrectionsQnVector::fMinimumSignificantValue = 1e-6;
-/// Mask for each external harmonic number
 const UInt_t   QnCorrectionsQnVector::harmonicNumberMask[] =
 {0x0000,0x0002,0x0004,0x0008,0x0010,0x0020,0x0040,0x0080,
  0x0100,0x0200,0x0400,0x0800,0x1000,0x2000,0x4000,0x8000};

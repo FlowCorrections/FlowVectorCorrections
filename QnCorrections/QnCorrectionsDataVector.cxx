@@ -38,8 +38,8 @@
 ClassImp(QnCorrectionsDataVector);
 /// \endcond
 
-/// the minimum value that will be considered as meaningful for processing
 const Float_t QnCorrectionsDataVector::fMinimumSignificantValue = 1.e-6;
+
 /// Default constructor
 QnCorrectionsDataVector::QnCorrectionsDataVector() : TObject() {
   fPhi = 0.0;

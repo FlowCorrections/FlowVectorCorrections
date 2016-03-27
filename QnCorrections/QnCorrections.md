@@ -1,19 +1,74 @@
-QnCorrections framework description (v0.8) {#mainpage}
-===================================
-# Introduction
-Measuring collective phenomena in heavy-ion collisions requires an estimate of the collision symmetry plane for different flow harmonics. The orientation of each plane is estimated from the azimutal distribution of produced particles. Detectors with nonuniform azimuthal acceptance distort such distribution. The goal of the correction framework is to provide an environment that is able to implement a set of corrections that compensates nonuniform azimuthal detector responses but also is flexible enough to try out new or additional correction approaches with a minimum incremental design effort.
+# QnCorrections framework description {#mainpage}
+  \tableofcontents
 
-The framework functional model is presented in the figure below. 
+\section introduction Introduction
+Measuring collective phenomena in heavy-ion collisions requires an estimate of the collision symmetry plane for different flow harmonics. The orientation of each plane is estimated from the azimutal distribution of produced particles. Detectors with nonuniform azimuthal acceptance distort such distribution. The goal of the correction framework is to provide an environment that is able to implement a set of corrections that compensates nonuniform azimuthal detector responses but also flexible enough to try out new or additional correction approaches with a minimum incremental design effort.
+
+The framework models any experimental setup as a set of detectors (QnCorrectionsDetector) handled by a framework manager (QnCorrectionsManager). Each detector needs to be configured at least on one shape (QnCorrectionsDetectorConfigurationBase) but a detector could have multiple configurations (QnCorrectionsDetectorConfigurationSet). 
+
+A detector configuration in its simplest way might be defined as a set of cuts applied to select which of the basic potential events happening to the detector are of interest for the considered detector configuration. For instance, if you are considering a tracking detector you could decide to define your detector configuration (QnCorrectionsDetectorConfigurationTracks) for your flow analysis by selecting the tracks with \f$p_T\f$ between 0.2 and 20.0 GeV/c.
+
+Detector configuration allows you to handle channelized detectors or sub-detectors (QnCorrectionsDetectorConfigurationChannels) by allocating a different set of channels to each configuration and allowing you to group your channels within groups to so considering them in your flow analysis. Not channelized detectors, as tracking detectors, are able to be modelled with channelized configurations if so you decide. For instance for your tracking detector you could define a channelized configuration assigning 20 channels to your 0.2 – 20.0 GeV/c \f$p_T\f$ range.
+
 ![Framework functional diagram](Framework.png "Framework functional diagram")
 
+Once you have defined the set of detector configurations that models your setup you will proceed to define the set of corrections (QnCorrectionsCorrectionStepBase) you will apply on each of these detector configurations. The framework provides support for two correction types: corrections on input (to the framework) data (QnCorrectionsCorrectionOnInputData), such as gain equalization, and Q vector corrections (QnCorrectionsCorrectionOnQvector). Corrections on input data are only able to be applied to channelized detector configurations while Q vector corrections can be applied to any detector configuration.
 
-## Event classes
-If you are interesting in doing Flow analysis most probably you want to classify your events under different event classes. For supporting that, the correction framework defines two classes: QnCorrectionEventClassVariable and QnCorrectionEventClassVariablesSet.
+Each channelized detector configuration has a socket where the desired corrections on input data (QnCorrectionsCorrectionsSetOnInputData) plug in. The available corrections on input data are defined, at design time, with information regarding its applicability order. When the framework user decides to apply a concrete set of the available corrections on input data to a concrete detector configuration such information is used at run time to 'know' in which order the corrections will be applied.
 
-### QnCorrectionsEventClassVariable
-Allows you to identify one variable you want to use to classify your events, their z vertex coordinate, for instance, and associate it a concrete binning and text label to be used when such variale is presented on the different histograms.
+Any detector configuration has a socket where the desired Q vector corrections (QnCorrectionsCorrectionsSetOnQvector) plug in. The principle is the same. When a new Q vector correction is designed for its first time, information on its applicability order is incorporated during its SW coding phase. This information is the only piece that the Q vector correction should provide to the framework for being able to run on it. The Q vector correction should follow a concrete template to be able of being invoked when so is required to perform its task.
 
-As you know all variables of interest whitin the correction framework own a unique Id. This Id is also passed when you instantiate a QnCorrectionEventClassVariable object.
+Once fully configured, the correction framework might be used in three different modes. *Calibration* is the mode by which the framework produces all the necessary information for, in a latter phase, apply the desired corrections. Calibration mode usually requires several passes before the information for all correction steps is collected. *Correct* is the mode by which the framework provides corrected Q vector to user processes according to the selected configuration. *Mixed* is the mode by which the framework apply certain selected corrections to Q vectors and builds new calibration information. In mixed mode the user selects, at configuration time, the set of corrections to apply and the calibration information to build. This mode is intended for the development of new correction approaches.
+
+\section frameworkdef Defining the framework
+
+\subsection expsetup The experimental setup
+Before starting to model your experimental setup you first need to consider which will be the scope of your flow analysis. You need to identify the set of detectors you will be focused on and under which conditions / configurations you will make use of the information they provide for each of the events you will analyse. Then you have to identify the different event classes in which you will classify your events and which variables you will make use of to build such event classes.
+
+\subsection correctionmanager The framework manager
+QnCorrectionsManager framework manager is the central piece of the correction framework. It is the anchor point between the framework and the external run time environment. The data flow comes in from the external environment and gets distributed to the set of defined detectors. At configuration time the different detectors are defined and assigne to the framework manager. 
+
+You define the framework manager in a simple way
+~~~{.cxx}
+  /* create the framework manager */
+  QnCorrectionsManager *QnManager = new QnCorrectionsManager();
+~~~
+and then you configure the basic functions that control the information produced by the framework
+* produce an output TTree with Q vector data
+* produce framework QA histograms
+* build calibration information
+
+~~~{.cxx}
+  /* do not fill Qn vector TTree */
+  QnManager->SetShouldFillQnVectorTree(kFALSE);
+  /* do not fill framework QA histograms */
+  QnManager->SetShouldFillQAHistograms(kFALSE);
+  /* produce calibration information */
+  QnManager->SetShouldFillOutputHistograms(kTRUE);
+~~~
+
+The framework support running a set of its instances on a concurrent scenario so that you will get results from each of the running instances. To be able to allocate the results to different processes they correspond to getting them at the end properly merged, you declare the list of processes names the framework should globally handle
+~~~{.cxx}
+  /* store the list of concurrent processes names */
+  QnManager->SetListOfProcessesNames(procNamesList);
+~~~
+and then, if you have already produced correction information, you inform the framework about the file that includes it
+~~~{.cxx}
+  /* transfer the TFile with correction information */
+  QnManager->SetCalibrationHistogramsList(calibfile);
+~~~
+Of course, the framework manager holds the set of detectors but they are defined next.
+
+\subsection detectors Defining detectors
+
+
+\subsection eventclasses Event classes
+If you are interesting in doing Flow analysis most probably you will want to classify your events under different event classes. For supporting that, the correction framework defines two classes: QnCorrectionsEventClassVariable and QnCorrectionsEventClassVariablesSet.
+
+\subsubsection eventclassesvars Event classes (EC) variables
+QnCorrectionsEventClassVariable allows you to identify one variable you want to use to classify your events, their z vertex coordinate, for instance, and associate it a concrete binning and text label to be used when such variale is presented on the different histograms.
+
+As you know all variables of interest whitin the correction framework own a unique Id. This Id is also passed when you instantiate a QnCorrectionsEventClassVariable object.
 
 The class incorporates a wide set of constructors that basically cover the different possibilities of declaring a concrete binning: explicit, uniform and with segments of different granularity.
 
@@ -29,8 +84,8 @@ will build an event class variable associated to the kVertexZ variable and with 
   QnCorrectionsEventClassVariable * fpCentralityEventClass = new QnCorrectionsEventClassVariable(kCentrality, VarNames[kCentrality], 10, 0.0, 100.0);
 ~~~
 
-### QnCorrectionsEventClassVariablesSet
-Encapsulates all variables you want to be used to classify your events, their z vertex coordinate and their multiplicities, for instance, as an array that contains the QnCorrectionEventClassVariable objects.
+\subsubsection eventclassesvarset Set of EC variables
+QnCorrectionsEventClassVariablesSet encapsulates all variables you want to be used to classify your events, their z vertex coordinate and their multiplicities, for instance, as an array that contains the QnCorrectionEventClassVariable objects.
 
 You are free to define an event classes variables set per detector configuration. This variables set will be incorporated to the different histograms the detector configuration will need to perform the intended corrections. The variables set will be the base for supporting the needed histogram multidimensionality.
 
@@ -71,16 +126,16 @@ now you are able to access to your event classes variables and their access memb
   }
 ~~~
 
-## Histograms
+\subsection histograms Histograms
 The correction framework makes an extensive use of profile histograms in order to provide the proper scope to the different averages needed to elaborate the intended Q vector corrections. As was previouslly described one of the key components of the correction framework is its concept of multidimensional event classes: you decide to define your event classes based on a concrete set of variables usually greather than one. This goes straight on to multidimensional profiles. 
 
 So far ROOT only supports up to tridimensional profiles, but we wanted to give more flexibility and, due to the fact we expect not that much bins per variable you will use to define your event classes, we decided to build multidimensional profiles functionality. With this aim we provide a base class, QnCorrectionsHistogramBase, that should not be instantiated, and which declares the whole interface for the correction framework histogram classes, a single multidimensional histogram profile class, QnCorrectionsProfile, a components oriented multidimensional histogram profile class, QnCorrectionsProfileComponents, which provide support for both components, X and Y, for a set of selected harmonics, and a correlation components oriented multidimenional histogram profile class, QnCorrectionsProfileCorrelationComponents, which provide support for the correlation components, XX, XY, YX and YY, for a set of selected harmonics. 
 
-### QnCorrectionsHistogramBase
-Is the base for the whole set of histogram classes and declares their interfaces for the basic methods. It is not oriented to be instantiated and as an additional development support will include run time error messages that will orient you when you are not doing a proper use of its descendant classes.
+\subsubsection histogramsbase Histograms base
+QnCorrectionsHistogramBase is the base for the whole set of histogram classes and declares their interfaces for the basic methods. It is not oriented to be instantiated and as an additional development support will include run time error messages that will orient you when you are not doing a proper use of its descendant classes.
 
-### QnCorrectionsProfile
-Implements a multidimensional histogram profile. You construct one of them passing as parameter an event classes variables set. Then you ask for the actual support histograms creation and then you use it as you will expect from a conventional histogram.
+\subsubsection profile Basic profiles
+QnCorrectionsProfile implements a multidimensional histogram profile. You construct one of them passing as parameter an event classes variables set. Then you ask for the actual support histograms creation and then you use it as you will expect from a conventional histogram.
 
 Example:
 * based on the event classes variables set you had created above
@@ -98,8 +153,8 @@ Example:
     Double_t myProfileBinError = myProfile->GetBinError(myProfile->GetBin(varContainer));
 ~~~
 
-### QnCorrectionsProfileComponents
-Implements a multidimensional histogram profile for each of the components X and Y for each of the selected harmonics. The harmonic number is handled in the expected way, i.e., if you are interested in the second harmonic, you will always address it as the second (2) harmonic. But you have to provide some help at histogram creation time.
+\subsubsection compprofile Components profile
+QnCorrectionsProfileComponents implements a multidimensional histogram profile for each of the components X and Y for each of the selected harmonics. The harmonic number is handled in the expected way, i.e., if you are interested in the second harmonic, you will always address it as the second (2) harmonic. But you have to provide some help at histogram creation time.
 
 At construction time you provide the same information as for any other histogram profile within the framework: an event classs variable set
 ~~~{.cxx}
@@ -134,8 +189,8 @@ Accessing the content of your profile is straight forward, as you expected,
     Double_t myProfile2YBinError = myProfile->GetYBinError(myHarmonic, myProfile->GetBin(varContainer));
 ~~~
  
-### QnCorrectionsProfileCorrelationComponents
-Implements a multidimensional histogram profile for each of the correlation components XX, XY, YX and YY for each of the selected harmonics. The overall behavior matches the QnCorrectionsProfileComponents one so, we just include the adapted code snipets
+\subsubsection compcorrprofile Correlation components
+QnCorrectionsProfileCorrelationComponents implements a multidimensional histogram profile for each of the correlation components XX, XY, YX and YY for each of the selected harmonics. The overall behavior matches the QnCorrectionsProfileComponents one so, we just include the adapted code snipets
 ~~~{.cxx}
     QnCorrectionsProfileCorrelationComponents *myProfile = 
         new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myComponentsCorrelationProfile", fEventClasses);
@@ -165,3 +220,5 @@ The framework expects you to fill both components for the whole set of harmonics
     Double_t myProfile2YXBinError = myProfile->GetYXBinError(myHarmonic, myProfile->GetBin(varContainer));
     Double_t myProfile2YYBinError = myProfile->GetYYBinError(myHarmonic, myProfile->GetBin(varContainer));
 ~~~
+
+
