@@ -19,6 +19,7 @@
 #include <TList.h>
 #include <TObjArray.h>
 #include <TClonesArray.h>
+#include <TH3.h>
 #include "QnCorrectionsCuts.h"
 #include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsEventClasses.h"
@@ -153,7 +154,7 @@ private:
 protected:
   ///< set of cuts that define the detector configuration
   QnCorrectionsCutsSet *fCuts;         //->
-  TClonesArray *fDataVectorBank;        ///< input data for the current process / event
+  TClonesArray *fDataVectorBank;        //!<! input data for the current process / event
   QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
@@ -269,6 +270,18 @@ public:
 
   void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup, Float_t *hardCodedGroupWeights = NULL);
 
+  /* QA section */
+  /// Sets the variable id used for centrality in QA histograms.
+  /// It must be one of the event class variables.
+  /// \param id id for the variable used for centrality
+  void SetQACentralityVar(Int_t id) { fQACentralityVarId = id; }
+  /// Sets the characteristics of the multiplicity axis in QA histograms
+  /// \param nbins the number of bins
+  /// \param min minimum multiplicity value
+  /// \param max maximum multiplicity value
+  void SetQAMultiplicityAxis(Int_t nbins, Float_t min, Float_t max)
+  { fQAnBinsMultiplicity = nbins; fQAMultiplicityMin = min; fQAMultiplicityMax = max; }
+
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
 
@@ -300,11 +313,23 @@ private:
   Int_t fNoOfChannels;                    ///< The number of channels associated
   /// array, which of the detector channels is used for this configuration
   Bool_t *fUsedChannel;                   //[fNoOfChannels]
+  /// array, mapping external to internal channel id. TODO: this has to go to a more generic histogram support
+  Int_t *fChannelMap;                     //[fNoOfChannels]
   /// array, the group to which the channel pertains
   Int_t *fChannelGroup;                   //[fNoOfChannels]
   /// array, group hard coded weight
   Float_t *fHardCodedGroupWeights;         //[fNoOfChannels]
   QnCorrectionsCorrectionsSetOnInputData fInputDataCorrections; ///< set of corrections to apply on input data vectors
+
+  /* QA section */
+  void FillQAHistograms(const Float_t *variableContainer);
+  static const char *szQAMultiplicityHistoName; ///< QA multiplicity histograms name
+  Int_t fQACentralityVarId;   ///< the id of the variable used for centrality in QA histograms
+  Int_t fQAnBinsMultiplicity; ///< number of bins for multiplicity in QA histograms
+  Float_t fQAMultiplicityMin; ///< minimum multiplicity value
+  Float_t fQAMultiplicityMax; ///< maximum multiplicity value
+  TH3F *fQAMultiplicityBefore3D; //!<! 3D channel multiplicity histogram before input equalization
+  TH3F *fQAMultiplicityAfter3D;  //!<! 3D channel multiplicity histogram after input equalization
 
 private:
   /// Copy constructor
@@ -557,6 +582,11 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(con
     else
       break;
   }
+
+  /* check whether QA histograms must be filled */
+  if (retValue)
+    if (fQAMultiplicityBefore3D != NULL && fQAMultiplicityAfter3D != NULL)
+      FillQAHistograms(variableContainer);
 
   if (retValue) {
     /* input corrections were applied so let's build the Q vector with the chosen calibration */

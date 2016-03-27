@@ -260,7 +260,6 @@ QnCorrectionsDetectorConfigurationTracks::QnCorrectionsDetectorConfigurationTrac
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
 
-  fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
 }
 
 /// Default destructor
@@ -278,6 +277,9 @@ QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTra
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationTracks::CreateSupportHistograms(TList *list) {
+  /* this is executed in the remote node so, allocate the data bank */
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
+
   Bool_t retValue = kTRUE;
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
@@ -343,14 +345,24 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
 ClassImp(QnCorrectionsDetectorConfigurationChannels);
 /// \endcond
 
+const char *QnCorrectionsDetectorConfigurationChannels::szQAMultiplicityHistoName = "Multiplicity";
+
 /// Default constructor
 QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationChannels() :
     QnCorrectionsDetectorConfigurationBase(), fRawQnVector(), fInputDataCorrections() {
 
   fNoOfChannels = 0;
   fUsedChannel = NULL;
+  fChannelMap = NULL;
   fChannelGroup = NULL;
   fHardCodedGroupWeights = NULL;
+  /* QA section */
+  fQACentralityVarId = -1;
+  fQAnBinsMultiplicity = 100;
+  fQAMultiplicityMin = 0.0;
+  fQAMultiplicityMax = 1000.0;
+  fQAMultiplicityBefore3D = NULL;
+  fQAMultiplicityAfter3D = NULL;
 }
 
 /// Normal constructor
@@ -370,9 +382,16 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
           fInputDataCorrections() {
   fNoOfChannels = nNoOfChannels;
   fUsedChannel = NULL;
+  fChannelMap = NULL;
   fChannelGroup = NULL;
   fHardCodedGroupWeights = NULL;
-  fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
+  /* QA section */
+  fQACentralityVarId = -1;
+  fQAnBinsMultiplicity = 100;
+  fQAMultiplicityMin = 0.0;
+  fQAMultiplicityMax = 1000.0;
+  fQAMultiplicityBefore3D = NULL;
+  fQAMultiplicityAfter3D = NULL;
 }
 
 /// Default destructor
@@ -380,6 +399,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
 QnCorrectionsDetectorConfigurationChannels::~QnCorrectionsDetectorConfigurationChannels() {
 
   if (fUsedChannel != NULL) delete fUsedChannel;
+  if (fChannelMap != NULL) delete fChannelMap;
   if (fChannelGroup != NULL) delete fChannelGroup;
   if (fHardCodedGroupWeights != NULL) delete fHardCodedGroupWeights;
 }
@@ -397,16 +417,20 @@ void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(
     Float_t *hardCodedGroupWeights) {
   /* TODO: there should be smart procedures on how to improve the channels scan for actual data */
   fUsedChannel = new Bool_t[fNoOfChannels];
+  fChannelMap = new Int_t[fNoOfChannels];
   fChannelGroup = new Int_t[fNoOfChannels];
 
   Int_t nMinGroup = 0xFFFF;
   Int_t nMaxGroup = 0x0000;
+  Int_t intChannelNo = 0;
   for (Int_t ixChannel = 0; ixChannel < fNoOfChannels; ixChannel++) {
     if (bUsedChannel != NULL)
       fUsedChannel[ixChannel] = bUsedChannel[ixChannel];
     else
       fUsedChannel[ixChannel] = kTRUE;
     if (fUsedChannel[ixChannel]) {
+      fChannelMap[ixChannel] = intChannelNo;
+      intChannelNo++;
       if (nChannelGroup != NULL) {
         fChannelGroup[ixChannel] = nChannelGroup[ixChannel];
         /* update min max group number */
@@ -447,6 +471,9 @@ void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList *list) {
+  /* this is executed in the remote node so, allocate the data bank */
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
+
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
@@ -474,7 +501,8 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList
 /// Asks for QA histograms creation
 ///
 /// A new histograms list is created for the detector and incorporated
-/// to the passed list. Then the new list is passed first to the input data corrections
+/// to the passed list. The own QA histograms are then created and incorporated
+/// to the new list. Then the new list is passed first to the input data corrections
 /// and then to the Q vector corrections.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
@@ -482,6 +510,88 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateQAHistograms(TList *lis
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
+
+  /* first create our own QA histograms */
+  TString beforeName = GetName();
+  beforeName += szQAMultiplicityHistoName;
+  beforeName += "Before";
+  TString beforeTitle = GetName();
+  beforeTitle += " ";
+  beforeTitle += szQAMultiplicityHistoName;
+  beforeTitle += " before input equalization";
+  TString afterName = GetName();
+  afterName += szQAMultiplicityHistoName;
+  afterName += "After";
+  TString afterTitle = GetName();
+  afterTitle += " ";
+  afterTitle += szQAMultiplicityHistoName;
+  afterTitle += " after input equalization";
+
+  /* let's pick the centrality variable and its binning */
+  Int_t ixVarId = -1;
+  for (Int_t ivar = 0; ivar < fEventClassVariables->GetEntries(); ivar++) {
+    if (fEventClassVariables->At(ivar)->GetVariableId() != fQACentralityVarId) {
+      continue;
+    }
+    else {
+      ixVarId = ivar;
+      break;
+    }
+  }
+
+  /* let's get the effective number of channels */
+  Int_t nNoOfChannels = 0;
+  for (Int_t i = 0; i < fNoOfChannels; i++)
+    if (fUsedChannel[i])
+      nNoOfChannels++;
+
+  if (ixVarId != -1) {
+    fQAMultiplicityBefore3D = new TH3F(
+        (const char *) beforeName,
+        (const char *) beforeTitle,
+        fEventClassVariables->At(ixVarId)->GetNBins(),
+        fEventClassVariables->At(ixVarId)->GetLowerEdge(),
+        fEventClassVariables->At(ixVarId)->GetUpperEdge(),
+        nNoOfChannels,
+        0.0,
+        nNoOfChannels,
+        fQAnBinsMultiplicity,
+        fQAMultiplicityMin,
+        fQAMultiplicityMax);
+    fQAMultiplicityAfter3D = new TH3F(
+        (const char *) afterName,
+        (const char *) afterTitle,
+        fEventClassVariables->At(ixVarId)->GetNBins(),
+        fEventClassVariables->At(ixVarId)->GetLowerEdge(),
+        fEventClassVariables->At(ixVarId)->GetUpperEdge(),
+        nNoOfChannels,
+        0.0,
+        nNoOfChannels,
+        fQAnBinsMultiplicity,
+        fQAMultiplicityMin,
+        fQAMultiplicityMax);
+    /* now set the proper labels and titles */
+    fQAMultiplicityBefore3D->GetXaxis()->SetTitle(fEventClassVariables->At(ixVarId)->GetVariableLabel());
+    fQAMultiplicityBefore3D->GetYaxis()->SetTitle("channel");
+    fQAMultiplicityBefore3D->GetZaxis()->SetTitle("M");
+    fQAMultiplicityAfter3D->GetXaxis()->SetTitle(fEventClassVariables->At(ixVarId)->GetVariableLabel());
+    fQAMultiplicityAfter3D->GetYaxis()->SetTitle("channel");
+    fQAMultiplicityAfter3D->GetZaxis()->SetTitle("M");
+    if (fNoOfChannels != nNoOfChannels) {
+      Int_t bin = 1;
+      for (Int_t i = 0; i < fNoOfChannels; i++)
+        if (fUsedChannel[i]) {
+          fQAMultiplicityBefore3D->GetYaxis()->SetBinLabel(bin, Form("%d", i));
+          fQAMultiplicityAfter3D->GetYaxis()->SetBinLabel(bin, Form("%d", i));
+          bin++;
+        }
+    }
+
+    detectorConfigurationList->Add(fQAMultiplicityBefore3D);
+    detectorConfigurationList->Add(fQAMultiplicityAfter3D);
+  }
+
+  /* now propagate it to the input data corrections */
   Bool_t retValue = kTRUE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
     retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
@@ -493,13 +603,12 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateQAHistograms(TList *lis
       retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
     }
   }
-  /* if list is empty delete it if not incorporate it */
-  if (detectorConfigurationList->GetEntries() != 0) {
+  /* now incorporate the list to the passed one */
+  if (detectorConfigurationList->GetEntries() != 0)
     list->Add(detectorConfigurationList);
-  }
-  else {
+  else
     delete detectorConfigurationList;
-  }
+
   return retValue;
 }
 
@@ -532,6 +641,17 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::AttachCorrectionInputs(TList 
 void QnCorrectionsDetectorConfigurationChannels::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {
   correctionOnInputData->SetConfigurationOwner(this);
   fInputDataCorrections.AddCorrection(correctionOnInputData);
+}
+
+/// Fills the multiplicity histograms before and after input equalization
+/// \param variableContainer pointer to the variable content bank
+void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t *variableContainer) {
+  for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
+    QnCorrectionsDataVectorChannelized *dataVector =
+        static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
+    fQAMultiplicityBefore3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->Weight());
+    fQAMultiplicityAfter3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->EqualizedWeight());
+  }
 }
 
 /// \cond CLASSIMP
