@@ -86,9 +86,13 @@ void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) 
   if (calibrationFile) {
     if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {
       fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject(szCalibrationHistogramsKeyName))->ReadObj()->Clone();
-      if (fCalibrationHistogramsList != NULL)
+      if (fCalibrationHistogramsList != NULL) {
+        QnCorrectionsInfo(Form("Stored calibration list %s from file %s",
+            fCalibrationHistogramsList->GetName(),
+            calibrationFile->GetName()));
         /* we need the histograms ownership once we go to the GRID */
         fCalibrationHistogramsList->SetOwner(kTRUE);
+      }
     }
   }
 }
@@ -235,6 +239,8 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
   if (fCalibrationHistogramsList != NULL) {
     TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
     if (processList != NULL) {
+      QnCorrectionsInfo(Form("Assigned process list %s as the calibration histograms list",
+          processList->GetName()));
       /* now transfer the order to the defined detectors */
       for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
@@ -295,6 +301,8 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
       if (fCalibrationHistogramsList != NULL) {
         TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
         if (processList != NULL) {
+          QnCorrectionsInfo(Form("Assigned process list %s as the calibration histograms list",
+              processList->GetName()));
           /* now transfer the order to the defined detectors */
           for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
             ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
