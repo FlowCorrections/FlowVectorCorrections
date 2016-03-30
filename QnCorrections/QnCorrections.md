@@ -26,7 +26,7 @@ Once fully configured, the correction framework might be used in three different
 Before starting to model your experimental setup you first need to consider which will be the scope of your flow analysis. You need to identify the set of detectors you will be focused on and under which conditions / configurations you will make use of the information they provide for each of the events you will analyse. Then you have to identify the different event classes in which you will classify your events and which variables you will make use of to build such event classes.
 
 \subsection correctionmanager The framework manager
-QnCorrectionsManager framework manager is the central piece of the correction framework. It is the anchor point between the framework and the external run time environment. The data flow comes in from the external environment and gets distributed to the set of defined detectors. At configuration time the different detectors are defined and assigne to the framework manager. 
+QnCorrectionsManager framework manager is the central piece of the correction framework. It is the anchor point between the framework and the external run time environment. The data flow comes in from the external environment and gets distributed to the set of defined detectors. At configuration time the different detectors are defined and assigned to the framework manager. 
 
 You define the framework manager in a simple way
 ~~~{.cxx}
@@ -34,9 +34,9 @@ You define the framework manager in a simple way
   QnCorrectionsManager *QnManager = new QnCorrectionsManager();
 ~~~
 and then you configure the basic functions that control the information produced by the framework
-* produce an output TTree with Q vector data
-* produce framework QA histograms
-* build calibration information
+* produce an output TTree with Q vector data: for getting the subsequent corrected Q vectors written in a TTree structure.
+* produce framework QA histograms: for producing and giving the framework defined QA histograms.
+* build calibration information: for providing the information needed to produce the calibration / correction parameters.
 
 ~~~{.cxx}
   /* do not fill Qn vector TTree */
@@ -47,19 +47,37 @@ and then you configure the basic functions that control the information produced
   QnManager->SetShouldFillOutputHistograms(kTRUE);
 ~~~
 
-The framework support running a set of its instances on a concurrent scenario so that you will get results from each of the running instances. To be able to allocate the results to different processes they correspond to getting them at the end properly merged, you declare the list of processes names the framework should globally handle
+The framework supports running a set of its instances on a concurrent scenario so that you will get results from each of the running instances. To be able to allocate the results to different processes they correspond to getting them at the end properly merged, you declare the list of processes names the framework should globally handle
 ~~~{.cxx}
   /* store the list of concurrent processes names */
   QnManager->SetListOfProcessesNames(procNamesList);
 ~~~
-and then, if you have already produced correction information, you inform the framework about the file that includes it
+and then, if you have already produced correction information in a previous step, you inform the framework about the file that includes it
 ~~~{.cxx}
   /* transfer the TFile with correction information */
   QnManager->SetCalibrationHistogramsList(calibfile);
 ~~~
-Of course, the framework manager holds the set of detectors but they are defined next.
+Of course, the framework manager holds the set of detectors but they are defined next. The detectors are addressed by an external Id defined by the user but internally they are reached using an internal address which translation is performed by the framework manager. The framework manager also owns the data container used to interchange experimental setup variables values. 
 
 \subsection detectors Defining detectors
+
+QnCorrectionsDetector mirrors the experimental setup detectors within the correction framework. They are each externally identified by an unique detector Id that is passed to the framework at detector creation time together with the detector name to be used by the framework.
+~~~{.cxx}
+  /* create the new detector */
+  QnCorrectionsDetector *VZERO = new QnCorrectionsDetector("VZERO", VAR::kVZERO);
+~~~
+The detector is in charge of holding the different configurations that the user has defined on it being its main task to properly address to them the incoming data flow. Some configurations could correspond to concrete subdetectors of the proper real detector but could as well be the own detector addressed by different set of cuts. In any case, it is task of the detector configuration and not of the detector to store / handle such characterization.
+
+Once the different detector configurations have been incorporated, the detector is includen in the framework attaching it to the framework manager.
+~~~{.cxx}
+  /* add the detector to the framework manager */
+  QnManager->AddDetector(VZERO);
+~~~
+
+\subsection detectorconfig Detector configurations
+
+
+![Framework incoming dataflow](FrameworkDataFlow.png "Framework incoming dataflow")
 
 
 \subsection eventclasses Event classes

@@ -186,7 +186,7 @@ void QnCorrectionsQnVector::Reset() {
 /// A check for significant values is made. Not passing them
 /// returns 0.0.
 /// \param harmonic the intended harmonic number
-/// \return The event plane according to \f$\frac{1}{h}\tan^{-1}{\frac{Qn_X}{Qn_Y}}\f$
+/// \return The event plane according to \f$\frac{1}{h}\tan^{-1}{\frac{Qh_X}{Qh_Y}}\f$
 Double_t QnCorrectionsQnVector::EventPlane(Int_t harmonic) const {
   if(TMath::Abs(Qx(harmonic)) < fMinimumSignificantValue && TMath::Abs(Qy(harmonic)) < fMinimumSignificantValue) {
     return 0.0;
