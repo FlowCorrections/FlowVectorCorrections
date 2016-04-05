@@ -76,7 +76,7 @@ QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized(Int_t cha
     QnCorrectionsDataVector(phi) {
   fId = channelId;
   fWeight = weight;
-  fEqualizedWeight = 1.0;
+  fEqualizedWeight = weight;
 }
 
 /// Default destructor

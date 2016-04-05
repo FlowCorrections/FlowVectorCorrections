@@ -51,7 +51,7 @@ ClassImp(QnCorrectionsInputGainEqualization);
 /// Default constructor
 /// Passes to the base class the identity data for the Gain equalization correction step
 QnCorrectionsInputGainEqualization::QnCorrectionsInputGainEqualization() :
-    QnCorrectionsCorrectionOnInputData() {
+    QnCorrectionsCorrectionOnInputData(szCorrectionName, szKey) {
   fInputHistograms = NULL;
   fCalibrationHistograms = NULL;
   fQAMultiplicityBefore = NULL;
@@ -146,7 +146,9 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
 
 /// Processes the correction step
 ///
-/// Pure virtual function
+/// Data are always taken from the data bank from the equalized weights
+/// allowing chaining of input data corrections so, caution must be taken to be
+/// sure that, on initialising, weight and equalized weight match
 /// \return kTRUE if the correction step was applied
 Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContainer) {
   switch (fState) {
@@ -155,7 +157,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
     for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
       QnCorrectionsDataVectorChannelized *dataVector =
           static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-      fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
+      fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
     }
     return kFALSE;
     break;
@@ -164,7 +166,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
     for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
       QnCorrectionsDataVectorChannelized *dataVector =
           static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-      fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
+      fCalibrationHistograms->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the equalization */
@@ -173,7 +175,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
         QnCorrectionsDataVectorChannelized *dataVector =
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-        fQAMultiplicityBefore->Fill(variableContainer, dataVector->GetId(), dataVector->Weight());
+        fQAMultiplicityBefore->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
       }
     }
     /* store the equalized weights in the data vector bank according to equalization method */
@@ -182,7 +184,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
         QnCorrectionsDataVectorChannelized *dataVector =
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-        dataVector->SetEqualizedWeight(dataVector->Weight());
+        dataVector->SetEqualizedWeight(dataVector->EqualizedWeight());
       }
       break;
     case QEQUAL_averageEqualization:
@@ -201,7 +203,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           }
         }
         if (fMinimumSignificantValue < average)
-          dataVector->SetEqualizedWeight((dataVector->Weight() / average) * groupweight);
+          dataVector->SetEqualizedWeight((dataVector->EqualizedWeight() / average) * groupweight);
         else
           dataVector->SetEqualizedWeight(0.0);
       }
@@ -223,7 +225,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           }
         }
         if (fMinimumSignificantValue < average)
-          dataVector->SetEqualizedWeight((fA + fB * (dataVector->Weight() - average) / width) * groupweight);
+          dataVector->SetEqualizedWeight((fA + fB * (dataVector->EqualizedWeight() - average) / width) * groupweight);
         else
           dataVector->SetEqualizedWeight(0.0);
       }
