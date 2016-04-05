@@ -40,7 +40,9 @@ class QnCorrectionsDetector;
 /// to it for each processing request.
 ///
 /// As such, it incorporates the set of corrections to carry on the input data
-/// and the set of corrections to perform on the produced Q vector.
+/// and the set of corrections to perform on the produced Q vector. It always stores
+/// the plain Q vector produced after potential input data corrections and the
+/// Q vector that incorporates the latest Q vector correction step.
 ///
 /// It receives at construction time the set of event classes variables and the
 /// detector reference. The reference of the detector should only be obtained at
@@ -93,6 +95,24 @@ protected:
   /// \return pointer to the event class variables set
   QnCorrectionsEventClassVariablesSet &GetEventClassVariablesSet()
   { return *fEventClassVariables; }
+  /// Get the current Qn vector
+  /// Makes it available for subsequent correction steps.
+  /// It could have already supported previous correction steps
+  /// \return pointer to the current Qn vector instance
+  QnCorrectionsQnVector *GetCurrentQnVector()
+  { return &fCorrectedQnVector; }
+  /// Update the current Qn vector
+  /// Update towards what is the latest values of the Qn vector after executing a
+  /// correction step to make it available to further steps.
+  /// \param newQnVector the new values for the Qn vector
+  void UpdateCurrentQnVector(QnCorrectionsQnVector *newQnVector)
+  { fCorrectedQnVector.Set(newQnVector); }
+  /// Get the number of harmonics handled by the detector configuration
+  /// \return the number of handled harmonics
+  Int_t GetNoOfHarmonics() const
+  { return fCorrectedQnVector.GetNoOfHarmonics(); }
+  void GetHarmonicMap(Int_t *store) const
+  { fCorrectedQnVector.GetHarmonicsMap(store); }
 public:
   /// Asks for support histograms creation
   ///
@@ -132,6 +152,11 @@ public:
   /// considering the chosen calibration method.
   /// Pure virtual function
   virtual void BuildQnVector() = 0;
+  /// Include the list of associated Qn vectors into the passed list
+  ///
+  /// Pure virtual function
+  /// \param list list where the Qn vectors list should be added
+  virtual void IncludeQnVectors(TList *list) = 0;
 
   /// New data vector for the detector configuration
   /// Pure virtual function
@@ -155,7 +180,8 @@ protected:
   ///< set of cuts that define the detector configuration
   QnCorrectionsCutsSet *fCuts;         //->
   TClonesArray *fDataVectorBank;        //!<! input data for the current process / event
-  QnCorrectionsQnVector fQnVector;     ///< Q vector from the post processed input data
+  QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data
+  QnCorrectionsQnVector fCorrectedQnVector; ///< Q vector after subsequent correction steps
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   /// set of variables that define event classes
@@ -211,6 +237,7 @@ public:
   virtual Bool_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
   virtual void BuildQnVector();
+  virtual void IncludeQnVectors(TList *list);
 
   /// Checks if the current content of the variable bank applies to
   /// the detector configuration
@@ -294,6 +321,7 @@ public:
 
   virtual void BuildQnVector();
   void BuildRawQnVector();
+  virtual void IncludeQnVectors(TList *list);
 
   /// Checks if the current content of the variable bank applies to
   /// the detector configuration for the passed channel.
@@ -409,6 +437,7 @@ public:
   Bool_t CreateQAHistograms(TList *list);
   Bool_t AttachCorrectionInputs(TList *list);
   Bool_t ProcessCorrections(const Float_t *variableContainer);
+  void IncludeQnVectors(TList *list);
 
   /// Gets the name of the detector configuration at index that accepted last data vector
   /// \param index the position in the list of accepted data vector configuration
@@ -463,19 +492,20 @@ inline void QnCorrectionsDetectorConfigurationTracks::ClearConfiguration() {
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->ClearCorrectionStep();
   }
-  /* clean the own Q vector */
-  fQnVector.Reset();
+  /* clean the own Q vectors */
+  fPlainQnVector.Reset();
+  fCorrectedQnVector.Reset();
   /* and now clear the the input data bank */
   fDataVectorBank->Clear("C");
 }
 
-/// Builds Qn vector before Q vector corrections but
+/// Builds Qn vectors before Q vector corrections but
 /// considering the chosen calibration method.
 /// Remember, this configuration does not have a channelized
-/// approach so, the built Q vector is the one to be used for
+/// approach so, the built Q vectors are the ones to be used for
 /// subsequent corrections.
 inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
-  QnCorrectionsQnVectorBuild qVectorTemp(fQnVector);
+  QnCorrectionsQnVectorBuild qVectorTemp(fPlainQnVector);
   qVectorTemp.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
@@ -483,24 +513,30 @@ inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
     qVectorTemp.Add(dataVector->Phi(), dataVector->Weight());
   }
   qVectorTemp.Calibrate(fQnCalibrationMethod);
-  fQnVector.Set(&qVectorTemp);
+  fPlainQnVector.Set(&qVectorTemp);
+  fCorrectedQnVector.Set(&qVectorTemp);
 }
 
 
 /// Ask for processing corrections for the involved detector configuration
 ///
 /// The request is transmitted to the Q vector correction steps.
-/// \return kTRUE if everything went OK
+/// The first not applied correction step breaks the loop and kFALSE is returned
+/// \return kTRUE if all correction steps were applied
 inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessCorrections(const Float_t *variableContainer) {
   /* first we build the Q vector with the chosen calibration */
   BuildQnVector();
 
   /* then we transfer the request to the Q vector correction steps */
-  Bool_t retValue = kTRUE;
+  /* the loop is broken when a correction step has not been applied */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer));
+    if (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer))
+      continue;
+    else
+      return kFALSE;
   }
-  return retValue;
+  /* all correction steps were applied */
+  return kTRUE;
 }
 
 /// New data vector for the detector configuration.
@@ -550,7 +586,7 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildRawQnVector() {
 /// The built Q vector is the one to be used for
 /// subsequent Q vector corrections.
 inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
-  QnCorrectionsQnVectorBuild qVectorTemp(fQnVector);
+  QnCorrectionsQnVectorBuild qVectorTemp(fPlainQnVector);
   qVectorTemp.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
@@ -558,50 +594,47 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
     qVectorTemp.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
   qVectorTemp.Calibrate(fQnCalibrationMethod);
-  fQnVector.Set(&qVectorTemp);
+  fPlainQnVector.Set(&qVectorTemp);
+  fCorrectedQnVector.Set(&qVectorTemp);
 }
 
 
 /// Ask for processing corrections for the involved detector configuration
 ///
 /// The request is transmitted to the incoming data correction steps
-/// and to then to Q vector correction steps via
-/// \return kTRUE if everything went OK
+/// and to then to Q vector correction steps.
+/// The first not applied correction step breaks the loop and kFALSE is returned
+/// \return kTRUE if all correction steps were applied
 inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(const Float_t *variableContainer) {
 
   /* first we build the raw Q vector with the chosen calibration */
   BuildRawQnVector();
 
   /* then we transfer the request to the input data correction steps */
-  Bool_t retValue = kFALSE;
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    retValue = kTRUE;
-    retValue = retValue && (fInputDataCorrections.At(ixCorrection)->Process(variableContainer));
-    if (retValue)
+    if (fInputDataCorrections.At(ixCorrection)->Process(variableContainer))
       continue;
     else
-      break;
+      return kFALSE;
   }
 
+  /* all input corrections were applied */
   /* check whether QA histograms must be filled */
-  if (retValue)
-    if (fQAMultiplicityBefore3D != NULL && fQAMultiplicityAfter3D != NULL)
-      FillQAHistograms(variableContainer);
+  if (fQAMultiplicityBefore3D != NULL && fQAMultiplicityAfter3D != NULL)
+    FillQAHistograms(variableContainer);
 
-  if (retValue) {
-    /* input corrections were applied so let's build the Q vector with the chosen calibration */
-    BuildQnVector();
+  /* input corrections were applied so let's build the Q vector with the chosen calibration */
+  BuildQnVector();
 
-    /* now lt's propagate it to Q vector corrections */
-    for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-      retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer));
-      if (retValue)
-        continue;
-      else
-        break;
-    }
+  /* now let's propagate it to Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    if (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer))
+      continue;
+    else
+      return kFALSE;
   }
-  return retValue;
+  /* all correction steps were applied */
+  return kTRUE;
 }
 
 /// Clean the configuration to accept a new event
@@ -622,7 +655,8 @@ inline void QnCorrectionsDetectorConfigurationChannels::ClearConfiguration() {
   /* clean the raw Q vector */
   fRawQnVector.Reset();
   /* clean the own Q vector */
-  fQnVector.Reset();
+  fPlainQnVector.Reset();
+  fCorrectedQnVector.Reset();
   /* and now clear the the input data bank */
   fDataVectorBank->Clear("C");
 }

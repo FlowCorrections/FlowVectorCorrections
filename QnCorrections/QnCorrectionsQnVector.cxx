@@ -147,6 +147,34 @@ void QnCorrectionsQnVector::ActivateHarmonic(Int_t harmonic) {
   }
 }
 
+/// Get the number of harmonics currently handled by the Q vector
+///
+/// \return the number of harmonics handled
+Int_t QnCorrectionsQnVector::GetNoOfHarmonics() const {
+  Int_t nNoOfHarmonics = 0;
+  for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+      nNoOfHarmonics++;
+    }
+  }
+  return nNoOfHarmonics;
+}
+
+/// Get the harmonic map handled by the Q vector
+/// The pointer passed should allow writing in at least the number of harmonics
+/// used so, use first GetNoOfHarmonics() to get that
+///
+/// \param harmonicMapStore pointer to where to store the harmonic map
+void QnCorrectionsQnVector::GetHarmonicsMap(Int_t *harmonicMapStore) const {
+  Int_t nNoOfHarmonics = 0;
+  for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+      harmonicMapStore[nNoOfHarmonics] = h;
+      nNoOfHarmonics++;
+    }
+  }
+}
+
 /// Copy member function
 ///
 /// The passed Q vector is copied within the current object.

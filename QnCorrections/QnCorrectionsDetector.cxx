@@ -141,6 +141,19 @@ QnCorrectionsDetectorConfigurationBase *QnCorrectionsDetector::FindDetectorConfi
   return (QnCorrectionsDetectorConfigurationBase *) fConfigurations.FindObject(name);
 }
 
+/// Include the the list of Qn vector associated to the detector
+/// into the passed list
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the corrected Qn vector should be added
+void QnCorrectionsDetector::IncludeQnVectors(TList *list) {
+
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->IncludeQnVectors(list);
+  }
+}
+
+
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationBase);
@@ -148,7 +161,7 @@ ClassImp(QnCorrectionsDetectorConfigurationBase);
 
 /// Default constructor
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
-    fQnVector(), fQnVectorCorrections() {
+    fPlainQnVector(), fCorrectedQnVector(), fQnVectorCorrections() {
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
@@ -166,7 +179,9 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           TNamed(name,name),
-          fQnVector(nNoOfHarmonics, harmonicMap), fQnVectorCorrections() {
+          fPlainQnVector(nNoOfHarmonics, harmonicMap),
+          fCorrectedQnVector(nNoOfHarmonics, harmonicMap),
+          fQnVectorCorrections() {
 
   fDetector = NULL;
   fCuts = NULL;
@@ -272,7 +287,7 @@ QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTra
 ///
 /// The request is transmitted to the Q vector corrections.
 ///
-/// A new histograms list is created for the detector and incorporated
+/// A new histograms list is created for the detector configuration and incorporated
 /// to the passed list. Then the new list is passed to the corrections.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
@@ -339,6 +354,29 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
     return retValue;
   }
   return kFALSE;
+}
+
+/// Include the the list of Qn vector associated to the detector configuration
+/// into the passed list
+///
+/// A new list is created for the detector configuration and incorporated
+/// to the passed list.
+///
+/// Always includes first the fully corrected Qn vector,
+/// and then includes the plain Qn vector and asks to the different correction
+/// steps to include their partially corrected Qn vectors.
+/// \param list list where the corrected Qn vector should be added
+inline void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *list) {
+
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kFALSE);
+
+  detectorConfigurationList->Add(&fCorrectedQnVector);
+  detectorConfigurationList->Add(&fPlainQnVector);
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->IncludeCorrectedQnVector(detectorConfigurationList);
+  }
 }
 
 /// \cond CLASSIMP
@@ -653,6 +691,33 @@ void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t 
     fQAMultiplicityAfter3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->EqualizedWeight());
   }
 }
+
+/// Include the the list of Qn vector associated to the detector configuration
+/// into the passed list
+///
+/// A new list is created for the detector configuration and incorporated
+/// to the passed list.
+///
+/// Always includes first the fully corrected Qn vector,
+/// and then includes the raw Qn vector and the plain Qn vector and then
+/// asks to the different correction
+/// steps to include their partially corrected Qn vectors.
+/// \param list list where the corrected Qn vector should be added
+inline void QnCorrectionsDetectorConfigurationChannels::IncludeQnVectors(TList *list) {
+
+  TList *detectorConfigurationList = new TList();
+  detectorConfigurationList->SetName(this->GetName());
+  detectorConfigurationList->SetOwner(kFALSE);
+
+  detectorConfigurationList->Add(&fCorrectedQnVector);
+  detectorConfigurationList->Add(&fRawQnVector);
+  detectorConfigurationList->Add(&fPlainQnVector);
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->IncludeCorrectedQnVector(detectorConfigurationList);
+  }
+  list->Add(detectorConfigurationList);
+}
+
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationSet);

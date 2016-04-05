@@ -33,6 +33,7 @@
 /// \brief Correction steps base classes implementation
 
 #include "QnCorrectionsCorrectionSteps.h"
+#include "QnCorrectionsQnVector.h"
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsCorrectionStepBase);
@@ -103,6 +104,7 @@ ClassImp(QnCorrectionsCorrectionOnQvector);
 QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
     QnCorrectionsCorrectionStepBase() {
 
+  fCorrectedQnVector = NULL;
 }
 
 /// Normal constructor
@@ -111,11 +113,34 @@ QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
 QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector(const char *name, const char *key) :
     QnCorrectionsCorrectionStepBase(name, key) {
 
+  fCorrectedQnVector = NULL;
 }
 
 /// Default destructor
 QnCorrectionsCorrectionOnQvector::~QnCorrectionsCorrectionOnQvector() {
 
+  if (fCorrectedQnVector != NULL)
+    delete fCorrectedQnVector;
+}
+
+/// Include the new corrected Qn vector into the passed list
+///
+/// Adds the Qn vector to the passed list
+/// if the correction step is in correction states.
+/// \param list list where the corrected Qn vector should be added
+void QnCorrectionsCorrectionOnQvector::IncludeCorrectedQnVector(TList *list) {
+
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    /* collect the data needed to further produce correction parameters */
+    break;
+  case QCORRSTEP_applyCollect:
+    /* collect the data needed to further produce correction parameters */
+    /* and proceed to ... */
+  case QCORRSTEP_apply: /* apply the correction */
+    list->Add(fCorrectedQnVector);
+    break;
+  }
 }
 
 /// \cond CLASSIMP

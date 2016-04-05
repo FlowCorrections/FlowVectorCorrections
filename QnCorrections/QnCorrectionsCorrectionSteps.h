@@ -19,6 +19,7 @@
 #include <TList.h>
 
 class QnCorrectionsDetectorConfigurationBase;
+class QnCorrectionsQnVector;
 
 /// \class QnCorrectionsCorrectionStepBase
 /// \brief Base class for correction steps
@@ -81,6 +82,11 @@ public:
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process(const Float_t *variableContainer) = 0;
+  /// Include the new corrected Qn vector into the passed list
+  ///
+  /// Pure virtual function
+  /// \param list list where the corrected Qn vector should be added
+  virtual void IncludeCorrectedQnVector(TList *list) = 0;
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
@@ -138,6 +144,11 @@ public:
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process(const Float_t *variableContainer) = 0;
+  /// Include the new corrected Qn vector into the passed list
+  ///
+  /// Does nothing. Not applicable for corrections on input data
+  /// \param list list where the corrected Qn vector should be added
+  virtual void IncludeCorrectedQnVector(TList *list)  {}
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
@@ -177,9 +188,21 @@ public:
   /// Pure virtual function
   /// \return kTRUE if everything went OK
   virtual Bool_t Process(const Float_t *variableContainer) = 0;
+  virtual void IncludeCorrectedQnVector(TList *list);
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
+
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsCorrectionOnQvector(QnCorrectionsCorrectionOnQvector &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsCorrectionOnQvector& operator= (const QnCorrectionsCorrectionOnQvector &);
+
+private:
+  QnCorrectionsQnVector *fCorrectedQnVector;    //!<! the step corrected Qn vector
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionOnQvector, 1);
 /// \endcond

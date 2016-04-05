@@ -255,6 +255,15 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateQAHistograms(fQAHistogramsList);
     }
   }
+
+  /* build the Qn vectors list */
+  fQnVectorList = new TList();
+  /* the list does not own the Qn vectors */
+  fQnVectorList->SetOwner(kFALSE);
+  /* pass it to the detectors for Qn vector creation and attachment */
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->IncludeQnVectors(fQnVectorList);
+  }
 }
 
 /// Set the name of the list that should be considered as assigned to the current process

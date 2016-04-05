@@ -51,6 +51,10 @@ public:
   virtual ~QnCorrectionsQnVector();
 
   void ActivateHarmonic(Int_t harmonic);
+  Int_t GetNoOfHarmonics() const;
+  void GetHarmonicsMap(Int_t *harmonicMap) const;
+  Int_t GetFirstHarmonic() const;
+  Int_t GetNextHarmonic(Int_t harmonic) const;
 
   /// Sets the X component for the considered harmonic
   /// \param harmonic the intended harmonic
@@ -173,6 +177,30 @@ protected:
   ClassDef(QnCorrectionsQnVectorBuild, 1);
 /// \endcond
 };
+
+/// Get the number of the first harmonic used
+/// \return the number of the first harmonic handled by the Q vector, -1 if none
+inline Int_t QnCorrectionsQnVector::GetFirstHarmonic() const {
+  for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+      return h;
+    }
+  }
+  return -1;
+}
+
+/// Get the next harmonic to the one passed as parameter
+/// \param harmonic number to find the next one
+/// \return the number of the next to the passed harmonic, -1 if none
+inline Int_t QnCorrectionsQnVector::GetNextHarmonic(Int_t harmonic) const {
+  for(Int_t h = harmonic+1; h < fHighestHarmonic + 1; h++){
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+      return h;
+    }
+  }
+  return -1;
+}
+
 
 /// Adds a contribution to the build Q vector
 /// \param phi azimuthal angle contribution

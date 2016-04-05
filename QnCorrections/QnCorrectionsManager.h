@@ -108,7 +108,7 @@ public:
   /// \return the tree of histograms for building correction parameters
   TTree *GetQnVectorTree() const { return fQnVectorTree; }
   /// Gets the Qn vector tree
-  /// \return the tree of histograms for building correction parameters
+  /// \return the list of detector configurations Qn vectors
   TList *GetQnVectorList() const { return fQnVectorList; }
   /// Gets the name of the calibration histograms container
   /// \return the calibration histograms container name
