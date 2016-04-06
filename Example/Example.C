@@ -44,6 +44,7 @@
 #include "../QnCorrections/QnCorrectionsDetector.h"
 #include "../QnCorrections/QnCorrectionsManager.h"
 #include "../QnCorrections/QnCorrectionsInputGainEqualization.h"
+#include "../QnCorrections/QnCorrectionsQnVectorRecentering.h"
 
 void Setup(QnCorrectionsManager* QnMan);
 void Loop(QnCorrectionsManager* QnMan);
@@ -204,6 +205,7 @@ void Setup(QnCorrectionsManager* QnMan){
           harmonicsMap);
   myDetectorOnePositive->SetCuts(myPositiveCuts);
   myDetectorOnePositive->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorOnePositive->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
       new QnCorrectionsDetectorConfigurationTracks(
@@ -213,6 +215,7 @@ void Setup(QnCorrectionsManager* QnMan){
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
   myDetectorOneNegative->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorOneNegative->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configurations to the detector */
   myDetectorOne->AddDetectorConfiguration(myDetectorOnePositive);
@@ -260,6 +263,7 @@ void Setup(QnCorrectionsManager* QnMan){
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
+  myDetectorTwoA->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
       new QnCorrectionsDetectorConfigurationChannels(
@@ -278,6 +282,7 @@ void Setup(QnCorrectionsManager* QnMan){
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoC->AddCorrectionOnInputData(eqC);
+  myDetectorTwoC->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);
