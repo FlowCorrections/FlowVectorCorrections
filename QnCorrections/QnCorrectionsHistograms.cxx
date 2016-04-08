@@ -979,7 +979,7 @@ Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
   fValues = NULL;
 
   fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
-  if (fEntries != NULL) {
+  if (fEntries != NULL && fEntries->GetEntries() != 0) {
     fValues = (THnF *) histogramList->FindObject((const char *)histoName);
     if (fValues == NULL)
       return kFALSE;
@@ -1437,6 +1437,12 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
   if (fGroupValues != NULL) delete fGroupValues;
   fValues = NULL;
   fGroupValues = NULL;
+  if (fUsedChannel != NULL) delete fUsedChannel;
+  if (fChannelGroup != NULL) delete fChannelGroup;
+  if (fChannelMap != NULL) delete fChannelMap;
+  if (fUsedGroup != NULL) delete fUsedGroup;
+  if (fGroupMap != NULL) delete fGroupMap;
+
 
   /* lets consider now the channel information */
   fUsedChannel = new Bool_t[fNoOfChannels];
@@ -1506,7 +1512,7 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
 
   /* let's first try the Values / Entries structure */
   THnI *origEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
-  if (origEntries != NULL) {
+  if (origEntries != NULL && origEntries->GetEntries() != 0) {
     /* so we get it! */
     /* let's check the channel axis */
     if (fActualNoOfChannels != origEntries->GetAxis(fEventClassVariables.GetEntriesFast())->GetNbins())
@@ -1960,7 +1966,7 @@ Bool_t QnCorrectionsProfileComponents::AttachHistograms(TList *histogramList) {
   fFullFilled = 0x0000;
 
   fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
-  if (fEntries != NULL) {
+  if (fEntries != NULL && fEntries->GetEntries() != 0) {
     /* allocate enough space for the supported harmonic numbers */
     fXValues = new THnF *[nMaxHarmonicNumberSupported + 1];
     fYValues = new THnF *[nMaxHarmonicNumberSupported + 1];
@@ -2517,7 +2523,7 @@ Bool_t QnCorrectionsProfileCorrelationComponents::AttachHistograms(TList *histog
   fFullFilled = 0x0000;
 
   fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
-  if (fEntries != NULL) {
+  if (fEntries != NULL && fEntries->GetEntries() != 0) {
     /* allocate enough space for the supported harmonic numbers */
     fXXValues = new THnF *[nMaxHarmonicNumberSupported + 1];
     fXYValues = new THnF *[nMaxHarmonicNumberSupported + 1];
