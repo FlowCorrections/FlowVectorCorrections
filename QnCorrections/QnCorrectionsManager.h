@@ -191,7 +191,6 @@ inline void QnCorrectionsManager::ProcessEvent() {
   for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
     ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->ProcessCorrections(fDataContainer);
   }
-  ClearEvent();
 }
 
 /// Clear the current event
