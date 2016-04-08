@@ -14,7 +14,7 @@
 /// \file QnCorrectionsQnVector.h
 /// \brief Classes that model Q vectors for different harmonics within the Q vector correction framework
 
-#include <TObject.h>
+#include <TNamed.h>
 #include <TMath.h>
 
 /// The maximum external harmonic number the framework currently support for Q vectors
@@ -42,11 +42,11 @@ typedef enum {
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 27, 2016
-class QnCorrectionsQnVector : public TObject {
+class QnCorrectionsQnVector : public TNamed {
 
 public:
   QnCorrectionsQnVector();
-  QnCorrectionsQnVector(Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   QnCorrectionsQnVector(const QnCorrectionsQnVector &Q);
   virtual ~QnCorrectionsQnVector();
 
@@ -64,8 +64,12 @@ public:
   /// \param harmonic the intended harmonic
   /// \param qy the Y component for the Q vector
   virtual void SetQy(Int_t harmonic, Float_t qy) { fQnY[harmonic] = qy; }
+  /// Set the good quality flag
+  /// \parameter good kTRUE  if the quality is good
+  virtual void SetGood(Bool_t good) { fGoodQuality = good; }
 
-  void Set(QnCorrectionsQnVector* Qn);
+
+  void Set(QnCorrectionsQnVector* Qn, Bool_t changename);
 
   void Normalize();
   /// Provides the length of the Q vector for the considered harmonic
@@ -91,8 +95,13 @@ public:
   /// \param harmonic the intended harmonic
   /// \return the Q vector Y component
   Float_t Qy(Int_t harmonic) const { return fQnY[harmonic]; }
+  /// Get the Qn vector quality flag
+  /// \return Qn vector quality flag
+  Bool_t IsGoodQuality() const { return fGoodQuality; }
 
   Double_t EventPlane(Int_t harmonic) const;
+
+  virtual void Print(Option_t *) const;
 
 private:
   /// Assignment operator
@@ -112,6 +121,7 @@ protected:
   Float_t fQnY[MAXHARMONICNUMBERSUPPORTED+1];   ///< the Q vector Y component for each harmonic
   Int_t   fHighestHarmonic;                    ///< the highest harmonic number handled
   UInt_t  fHarmonicMask;                       ///< the mask for the supported harmonics
+  Bool_t  fGoodQuality;                        ///< Qn vector good quality flag
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVector, 1);
@@ -132,7 +142,7 @@ class QnCorrectionsQnVectorBuild : public QnCorrectionsQnVector {
 
 public:
   QnCorrectionsQnVectorBuild();
-  QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  QnCorrectionsQnVectorBuild(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   QnCorrectionsQnVectorBuild(const QnCorrectionsQnVector &Qn);
   QnCorrectionsQnVectorBuild(const QnCorrectionsQnVectorBuild &Qn);
   virtual ~QnCorrectionsQnVectorBuild();
@@ -145,6 +155,10 @@ public:
   void Add(QnCorrectionsQnVectorBuild* qvec);
   void Add(Double_t phi, Double_t weight = 1.0);
 
+  /// Check the quality of the constructed Qn vector
+  /// Current criteria is number of contributors higher than one.
+  /// If so happen, sets the good quality flag.
+  void CheckQuality() { fGoodQuality = ((1 < fN) ? kTRUE : kFALSE); }
   void Calibrate(QnVectorCalibrationMethod method);
 
   void NormalizeQoverM();
@@ -158,6 +172,8 @@ public:
   /// Gets the number of elements
   /// \return number of elements
   Int_t GetN() const { return fN; }
+
+  virtual void Print(Option_t *) const;
 
 private:
   /// Assignment operator

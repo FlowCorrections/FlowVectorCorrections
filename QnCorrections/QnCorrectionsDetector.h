@@ -105,8 +105,9 @@ protected:
   /// Update towards what is the latest values of the Qn vector after executing a
   /// correction step to make it available to further steps.
   /// \param newQnVector the new values for the Qn vector
-  void UpdateCurrentQnVector(QnCorrectionsQnVector *newQnVector)
-  { fCorrectedQnVector.Set(newQnVector); }
+  /// \param changename kTRUE by default to keep track of the subsequent Qn vector corrections
+  void UpdateCurrentQnVector(QnCorrectionsQnVector *newQnVector, Bool_t changename = kTRUE)
+  { fCorrectedQnVector.Set(newQnVector, changename); }
   /// Get the number of harmonics handled by the detector configuration
   /// \return the number of handled harmonics
   Int_t GetNoOfHarmonics() const
@@ -177,11 +178,13 @@ public:
 private:
   QnCorrectionsDetector *fDetector;    ///< pointer to the detector that owns the configuration
 protected:
+  static const char *szPlainQnVectorName; ///< the name of the Qn plain, not corrected Qn vectors
   ///< set of cuts that define the detector configuration
   QnCorrectionsCutsSet *fCuts;         //->
   TClonesArray *fDataVectorBank;        //!<! input data for the current process / event
   QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data
   QnCorrectionsQnVector fCorrectedQnVector; ///< Q vector after subsequent correction steps
+  QnCorrectionsQnVectorBuild fTempQnVector; ///< temporary Qn vector for efficient Q vector building
   QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   /// set of variables that define event classes
@@ -337,6 +340,7 @@ public:
   virtual void ClearConfiguration();
 
 private:
+  static const char *szRawQnVectorName;   ///< the name of the raw Qn vector from raw data without input data corrections
   QnCorrectionsQnVector fRawQnVector;     ///< Q vector from input data before pre-processing
   Int_t fNoOfChannels;                    ///< The number of channels associated
   /// array, which of the detector channels is used for this configuration
@@ -505,16 +509,17 @@ inline void QnCorrectionsDetectorConfigurationTracks::ClearConfiguration() {
 /// approach so, the built Q vectors are the ones to be used for
 /// subsequent corrections.
 inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
-  QnCorrectionsQnVectorBuild qVectorTemp(fPlainQnVector);
-  qVectorTemp.Reset();
+  fTempQnVector.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVector *dataVector = static_cast<QnCorrectionsDataVector *>(fDataVectorBank->At(ixData));
-    qVectorTemp.Add(dataVector->Phi(), dataVector->Weight());
+    fTempQnVector.Add(dataVector->Phi(), dataVector->Weight());
   }
-  qVectorTemp.Calibrate(fQnCalibrationMethod);
-  fPlainQnVector.Set(&qVectorTemp);
-  fCorrectedQnVector.Set(&qVectorTemp);
+  /* check the quality of the Qn vector */
+  fTempQnVector.CheckQuality();
+  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fPlainQnVector.Set(&fTempQnVector, kFALSE);
+  fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
 }
 
 
@@ -566,36 +571,32 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::AddDataVector(
 /// This is a channelized configuration so this Q vector will NOT be
 /// the one to be used for subsequent Q vector corrections.
 inline void QnCorrectionsDetectorConfigurationChannels::BuildRawQnVector() {
-  QnCorrectionsQnVectorBuild qVectorTemp(fRawQnVector);
-  qVectorTemp.Reset();
+  fTempQnVector.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVectorChannelized *dataVector = static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
-    qVectorTemp.Add(dataVector->Phi(), dataVector->Weight());
+    fTempQnVector.Add(dataVector->Phi(), dataVector->Weight());
   }
-  qVectorTemp.Calibrate(fQnCalibrationMethod);
-  fRawQnVector.Set(&qVectorTemp);
+  fTempQnVector.CheckQuality();
+  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fRawQnVector.Set(&fTempQnVector, kFALSE);
 }
 
-/// Builds raw Qn vector before Q vector corrections and before input
-/// data corrections but considering the chosen calibration method.
-/// This is a channelized configuration so this Q vector will NOT be
-/// the one to be used for subsequent Q vector corrections.
 /// Builds Qn vector before Q vector corrections and after input corrections
 /// and considering the chosen calibration method.
 /// The built Q vector is the one to be used for
 /// subsequent Q vector corrections.
 inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
-  QnCorrectionsQnVectorBuild qVectorTemp(fPlainQnVector);
-  qVectorTemp.Reset();
+  fTempQnVector.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVectorChannelized *dataVector = static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
-    qVectorTemp.Add(dataVector->Phi(), dataVector->EqualizedWeight());
+    fTempQnVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
-  qVectorTemp.Calibrate(fQnCalibrationMethod);
-  fPlainQnVector.Set(&qVectorTemp);
-  fCorrectedQnVector.Set(&qVectorTemp);
+  fTempQnVector.CheckQuality();
+  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fPlainQnVector.Set(&fTempQnVector, kFALSE);
+  fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
 }
 
 

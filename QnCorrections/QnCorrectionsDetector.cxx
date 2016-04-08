@@ -104,7 +104,8 @@ Bool_t QnCorrectionsDetector::AttachCorrectionInputs(TList *list) {
   /* TODO: do we need to fine tune the list passed according to the detector? */
   Bool_t retValue = kTRUE;
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
-    retValue = retValue && (fConfigurations.At(ixConfiguration)->AttachCorrectionInputs(list));
+    Bool_t ret = fConfigurations.At(ixConfiguration)->AttachCorrectionInputs(list);
+    retValue = retValue && ret;
   }
   return retValue;
 }
@@ -159,9 +160,12 @@ void QnCorrectionsDetector::IncludeQnVectors(TList *list) {
 ClassImp(QnCorrectionsDetectorConfigurationBase);
 /// \endcond
 
+const char *QnCorrectionsDetectorConfigurationBase::szPlainQnVectorName = "plain";
+
+
 /// Default constructor
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
-    fPlainQnVector(), fCorrectedQnVector(), fQnVectorCorrections() {
+    fPlainQnVector(), fCorrectedQnVector(), fTempQnVector(), fQnVectorCorrections() {
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
@@ -179,8 +183,9 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           TNamed(name,name),
-          fPlainQnVector(nNoOfHarmonics, harmonicMap),
-          fCorrectedQnVector(nNoOfHarmonics, harmonicMap),
+          fPlainQnVector(szPlainQnVectorName,nNoOfHarmonics, harmonicMap),
+          fCorrectedQnVector(szPlainQnVectorName,nNoOfHarmonics, harmonicMap),
+          fTempQnVector("temp",nNoOfHarmonics, harmonicMap),
           fQnVectorCorrections() {
 
   fDetector = NULL;
@@ -377,12 +382,14 @@ inline void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *li
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->IncludeCorrectedQnVector(detectorConfigurationList);
   }
+  list->Add(detectorConfigurationList);
 }
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationChannels);
 /// \endcond
 
+const char *QnCorrectionsDetectorConfigurationChannels::szRawQnVectorName = "raw";
 const char *QnCorrectionsDetectorConfigurationChannels::szQAMultiplicityHistoName = "Multiplicity";
 
 /// Default constructor
@@ -416,7 +423,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
       Int_t nNoOfHarmonics,
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap),
-          fRawQnVector(nNoOfHarmonics, harmonicMap),
+          fRawQnVector(szRawQnVectorName, nNoOfHarmonics, harmonicMap),
           fInputDataCorrections() {
   fNoOfChannels = nNoOfChannels;
   fUsedChannel = NULL;

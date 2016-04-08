@@ -40,6 +40,7 @@
 const char *QnCorrectionsQnVectorRecentering::szCorrectionName = "Recentering and width equalization";
 const char *QnCorrectionsQnVectorRecentering::szKey = "CCCC";
 const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn Components";
+const char *QnCorrectionsQnVectorRecentering::szCorrectedQnVectorName = "rec";
 
 
 /// \cond CLASSIMP
@@ -82,7 +83,7 @@ Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
   Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
   fCalibrationHistograms->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
-  fCorrectedQnVector = new QnCorrectionsQnVector(nNoOfHarmonics, harmonicsMap);
+  fCorrectedQnVector = new QnCorrectionsQnVector(szCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
   delete harmonicsMap;
   return kTRUE;
 }
@@ -116,40 +117,58 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
   Int_t harmonic;
   switch (fState) {
   case QCORRSTEP_calibration:
-    /* collect the data needed to further produce correction parameters */
-    harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-    while (harmonic != -1) {
-      fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
-      fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
-      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+    /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
+    if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
+      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
+        fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
+        printf("Detector configuration: %s, Q(%d)X: %f, Q(%d)Y: %f\n",
+            fDetectorConfiguration->GetName(),
+            harmonic,
+            fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic),
+            harmonic,
+            fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
+        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+      }
     }
     /* we have not perform any correction yet */
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
-    /* collect the data needed to further produce correction parameters */
-    harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-    while (harmonic != -1) {
-      fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
-      fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
-      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+    /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
+    if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
+      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
+        fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
+        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+      }
     }
     /* and proceed to ... */
-  case QCORRSTEP_apply: /* apply the correction */
-    harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-    while (harmonic != -1) {
-      Float_t widthX = 1.0;
-      Float_t widthY = 1.0;
-      if (fApplyWidthEqualization) {
-        widthX = fInputHistograms->GetXBinError(harmonic, fInputHistograms->GetBin(variableContainer));
+  case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+    if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
+      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
+      while (harmonic != -1) {
+        Float_t widthX = 1.0;
+        Float_t widthY = 1.0;
+        if (fApplyWidthEqualization) {
+          widthX = fInputHistograms->GetXBinError(harmonic, fInputHistograms->GetBin(variableContainer));
+        }
+        fCorrectedQnVector->SetQx(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic)
+            - fInputHistograms->GetXBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
+            / widthX);
+        fCorrectedQnVector->SetQy(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic)
+            - fInputHistograms->GetYBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
+            / widthY);
+        /* done! */
+        fCorrectedQnVector->SetGood(kTRUE);
+        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
       }
-      fCorrectedQnVector->SetQx(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic)
-          - fInputHistograms->GetXBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
-          / widthX);
-      fCorrectedQnVector->SetQy(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic)
-          - fInputHistograms->GetYBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
-          / widthY);
-      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+    }
+    else {
+      /* not done! */
+      fCorrectedQnVector->SetGood(kFALSE);
     }
     /* and update the current Qn vector */
     fDetectorConfiguration->UpdateCurrentQnVector(fCorrectedQnVector);

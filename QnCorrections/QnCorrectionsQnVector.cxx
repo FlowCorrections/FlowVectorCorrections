@@ -32,6 +32,8 @@
 /// \file QnCorrectionsQnVector.cxx
 /// \brief Implementation of Q vector classes
 
+#include <Riostream.h>
+
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsLog.h"
 
@@ -45,11 +47,12 @@ const UInt_t   QnCorrectionsQnVector::harmonicNumberMask[] =
  0x0100,0x0200,0x0400,0x0800,0x1000,0x2000,0x4000,0x8000};
 
 /// Default constructor
-QnCorrectionsQnVector::QnCorrectionsQnVector() : TObject() {
+QnCorrectionsQnVector::QnCorrectionsQnVector() : TNamed() {
   memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fHighestHarmonic = 0;
   fHarmonicMask = 0x0000;
+  fGoodQuality = kFALSE;
 }
 
 /// Normal constructor
@@ -66,10 +69,11 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() : TObject() {
 /// A check on the asked number of harmonics is made for having it within
 /// current implementation limits.
 ///
+/// \param name the name of the Qn vector. Identifies its origin
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
-QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nNoOfHarmonics, Int_t *harmonicMap) :
-    TObject() {
+QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap) :
+    TNamed(name,name) {
 
   memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
@@ -94,17 +98,19 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nNoOfHarmonics, Int_t *harmon
     }
     fHarmonicMask |= harmonicNumberMask[currentHarmonic];
   }
+  fGoodQuality = kFALSE;
 }
 
 /// Copy constructor
 /// \param Qn the Q vector object to copy after construction
 QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
-    TObject(Qn) {
+    TNamed(Qn) {
 
   memcpy(fQnX, Qn.fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memcpy(fQnY, Qn.fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fHighestHarmonic = Qn.fHighestHarmonic;
   fHarmonicMask = Qn.fHarmonicMask;
+  fGoodQuality = Qn.fGoodQuality;
 }
 
 /// Default destructor
@@ -135,7 +141,7 @@ void QnCorrectionsQnVector::ActivateHarmonic(Int_t harmonic) {
     fQnY[harmonic] = 0.0;
   }
   else {
-    if (fHarmonicMask & harmonicNumberMask[harmonic] == harmonicNumberMask[harmonic]) {
+    if ((fHarmonicMask & harmonicNumberMask[harmonic]) == harmonicNumberMask[harmonic]) {
       /* already active */
     }
     else {
@@ -181,7 +187,8 @@ void QnCorrectionsQnVector::GetHarmonicsMap(Int_t *harmonicMapStore) const {
 /// The harmonic structures are compared. A run time error is
 /// raised if they do not match.
 /// \param Qn pointer to the Q vector to be copied
-void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn) {
+/// \param changename kTRUE if the name of the Qn vector must also be changed
+void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn, Bool_t changename) {
   if ((fHighestHarmonic != Qn->fHighestHarmonic) ||
       (fHarmonicMask != Qn->fHarmonicMask)) {
     QnCorrectionsFatal("You requested set a Q vector with the values of other Q " \
@@ -190,13 +197,18 @@ void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn) {
   }
   memcpy(fQnX, Qn->fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memcpy(fQnY, Qn->fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  fGoodQuality = Qn->fGoodQuality;
+  if (changename) {
+    SetName(Qn->GetName());
+    SetTitle(Qn->GetTitle());
+  }
 }
 
 /// Normalize the Q vector to unit length
 ///
 void QnCorrectionsQnVector::Normalize() {
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
-    if (fHarmonicMask & harmonicNumberMask[h] == harmonicNumberMask[h]) {
+    if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
       fQnX[h] = QxNorm(h);
       fQnY[h] = QyNorm(h);
     }
@@ -207,6 +219,7 @@ void QnCorrectionsQnVector::Normalize() {
 void QnCorrectionsQnVector::Reset() {
   memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  fGoodQuality = kFALSE;
 }
 
 /// Gets the event plane for the asked harmonic
@@ -220,6 +233,17 @@ Double_t QnCorrectionsQnVector::EventPlane(Int_t harmonic) const {
     return 0.0;
   }
   return TMath::ATan2(Qy(harmonic), Qx(harmonic))/Double_t(harmonic);
+}
+
+/// Print the Qn vector in a readable shape
+///
+void QnCorrectionsQnVector::Print(Option_t *) const {
+  cout <<"OBJ: Qn vector step: " << GetName() << "\t" << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
+  Int_t harmonic = GetFirstHarmonic();
+  while (harmonic != -1) {
+    cout << "\t" << "\t" << "harmonic " << harmonic << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
+    harmonic = GetNextHarmonic(harmonic);
+  }
 }
 
 /// \cond CLASSIMP
@@ -239,8 +263,8 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector
 ///
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
-QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(Int_t nNoOfHarmonics, Int_t *harmonicMap) :
-    QnCorrectionsQnVector(nNoOfHarmonics, harmonicMap) {
+QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap) :
+    QnCorrectionsQnVector(name, nNoOfHarmonics, harmonicMap) {
 
   fSumW = 0.0;
   fN = 0;
@@ -291,7 +315,8 @@ void QnCorrectionsQnVectorBuild::SetQy(Int_t, Float_t) {
 /// \param Qn pointer to the Q vector to be copied
 void QnCorrectionsQnVectorBuild::Set(QnCorrectionsQnVectorBuild* Qn) {
 
-  QnCorrectionsQnVector::Set(Qn);
+  /* the name is not copied from building Qn vectors */
+  QnCorrectionsQnVector::Set(Qn,kFALSE);
   fSumW = Qn->fSumW;
   fN = Qn->fN;
 }
@@ -320,11 +345,15 @@ void QnCorrectionsQnVectorBuild::Add(QnCorrectionsQnVectorBuild* Qn) {
 /// does nothing
 void QnCorrectionsQnVectorBuild::NormalizeQoverM() {
 
-  if(fSumW < fMinimumSignificantValue)
-  for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
-    if (fHarmonicMask & harmonicNumberMask[h] == harmonicNumberMask[h]) {
-      fQnX[h] += fQnX[h] / fSumW;
-      fQnY[h] += fQnY[h] / fSumW;
+  if(fSumW < fMinimumSignificantValue) {
+
+  }
+  else {
+    for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
+      if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+        fQnX[h] = (fQnX[h] / fSumW);
+        fQnY[h] = (fQnY[h] / fSumW);
+      }
     }
   }
 }
@@ -336,11 +365,15 @@ void QnCorrectionsQnVectorBuild::NormalizeQoverM() {
 /// does nothing
 void QnCorrectionsQnVectorBuild::NormalizeQoverSquareRootOfM() {
 
-  if(fSumW < fMinimumSignificantValue)
-  for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
-    if (fHarmonicMask & harmonicNumberMask[h] == harmonicNumberMask[h]) {
-      fQnX[h] += fQnX[h] / TMath::Sqrt(fSumW);
-      fQnY[h] += fQnY[h] / TMath::Sqrt(fSumW);
+  if(fSumW < fMinimumSignificantValue) {
+
+  }
+  else {
+    for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
+      if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
+        fQnX[h] += fQnX[h] / TMath::Sqrt(fSumW);
+        fQnY[h] += fQnY[h] / TMath::Sqrt(fSumW);
+      }
     }
   }
 }
@@ -351,6 +384,18 @@ void QnCorrectionsQnVectorBuild::Reset() {
   QnCorrectionsQnVector::Reset();
   fSumW = 0.0;
   fN = 0;
+}
+
+/// Print the Qn vector in a readable shape
+///
+void QnCorrectionsQnVectorBuild::Print(Option_t *) const {
+  cout <<"OBJ: building Qn vector" << "\t" << "N: " << fN << "\t" << "Sum w: " << fSumW << "\t"
+      << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
+  Int_t harmonic = GetFirstHarmonic();
+  while (harmonic != -1) {
+    cout << "\t" << "\t" << "harmonic " << harmonic << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
+    harmonic = GetNextHarmonic(harmonic);
+  }
 }
 
 
