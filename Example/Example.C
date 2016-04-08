@@ -30,6 +30,7 @@
 #include <TObject.h>
 #include <TStopwatch.h>
 #include <TFile.h>
+#include <TList.h>
 
 /* to exclude */
 #include <TProfile2D.h>
@@ -81,6 +82,9 @@ ofstream textTrackEventFile;
 ofstream textChannelsEventFile;
 Int_t nEventNo;
 #endif
+
+/* print the list of Qn vectors */
+void PrintQnVectorList(TList*);
 
 /* the prepared tests */
 void TestEventClasses();
@@ -147,10 +151,13 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
   cout<<"Total time:     "<<stopwatch.RealTime()<<" s"<<endl;
   cout<<"Time per event: "<<stopwatch.RealTime()*1000./nevents<<" ms"<<endl;
 
-  Finish(QnMan);
-
   outputFile->cd();
   QnMan->GetOutputHistogramsList()->Write(QnMan->GetOutputHistogramsList()->GetName(),TObject::kSingleKey);
+  QnMan->GetQAHistogramsList()->Write(QnMan->GetQAHistogramsList()->GetName(),TObject::kSingleKey);
+
+  Finish(QnMan);
+
+
   if (inputFile) inputFile->Close();
   if (outputFile) outputFile->Close();
 }
@@ -291,6 +298,10 @@ void Setup(QnCorrectionsManager* QnMan){
   /* finally add the detector to the framework */
   QnMan->AddDetector(myDetectorTwo);
 
+  /* order the appropriate output */
+  QnMan->SetShouldFillQAHistograms(kTRUE);
+  QnMan->SetShouldFillOutputHistograms(kTRUE);
+
   /* here we should be able to store produced data vectors */
   QnMan->SetCurrentProcessListName("Example");
 
@@ -314,6 +325,8 @@ void Loop(QnCorrectionsManager* QnMan){
     textChannelsEventFile.open(sChannelsEventFileName,std::ofstream::out | std::ofstream::app);
   }
 #endif
+
+  QnMan->ClearEvent();
 
   // Set event data
   QnMan->GetDataContainer()[kCentrality] = gRandom->Rndm() * 100;
@@ -398,6 +411,13 @@ void Loop(QnCorrectionsManager* QnMan){
 #endif
 
   QnMan->ProcessEvent();
+
+  PrintQnVectorList(QnMan->GetQnVectorList());
+}
+
+/* print the Qn vector list */
+void PrintQnVectorList(TList *list) {
+  list->Print("",-1);
 }
 
 /// Test fot the event classes variables and set
@@ -1139,8 +1159,8 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
   /// the Q vectors we are going to use
   Int_t nHarmonics = 3;
   Int_t harmonicMap[] = {2, 4, 6};
-  QnCorrectionsQnVectorBuild myChannelizedDetectorQnVector(nHarmonics,harmonicMap);
-  QnCorrectionsQnVectorBuild myDetectorQnVector(nHarmonics,harmonicMap);
+  QnCorrectionsQnVectorBuild myChannelizedDetectorQnVector("myQnVectorOne",nHarmonics,harmonicMap);
+  QnCorrectionsQnVectorBuild myDetectorQnVector("myQnVectorTwo",nHarmonics,harmonicMap);
 
   /// loop over events
   for (Int_t event = 0; event < nEvents; event++) {

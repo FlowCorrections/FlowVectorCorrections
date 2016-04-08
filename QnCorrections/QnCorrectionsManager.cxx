@@ -315,6 +315,10 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
         }
       }
     }
+    else {
+      /* histograms list not yet created so, we just change the name */
+      fProcessListName = name;
+    }
   }
   else {
     QnCorrectionsFatal(Form("Changing process list name on the fly is not supported." \
