@@ -1,0 +1,16 @@
+# R files
+.RData
+.Rhistory
+
+# data files
+*.root
+
+# text output files
+*.txt
+*.txt~
+*.log
+*.log~
+
+# binary files
+*.so
+
