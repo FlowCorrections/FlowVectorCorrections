@@ -65,7 +65,7 @@ public:
   /// \param qy the Y component for the Q vector
   virtual void SetQy(Int_t harmonic, Float_t qy) { fQnY[harmonic] = qy; }
   /// Set the good quality flag
-  /// \parameter good kTRUE  if the quality is good
+  /// \param good kTRUE  if the quality is good
   virtual void SetGood(Bool_t good) { fGoodQuality = good; }
 
 

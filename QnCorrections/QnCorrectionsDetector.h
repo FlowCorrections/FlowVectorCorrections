@@ -112,6 +112,8 @@ protected:
   /// \return the number of handled harmonics
   Int_t GetNoOfHarmonics() const
   { return fCorrectedQnVector.GetNoOfHarmonics(); }
+  /// Get the harmonics map handled by the detector configuration
+  /// \param store pointer to the memory for storing the harmonics map
   void GetHarmonicMap(Int_t *store) const
   { fCorrectedQnVector.GetHarmonicsMap(store); }
 public:
@@ -179,7 +181,7 @@ private:
   QnCorrectionsDetector *fDetector;    ///< pointer to the detector that owns the configuration
 protected:
   static const char *szPlainQnVectorName; ///< the name of the Qn plain, not corrected Qn vectors
-  ///< set of cuts that define the detector configuration
+  /// set of cuts that define the detector configuration
   QnCorrectionsCutsSet *fCuts;         //->
   TClonesArray *fDataVectorBank;        //!<! input data for the current process / event
   QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data

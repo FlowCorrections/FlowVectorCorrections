@@ -261,6 +261,7 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector
 ///
 /// Relays on its parent for almost everything
 ///
+/// \param name the name of the Qn vector. Identifies its origin
 /// \param nNoOfHarmonics the desired number of harmonics
 /// \param harmonicMap ordered array with the external number of the harmonics
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap) :
