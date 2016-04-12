@@ -94,16 +94,28 @@ Bool_t QnCorrectionsInputGainEqualization::AttachInput(TList *list) {
   return kFALSE;
 }
 
+/// Asks for support data structures creation
+///
+/// Does nothing for the time being
+void QnCorrectionsInputGainEqualization::CreateSupportDataStructures() {
+
+}
+
 /// Asks for support histograms creation
 ///
 /// Allocates the histogram objects and creates the calibration histograms.
 /// The histograms are constructed with standard deviation error calculation
 /// for the proper behavior of the gain equalization.
+///
+/// Process concurrency requires Calibration Histograms creation for all c
+/// concurrent processes but not for Input Histograms so, we delete previously
+/// allocated ones.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) {
   QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
       static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
+  if (fInputHistograms != NULL) delete fInputHistograms;
   fInputHistograms = new QnCorrectionsProfileChannelizedIngress(szSupportHistogramName, szSupportHistogramName,
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms = new QnCorrectionsProfileChannelized(szSupportHistogramName, szSupportHistogramName,

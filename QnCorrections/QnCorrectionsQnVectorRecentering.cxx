@@ -65,14 +65,32 @@ QnCorrectionsQnVectorRecentering::~QnCorrectionsQnVectorRecentering() {
     delete fCalibrationHistograms;
 }
 
+/// Asks for support data structures creation
+///
+/// Creates the recentered Qn vector
+void QnCorrectionsQnVectorRecentering::CreateSupportDataStructures() {
+
+  Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
+  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+  fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
+  fCorrectedQnVector = new QnCorrectionsQnVector(szCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
+  delete harmonicsMap;
+}
+
 /// Asks for support histograms creation
 ///
 /// Allocates the histogram objects and creates the calibration histograms.
 /// The histograms are constructed with standard deviation error calculation
 /// for the proper behavior of optional gain equalization step.
+///
+/// Process concurrency requires Calibration Histograms creation for all c
+/// concurrent processes but not for Input Histograms so, we delete previously
+/// allocated ones.
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
+
+  if (fInputHistograms != NULL) delete fInputHistograms;
   fInputHistograms = new QnCorrectionsProfileComponents(szSupportHistogramName, szSupportHistogramName,
       fDetectorConfiguration->GetEventClassVariablesSet(), "s");
   fCalibrationHistograms = new QnCorrectionsProfileComponents(szSupportHistogramName, szSupportHistogramName,
@@ -83,7 +101,6 @@ Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
   Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
   fCalibrationHistograms->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
-  fCorrectedQnVector = new QnCorrectionsQnVector(szCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
   delete harmonicsMap;
   return kTRUE;
 }

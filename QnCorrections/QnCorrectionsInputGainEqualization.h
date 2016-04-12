@@ -88,6 +88,7 @@ public:
   { fUseChannelGroupsWeights = enable; }
 
   virtual Bool_t AttachInput(TList *list);
+  virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
 

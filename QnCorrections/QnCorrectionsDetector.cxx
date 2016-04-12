@@ -69,6 +69,16 @@ QnCorrectionsDetector::~QnCorrectionsDetector() {
 
 }
 
+/// Asks for support data structures creation
+///
+/// The request is transmitted to the attached detector configurations
+void QnCorrectionsDetector::CreateSupportDataStructures() {
+
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->CreateSupportDataStructures();
+  }
+}
+
 /// Asks for support histograms creation
 ///
 /// The request is transmitted to the attached detector configurations
@@ -288,6 +298,20 @@ QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTra
 
 }
 
+/// Asks for support data structures creation
+///
+/// The input data vector bank is allocated and the request is
+/// transmitted to the Q vector corrections.
+void QnCorrectionsDetectorConfigurationTracks::CreateSupportDataStructures() {
+
+  /* this is executed in the remote node so, allocate the data bank */
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
+
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->CreateSupportDataStructures();
+  }
+}
+
 /// Asks for support histograms creation
 ///
 /// The request is transmitted to the Q vector corrections.
@@ -297,9 +321,6 @@ QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTra
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationTracks::CreateSupportHistograms(TList *list) {
-  /* this is executed in the remote node so, allocate the data bank */
-  fDataVectorBank = new TClonesArray("QnCorrectionsDataVector", INITIALDATAVECTORBANKSIZE);
-
   Bool_t retValue = kTRUE;
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
@@ -508,6 +529,24 @@ void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(
   }
 }
 
+/// Asks for support data structures creation
+///
+/// The input data vector bank is allocated and the request is
+/// transmitted to the input data corrections and then to the Q vector corrections.
+void QnCorrectionsDetectorConfigurationChannels::CreateSupportDataStructures() {
+
+  /* this is executed in the remote node so, allocate the data bank */
+  fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
+
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    fInputDataCorrections.At(ixCorrection)->CreateSupportDataStructures();
+  }
+
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->CreateSupportDataStructures();
+  }
+}
+
 /// Asks for support histograms creation
 ///
 /// A new histograms list is created for the detector and incorporated
@@ -516,8 +555,6 @@ void QnCorrectionsDetectorConfigurationChannels::SetChannelsScheme(
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsDetectorConfigurationChannels::CreateSupportHistograms(TList *list) {
-  /* this is executed in the remote node so, allocate the data bank */
-  fDataVectorBank = new TClonesArray("QnCorrectionsDataVectorChannelized", INITIALDATAVECTORBANKSIZE);
 
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());

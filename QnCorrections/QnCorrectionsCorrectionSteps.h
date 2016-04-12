@@ -65,6 +65,10 @@ public:
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list) = 0;
+  /// Asks for support data structures creation
+  ///
+  /// Pure virtual function
+  virtual void CreateSupportDataStructures() = 0;
   /// Asks for support histograms creation
   ///
   /// Pure virtual function
@@ -133,6 +137,10 @@ public:
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list) = 0;
+  /// Asks for support data structures creation
+  ///
+  /// Pure virtual function
+  virtual void CreateSupportDataStructures() = 0;
   /// Asks for support histograms creation
   ///
   /// Pure virtual function
@@ -177,6 +185,10 @@ public:
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list) = 0;
+  /// Asks for support data structures creation
+  ///
+  /// Pure virtual function
+  virtual void CreateSupportDataStructures() = 0;
   /// Asks for support histograms creation
   ///
   /// Pure virtual function

@@ -174,6 +174,11 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
   }
 
 
+  /* create the support data structures */
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportDataStructures();
+  }
+
   /* build the support histograms list */
   fSupportHistogramsList = new TList();
   fSupportHistogramsList->SetName(szCalibrationHistogramsKeyName);

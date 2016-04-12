@@ -117,6 +117,12 @@ protected:
   void GetHarmonicMap(Int_t *store) const
   { fCorrectedQnVector.GetHarmonicsMap(store); }
 public:
+  /// Asks for support data structures creation
+  ///
+  /// The request is transmitted to the different corrections.
+  /// Pure virtual function
+  virtual void CreateSupportDataStructures() = 0;
+
   /// Asks for support histograms creation
   ///
   /// The request is transmitted to the different corrections.
@@ -230,6 +236,7 @@ public:
       Int_t *harmonicMap = NULL);
   virtual ~QnCorrectionsDetectorConfigurationTracks();
 
+  virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
   virtual Bool_t AttachCorrectionInputs(TList *list);
@@ -314,6 +321,7 @@ public:
   void SetQAMultiplicityAxis(Int_t nbins, Float_t min, Float_t max)
   { fQAnBinsMultiplicity = nbins; fQAMultiplicityMin = min; fQAMultiplicityMax = max; }
 
+  virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
 
@@ -439,6 +447,7 @@ public:
   /// \return detector Id
   Int_t GetId() { return fDetectorId; }
 
+  void CreateSupportDataStructures();
   Bool_t CreateSupportHistograms(TList *list);
   Bool_t CreateQAHistograms(TList *list);
   Bool_t AttachCorrectionInputs(TList *list);
