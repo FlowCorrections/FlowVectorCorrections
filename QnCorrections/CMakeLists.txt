@@ -12,27 +12,32 @@ add_definitions(${ROOT_CXX_FLAGS})
 
 
 set (HEADERS
-QnCorrectionsConstants.h 
-QnCorrectionsAxes.h 
-QnCorrectionsConfiguration.h 
-QnCorrectionsCuts.h 
-QnCorrectionsDataVector.h 
-QnCorrectionsHistograms.h 
-QnCorrectionsManager.h 
-QnCorrectionsQnVector.h 
-QnCorrectionsSteps.h
+QnCorrectionsCorrectionSteps.h
+QnCorrectionsCuts.h
+QnCorrectionsDataVector.h
+QnCorrectionsDetector.h
+QnCorrectionsEventClasses.h
+QnCorrectionsHistograms.h
+QnCorrectionsInputGainEqualization.h
+QnCorrectionsLog.h
+QnCorrectionsManager.h
+QnCorrectionsQnVector.h
+QnCorrectionsQnVectorRecentering.h
 )
 
 
 set (SOURCES
-QnCorrectionsAxes.cxx 
-QnCorrectionsConfiguration.cxx 
-QnCorrectionsCuts.cxx 
-QnCorrectionsDataVector.cxx 
-QnCorrectionsHistograms.cxx 
-QnCorrectionsManager.cxx 
-QnCorrectionsQnVector.cxx 
-QnCorrectionsSteps.cxx
+QnCorrectionsCorrectionSteps.cxx
+QnCorrectionsCuts.cxx
+QnCorrectionsDataVector.cxx
+QnCorrectionsDetector.cxx
+QnCorrectionsEventClasses.cxx
+QnCorrectionsHistograms.cxx
+QnCorrectionsInputGainEqualization.cxx
+QnCorrectionsLog.cxx
+QnCorrectionsManager.cxx
+QnCorrectionsQnVector.cxx
+QnCorrectionsQnVectorRecentering.cxx
 )
 
 ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)
