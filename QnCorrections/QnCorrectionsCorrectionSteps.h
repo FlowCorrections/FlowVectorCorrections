@@ -19,6 +19,7 @@
 #include <TList.h>
 
 class QnCorrectionsDetectorConfigurationBase;
+class QnCorrectionsDetectorConfigurationChannels;
 class QnCorrectionsQnVector;
 
 /// \class QnCorrectionsCorrectionStepBase
@@ -127,6 +128,7 @@ private:
 
 class QnCorrectionsCorrectionOnInputData: public QnCorrectionsCorrectionStepBase {
 public:
+  friend class QnCorrectionsDetectorConfigurationChannels;
   QnCorrectionsCorrectionOnInputData();
   QnCorrectionsCorrectionOnInputData(const char *name, const char *key);
   virtual ~QnCorrectionsCorrectionOnInputData();
@@ -213,7 +215,7 @@ private:
   /// Not allowed. Forced private.
   QnCorrectionsCorrectionOnQvector& operator= (const QnCorrectionsCorrectionOnQvector &);
 
-private:
+protected:
   QnCorrectionsQnVector *fCorrectedQnVector;    //!<! the step corrected Qn vector
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionOnQvector, 1);

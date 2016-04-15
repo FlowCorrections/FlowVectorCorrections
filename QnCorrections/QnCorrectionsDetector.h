@@ -75,7 +75,7 @@ public:
   void SetQVectorCalibrationMethod(QnVectorCalibrationMethod method)
   { fQnCalibrationMethod = method; }
 
-protected:
+public:
   /// Stores the detector reference
   /// \param detector the detector owner
   void SetDetectorOwner(QnCorrectionsDetector *detector)
@@ -84,7 +84,7 @@ protected:
   ///
   /// \return detector pointer
   QnCorrectionsDetector *GetDetector() { return fDetector; }
-protected:
+public:
   /// Get the input data bank.
   /// Makes it available for input corrections steps.
   /// \return pointer to the input data bank
@@ -229,6 +229,8 @@ private:
 class QnCorrectionsDetectorConfigurationTracks :
     public QnCorrectionsDetectorConfigurationBase {
 public:
+  friend class QnCorrectionsCorrectionStepBase;
+  friend class QnCorrectionsDetector;
   QnCorrectionsDetectorConfigurationTracks();
   QnCorrectionsDetectorConfigurationTracks(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
@@ -286,6 +288,8 @@ public:
 class QnCorrectionsDetectorConfigurationChannels :
     public QnCorrectionsDetectorConfigurationBase {
 public:
+  friend class QnCorrectionsCorrectionStepBase;
+  friend class QnCorrectionsDetector;
   QnCorrectionsDetectorConfigurationChannels();
   QnCorrectionsDetectorConfigurationChannels(const char *name,
       QnCorrectionsEventClassVariablesSet *eventClassesVariables,
@@ -489,9 +493,8 @@ inline Bool_t QnCorrectionsDetectorConfigurationTracks::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
   if (IsSelected(variableContainer)) {
     /// add the data vector to the bank
-    QnCorrectionsDataVector *dataVector =
-        new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-            QnCorrectionsDataVector(phi);
+    new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
+        QnCorrectionsDataVector(phi);
     return kTRUE;
   }
   return kFALSE;
@@ -569,9 +572,8 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::AddDataVector(
     const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t channelId) {
   if (IsSelected(variableContainer, channelId)) {
     /// add the data vector to the bank
-    QnCorrectionsDataVectorChannelized *channelizedDataVector =
-        new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-          QnCorrectionsDataVectorChannelized(channelId, phi, weight);
+    new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
+      QnCorrectionsDataVectorChannelized(channelId, phi, weight);
     return kTRUE;
   }
   return kFALSE;

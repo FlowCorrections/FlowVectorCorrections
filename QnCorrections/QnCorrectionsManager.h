@@ -124,11 +124,10 @@ public:
   Int_t AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
   const char *GetAcceptedDataDetectorConfigurationName(Int_t detectorId, Int_t index) const;
   void ProcessEvent();
+  void ClearEvent();
   void FinalizeQnCorrectionsFramework();
 
 private:
-  void ClearEvent();
-
   static const Int_t nMaxNoOfDetectors;              ///< the highest detector id currently supported by the framework
   static const Int_t nMaxNoOfDataVariables;          ///< the maximum number of variables currently supported by the framework
   static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored

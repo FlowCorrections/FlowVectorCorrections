@@ -1056,6 +1056,8 @@ Float_t QnCorrectionsProfile::GetBinError(Int_t bin) {
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -1309,6 +1311,8 @@ Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2105,6 +2109,8 @@ Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) 
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2147,6 +2153,8 @@ Float_t QnCorrectionsProfileComponents::GetYBinError(Int_t harmonic, Int_t bin) 
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2723,6 +2731,8 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Int_t harmonic,
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2765,6 +2775,8 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Int_t harmonic,
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2807,6 +2819,8 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Int_t harmonic,
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
@@ -2849,6 +2863,8 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinError(Int_t harmonic,
       /* standard deviation of the bin values */
       return serror;
       break;
+    default:
+      return 0.0;
     }
   }
 }
