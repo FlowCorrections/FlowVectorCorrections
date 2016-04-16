@@ -238,15 +238,15 @@ inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
 /// \param method the method of calibration
 inline void QnCorrectionsQnVectorBuild::Normalize(QnVectorNormalizationMethod method) {
   switch (method) {
-  case QVECNORM::QVNORM_noCalibration:
+  case QVNORM_noCalibration:
     break;
-  case QVECNORM::QVNORM_QoverSqrtM:
+  case QVNORM_QoverSqrtM:
     NormalizeQoverSquareRootOfM();
     break;
-  case QVECNORM::QVNORM_QoverM:
+  case QVNORM_QoverM:
     NormalizeQoverM();
     break;
-  case QVECNORM::QVNORM_QoverQlength:
+  case QVNORM_QoverQlength:
     QnCorrectionsQnVector::Normalize();
     break;
   }

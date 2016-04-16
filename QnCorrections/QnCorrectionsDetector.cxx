@@ -179,7 +179,7 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase()
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
-  fQnNormalizationMethod = QVECNORM::QVNORM_noCalibration;
+  fQnNormalizationMethod = QVNORM_noCalibration;
   fEventClassVariables = NULL;
 }
 
@@ -201,7 +201,7 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
   fDetector = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
-  fQnNormalizationMethod = QVECNORM::QVNORM_noCalibration;
+  fQnNormalizationMethod = QVNORM_noCalibration;
   fEventClassVariables = eventClassesVariables;
 }
 
