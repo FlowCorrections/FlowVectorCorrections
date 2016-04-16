@@ -140,12 +140,6 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
       while (harmonic != -1) {
         fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
         fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
-        printf("Detector configuration: %s, Q(%d)X: %f, Q(%d)Y: %f\n",
-            fDetectorConfiguration->GetName(),
-            harmonic,
-            fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic),
-            harmonic,
-            fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
         harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
       }
     }
