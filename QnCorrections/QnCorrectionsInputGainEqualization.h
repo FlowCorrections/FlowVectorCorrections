@@ -58,10 +58,10 @@
 /// But full protection will be reached when were possible declaring it
 /// as a class.
 ///
-typedef enum {
-  QEQUAL_noEqualization,         ///< \f$ \mbox{M'} = \mbox{M}\f$
-  QEQUAL_averageEqualization,    ///< \f$ \mbox{M}' = \frac{\mbox{M}}{\langle\mbox{M}\rangle} \f$
-  QEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
+typedef enum GAINEQUAL{
+  GEQUAL_noEqualization,         ///< \f$ \mbox{M'} = \mbox{M}\f$
+  GEQUAL_averageEqualization,    ///< \f$ \mbox{M}' = \frac{\mbox{M}}{\langle\mbox{M}\rangle} \f$
+  GEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
 } QnGainEqualizationMethod;
 
 /// \class QnCorrectionsInputGainEqualization

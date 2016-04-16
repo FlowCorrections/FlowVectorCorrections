@@ -20,20 +20,20 @@
 /// The maximum external harmonic number the framework currently support for Q vectors
 #define MAXHARMONICNUMBERSUPPORTED 15
 
-/// \typedef QnVectorCalibrationMethod
-/// \brief The class of the id of the supported Q vector calibration methods
+/// \typedef QnVectorNormalizationMethod
+/// \brief The class of the id of the supported Q vector normalization methods
 ///
 /// Actually it is not a class because the C++ level of implementation.
 /// But full protection will be reached when were possible declaring it
 /// as a class.
 ///
 /// M is the sum of weights.
-typedef enum {
-  QCALIB_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
-  QCALIB_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
-  QCALIB_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
-  QCALIB_QoverQlength   ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{|\mbox{Q}|} \f$
-} QnVectorCalibrationMethod;
+typedef enum QVECNORM {
+  QVNORM_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
+  QVNORM_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
+  QVNORM_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
+  QVNORM_QoverQlength   ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{|\mbox{Q}|} \f$
+} QnVectorNormalizationMethod;
 
 /// \class QnCorrectionsQnVector
 /// \brief Class that models and encapsulates a Q vector set
@@ -159,7 +159,7 @@ public:
   /// Current criteria is number of contributors higher than one.
   /// If so happen, sets the good quality flag.
   void CheckQuality() { fGoodQuality = ((1 < fN) ? kTRUE : kFALSE); }
-  void Calibrate(QnVectorCalibrationMethod method);
+  void Normalize(QnVectorNormalizationMethod method);
 
   void NormalizeQoverM();
   void NormalizeQoverSquareRootOfM();
@@ -236,18 +236,18 @@ inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
 
 /// Calibrates the Q vector according to the method passed
 /// \param method the method of calibration
-inline void QnCorrectionsQnVectorBuild::Calibrate(QnVectorCalibrationMethod method) {
+inline void QnCorrectionsQnVectorBuild::Normalize(QnVectorNormalizationMethod method) {
   switch (method) {
-  case QCALIB_noCalibration:
+  case QVECNORM::QVNORM_noCalibration:
     break;
-  case QCALIB_QoverSqrtM:
+  case QVECNORM::QVNORM_QoverSqrtM:
     NormalizeQoverSquareRootOfM();
     break;
-  case QCALIB_QoverM:
+  case QVECNORM::QVNORM_QoverM:
     NormalizeQoverM();
     break;
-  case QCALIB_QoverQlength:
-    Normalize();
+  case QVECNORM::QVNORM_QoverQlength:
+    QnCorrectionsQnVector::Normalize();
     break;
   }
 }

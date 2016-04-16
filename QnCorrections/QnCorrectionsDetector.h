@@ -71,9 +71,10 @@ public:
   /// \param cuts the set of cuts
   void SetCuts(QnCorrectionsCutsSet *cuts)
   { fCuts = cuts; }
-  /// Sets the calibration method for Q vectors
-  void SetQVectorCalibrationMethod(QnVectorCalibrationMethod method)
-  { fQnCalibrationMethod = method; }
+  /// Sets the normalization method for Q vectors
+  /// \param method the Qn vector normalizatio method
+  void SetQVectorNormalizationMethod(QnVectorNormalizationMethod method)
+  { fQnNormalizationMethod = method; }
 
 public:
   /// Stores the detector reference
@@ -193,7 +194,7 @@ protected:
   QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data
   QnCorrectionsQnVector fCorrectedQnVector; ///< Q vector after subsequent correction steps
   QnCorrectionsQnVectorBuild fTempQnVector; ///< temporary Qn vector for efficient Q vector building
-  QnVectorCalibrationMethod fQnCalibrationMethod; ///< the method for Q vector calibration
+  QnVectorNormalizationMethod fQnNormalizationMethod; ///< the method for Q vector normalization
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   /// set of variables that define event classes
   QnCorrectionsEventClassVariablesSet    *fEventClassVariables; //->
@@ -531,7 +532,7 @@ inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
   }
   /* check the quality of the Qn vector */
   fTempQnVector.CheckQuality();
-  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fTempQnVector.Normalize(fQnNormalizationMethod);
   fPlainQnVector.Set(&fTempQnVector, kFALSE);
   fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
 }
@@ -591,7 +592,7 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildRawQnVector() {
     fTempQnVector.Add(dataVector->Phi(), dataVector->Weight());
   }
   fTempQnVector.CheckQuality();
-  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fTempQnVector.Normalize(fQnNormalizationMethod);
   fRawQnVector.Set(&fTempQnVector, kFALSE);
 }
 
@@ -607,7 +608,7 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
     fTempQnVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
   fTempQnVector.CheckQuality();
-  fTempQnVector.Calibrate(fQnCalibrationMethod);
+  fTempQnVector.Normalize(fQnNormalizationMethod);
   fPlainQnVector.Set(&fTempQnVector, kFALSE);
   fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
 }

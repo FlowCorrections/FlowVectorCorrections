@@ -211,7 +211,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOnePositive->SetCuts(myPositiveCuts);
-  myDetectorOnePositive->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorOnePositive->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   myDetectorOnePositive->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
@@ -221,7 +221,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
-  myDetectorOneNegative->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorOneNegative->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   myDetectorOneNegative->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configurations to the detector */
@@ -263,10 +263,10 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoA->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorTwoA->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
   eqA->SetAandB(1.0, 0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
@@ -282,10 +282,10 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoC->SetQVectorCalibrationMethod(QCALIB_QoverM);
+  myDetectorTwoC->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(QEQUAL_widthEqualization);
+  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
   eqC->SetAandB(1.0, 0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoC->AddCorrectionOnInputData(eqC);
