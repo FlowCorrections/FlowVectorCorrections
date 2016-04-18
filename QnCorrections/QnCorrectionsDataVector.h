@@ -31,25 +31,36 @@
 class QnCorrectionsDataVector : public TObject {
 public:
   QnCorrectionsDataVector();
-  QnCorrectionsDataVector(Float_t phi);
+  QnCorrectionsDataVector(Int_t id, Float_t phi, Float_t weight);
   virtual ~QnCorrectionsDataVector();
 
   /// Sets the data vector azimuthal angle
   /// \param phi the azimuthal angle
   virtual void SetPhi(Float_t phi) { fPhi = phi; }
+  /// Sets the channel id associated with the data vector
+  /// \param id channel id
+  void SetId(Int_t id) { fId = id; }
 
+  /// Gets the channel id associated with the data vector
+  /// \return the channel id
+  Int_t GetId() { return fId; }
+  /// Sets the raw weight
+  /// \param weight raw weight from the detector channel
+  void SetWeight(Float_t weight) { fWeight = weight; }
   /// Gets the azimuthal angle for the data vector
   /// \return phi
   virtual Float_t Phi() { return fPhi; }
   /// Gets the weight for the data vector
   /// \return defaults to 1.0
-  virtual Float_t Weight() { return 1.0; }
+  virtual Float_t Weight() { return fWeight; }
   /// Gets the equalized weight for the data vector
-  /// \return defaults to 1.0
-  virtual Float_t EqualizedWeight() { return 1.0; }
+  /// \return defaults to weights
+  virtual Float_t EqualizedWeight() { return fWeight; }
 
 protected:
   Float_t fPhi;                                   //!<! the azimuthal angle of the data vector
+  Int_t   fId;                    //!<! the id associated with the data vector
+  Float_t fWeight;                //!<! raw weight assigned to the data vector
 
   static const Float_t fMinimumSignificantValue;  ///< the minimum value that will be considered as meaningful for processing
 
@@ -75,15 +86,6 @@ public:
   QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight);
   virtual ~QnCorrectionsDataVectorChannelized();
 
-  /// Gets the channel id associated with the data vector
-  /// \return the channel id
-  Int_t GetId() { return fId; }
-  /// Sets the channel id associated with the data vector
-  /// \param id channel id
-  void SetId(Int_t id) { fId = id; }
-  /// Sets the raw weight
-  /// \param weight raw weight from the detector channel
-  void SetWeight(Float_t weight) { fWeight = weight; }
   /// Sets the equalized weight
   /// \param weight equalized weight after channel equalization
   void SetEqualizedWeight( Float_t weight) { fEqualizedWeight = weight; }
@@ -96,8 +98,6 @@ public:
   virtual Float_t EqualizedWeight() { return fEqualizedWeight; }
 
 private:
-  Int_t   fId;                    //!<! the channel id associated with the data vector
-  Float_t fWeight;                //!<! raw weight as from the detector
   Float_t fEqualizedWeight;       //!<! equalized weight after channel equalization
 
 /// \cond CLASSIMP

@@ -43,12 +43,18 @@ const Float_t QnCorrectionsDataVector::fMinimumSignificantValue = 1.e-6;
 /// Default constructor
 QnCorrectionsDataVector::QnCorrectionsDataVector() : TObject() {
   fPhi = 0.0;
+  fId = -1;
+  fWeight = 1.0;
 }
 
 /// Normal constructor
+/// \param id the id associated with the data vector
 /// \param phi the azimuthal angle
-QnCorrectionsDataVector::QnCorrectionsDataVector(Float_t phi) : TObject() {
+/// \param weight the data vector weight
+QnCorrectionsDataVector::QnCorrectionsDataVector(Int_t id, Float_t phi, Float_t weight) : TObject() {
   fPhi = phi;
+  fId = id;
+  fWeight = weight;
 }
 
 /// Default destructor
@@ -63,8 +69,6 @@ ClassImp(QnCorrectionsDataVectorChannelized);
 /// Default constructor
 QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized() :
     QnCorrectionsDataVector() {
-  fId = -1;
-  fWeight = 1.0;
   fEqualizedWeight = 1.0;
 }
 
@@ -73,9 +77,7 @@ QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized() :
 /// \param phi the azimuthal angle
 /// \param weight the data vector weight
 QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight) :
-    QnCorrectionsDataVector(phi) {
-  fId = channelId;
-  fWeight = weight;
+    QnCorrectionsDataVector(channelId, phi, weight) {
   fEqualizedWeight = weight;
 }
 

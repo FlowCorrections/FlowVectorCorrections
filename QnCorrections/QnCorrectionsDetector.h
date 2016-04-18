@@ -487,15 +487,15 @@ private:
 /// the associated cuts. If so, the data vector is stored.
 /// \param variableContainer pointer to the variable content bank
 /// \param phi azimuthal angle
-/// \param weight the weight of the data vector. Ignored for track detector configurations.
-/// \param channelId the channel Id that originates the data vector. Ignored for track detector configurations.
+/// \param weight the weight associated to the data vector. For track detector is usually one.
+/// \param id the Id associated to the data vector. For track detector configurations could represent the track id.
 /// \return kTRUE if the data vector was accepted and stored
 inline Bool_t QnCorrectionsDetectorConfigurationTracks::AddDataVector(
-    const Float_t *variableContainer, Double_t phi, Double_t, Int_t) {
+    const Float_t *variableContainer, Double_t phi, Double_t weight, Int_t id) {
   if (IsSelected(variableContainer)) {
     /// add the data vector to the bank
     new (fDataVectorBank->ConstructedAt(fDataVectorBank->GetEntriesFast()))
-        QnCorrectionsDataVector(phi);
+        QnCorrectionsDataVector(id, phi, weight);
     return kTRUE;
   }
   return kFALSE;

@@ -1222,7 +1222,7 @@ void TestDataVectorsAndQnVectors(Int_t nEvents) {
       /// add the data vector to the bank
       QnCorrectionsDataVector *dataVector =
           new (dataVectorsBank->ConstructedAt(dataVectorsBank->GetEntriesFast()))
-              QnCorrectionsDataVector(phiTrack);
+              QnCorrectionsDataVector(track, phiTrack, 1.0);
     }
 
     cout << Form("data vector bank entries: %d\n", dataVectorsBank->GetEntriesFast());
