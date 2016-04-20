@@ -156,9 +156,9 @@ public:
   void Add(Double_t phi, Double_t weight = 1.0);
 
   /// Check the quality of the constructed Qn vector
-  /// Current criteria is number of contributors higher than one.
+  /// Current criteria is number of contributors should be at least one.
   /// If so happen, sets the good quality flag.
-  void CheckQuality() { fGoodQuality = ((1 < fN) ? kTRUE : kFALSE); }
+  void CheckQuality() { fGoodQuality = ((0 < fN) ? kTRUE : kFALSE); }
   void Normalize(QnVectorNormalizationMethod method);
 
   void NormalizeQoverM();
