@@ -143,8 +143,7 @@ class QnCorrectionsManager : public TObject {
   Bool_t CallStepRecenterQnVector(QnCorrectionsConfiguration* QnConf);
   //void CallStepRescaleQnVector(Int_t corpar);
   void CallStepTwistAndRescaleQnVector(QnCorrectionsConfiguration* QnConf);
-  void RotateQvec(QnCorrectionsConfiguration* QnConf);
-
+  void CallStepRotateQvector(QnCorrectionsConfiguration* QnConf);
 
   void WriteCalibrationHistogramsToList();
   void WriteQaHistogramsToList();
