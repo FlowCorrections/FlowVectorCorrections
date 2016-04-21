@@ -37,12 +37,9 @@
 
 #include <TObject.h>
 #include <TMath.h>
-#include <TArrayI.h>
-#include <TArrayD.h>
 //#include <TList.h>
 //#include <TClonesArray.h>
 //#include <TRandom3.h>
-//#include <TArrayS.h>
 #include <TAxis.h>
 #include <iostream>
 
@@ -96,6 +93,7 @@ void QnCorrectionsAxes::SetAxis(Int_t axis, Int_t var, TAxis ax, TString label) 
   fVar[axis]=var;
   //fNbins.SetAt(ax.GetNbins(),axis);
   fAxes[axis] = TAxis(ax);
+  fAxes[axis].SetTitle(label);
 
   return;
 }
@@ -127,6 +125,7 @@ void QnCorrectionsAxes::SetAxis(Int_t axis, Int_t var, Int_t nwidths, Int_t * nb
   fVar[axis]=var;
   TAxis ax = TAxis(ibin-1, newbins);
   fAxes[axis] = TAxis(ax);
+  fAxes[axis].SetTitle(label);
 
   return;
 }
@@ -141,6 +140,7 @@ void QnCorrectionsAxes::SetAxis(Int_t axis, Int_t var, Double_t binArray[][2], T
   fVar[axis]=var;
   TAxis ax = MakeAxis(binArray);
   fAxes[axis] = TAxis(ax);
+  fAxes[axis].SetTitle(label);
 
   return;
 }
@@ -181,7 +181,7 @@ TAxis QnCorrectionsAxes::MakeAxis(Double_t binArray[][2]){
 //____________________________________________________________________________________
 void QnCorrectionsAxes::SetNchannels(Int_t nchannels){
     
-  Double_t channelArray[][2] = {{-0.5, 2}, {-0.5+nchannels, nchannels}};
+  Double_t channelArray[][2] = {{-0.5, 2}, {-0.5+nchannels, (Double_t)nchannels}};
 
   SetAxis(fDim-1, 0, channelArray, "Channel number");
   

@@ -9,21 +9,17 @@
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
  
- 
- 
+
+
 
 #include "QnCorrectionsConstants.h"
 #include "QnCorrectionsSteps.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsAxes.h"
-#include <iostream>
-#include <Rtypes.h>
 #include <THn.h>
 
 class TProfile;
 class TList;
-//class THnF;
-//class THnT<float> THnF;
 class TH1F;
 class TObject;
 class QnCorrectionsAxes;
@@ -53,9 +49,9 @@ class QnCorrectionsHistograms : public TObject {
   void SetRotationHistogramE(THnF* hist) {  fRotationHistogramE[0]=hist;}
 
 
-  void CreateCalibrationHistograms(QnCorrectionsConfiguration* QnConf, Int_t managerStep) {CreateMultiplicityHistograms(QnConf);CreateRotationHistograms(QnConf);CreateQvectorHistograms(QnConf);CreateCorrelationHistograms(QnConf,managerStep);}
+  void CreateCalibrationHistograms(QnCorrectionsConfiguration* QnConf) {CreateMultiplicityHistograms(QnConf);CreateRotationHistograms(QnConf);CreateQvectorHistograms(QnConf);CreateCorrelationHistograms(QnConf);}
   void CreateQvectorHistograms(QnCorrectionsConfiguration* QnConf);
-  void CreateCorrelationHistograms(QnCorrectionsConfiguration* QnConf, Int_t currentManagerStep);
+  void CreateCorrelationHistograms(QnCorrectionsConfiguration* QnConf);
   void CreateCorrelationHistogramsQA(QnCorrectionsConfiguration* QnConf);
   void CreateMultiplicityHistograms(QnCorrectionsConfiguration* QnConf);
   void CreateGroupMultiplicityHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
@@ -66,6 +62,7 @@ class QnCorrectionsHistograms : public TObject {
   Bool_t ConnectMultiplicityHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
   Bool_t ConnectMeanQnCalibrationHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
   Bool_t ConnectU2nQnCalibrationHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
+  Bool_t ConnectCorrelationQnCalibrationHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
   Bool_t ConnectRotationQnCalibrationHistograms(TList* list, QnCorrectionsConfiguration* QnConf);
 
   void FillEventHistograms(Int_t dim, Double_t* fillValues);
@@ -100,7 +97,7 @@ class QnCorrectionsHistograms : public TObject {
   THnF* fRotationHistogramE[2];
   THnF* fU2nHistogramsQA[QnCorrectionsConstants::nHarmonics][4];
   THnF* fU2nHistogramsEQA;
-  THnF* fCalibrationHistogramsQ[QnCorrectionsConstants::nCorrectionSteps][QnCorrectionsConstants::nHarmonics][2];
+  THnF* fCalibrationHistogramsQ[QnCorrectionsConstants::nCorrectionSteps][QnCorrectionsConstants::nHarmonics*2][2];
   THnF* fCalibrationHistogramsE[QnCorrectionsConstants::nCorrectionSteps];
   TProfile* fCorrelationProfs[QnCorrectionsConstants::nCorrectionSteps][3][QnCorrectionsConstants::nHarmonics][4][QnCorrectionsConstants::nHistogramDimensions];
   TProfile* fCorrelationEpProfs[QnCorrectionsConstants::nCorrectionSteps][3][QnCorrectionsConstants::nHarmonics][4][QnCorrectionsConstants::nHistogramDimensions];

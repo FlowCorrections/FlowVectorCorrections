@@ -41,7 +41,6 @@
 #include "QnCorrectionsConfiguration.h"
 #include "QnCorrectionsAxes.h"
 #include "QnCorrectionsCuts.h"
-#include <iostream>
 
 
 ClassImp(QnCorrectionsConfiguration)

@@ -28,8 +28,6 @@
  *                                                                                                *
  **************************************************************************************************/
  
- 
-  
 
 #include "QnCorrectionsSteps.h"
 #include "QnCorrectionsConfiguration.h"
@@ -39,9 +37,9 @@
 #include <TList.h>
 #include <THashList.h>
 #include <TClonesArray.h>
+#include <TProfile.h>
 #include <TRandom3.h>
 #include <TArrayS.h>
-#include <iostream>
 
 ClassImp(QnCorrectionsSteps)
 
@@ -142,6 +140,7 @@ void QnCorrectionsSteps::CalibrateDataVector(TClonesArray* dataVectorArray, QnCo
     average  = inputHistos->EqualizationHistogramM(0)->GetBinContent(bin);
     width    = inputHistos->EqualizationHistogramM(0)->GetBinError(bin);
 
+
     chanAveMult=0.0;
     chanWidthMult=0.0;
     if(average > 1.0e-6){
@@ -198,6 +197,153 @@ void QnCorrectionsSteps::RecenterQvec(QnCorrectionsQnVector* QvectorIn, QnCorrec
 return;
 }
 
+
+//_____________________________________________________________________
+void QnCorrectionsSteps::TwistAndRescale2nQn(QnCorrectionsQnVector* QvectorIn, QnCorrectionsQnVector* QvectorTwist, QnCorrectionsQnVector* QvectorRescale, QnCorrectionsHistograms* inputHistos, Int_t bin, Int_t minHar, Int_t maxHar, Bool_t doTwist, Bool_t doRescaling){
+
+  //
+  // Twist and rescaling correction with <Q2n>
+  //
+
+
+  Double_t cos2n, sin2n, Lp, Ln, Ap, An, Qx, Qy, QxTwist, QyTwist, QxRescaling, QyRescaling;
+
+  Double_t axentries =inputHistos->CalibrationHistogramE(0)->GetBinContent(bin);
+  //Double_t axentries =inputHistos->U2nHistogramE()->GetBinContent(bin);
+
+  for(Int_t ih=minHar; ih<=maxHar; ++ih) {
+    cos2n = inputHistos->CalibrationHistogramQ(0,ih*2,0)->GetBinContent(bin)/axentries;
+    sin2n = inputHistos->CalibrationHistogramQ(0,ih*2,1)->GetBinContent(bin)/axentries;
+    //cos2n = inputHistos->U2nHistogram(ih,0)->GetBinContent(bin)/axentries;
+    //sin2n = inputHistos->U2nHistogram(ih,1)->GetBinContent(bin)/axentries;
+
+    
+     Ap = 1+cos2n;
+     An = 1-cos2n;
+     Lp = sin2n/Ap;
+     Ln = sin2n/An;
+
+
+    // if(gPrintOnce<3){
+    // cout<<inputHistos->CalibrationHistogramQ(0,ih*2,0)->GetName()<<"  "<<minHar<<" Ap,An,Lp,Ln: "<<Ap<<"  "<<An<<"  "<<Lp<<"  "<<Ln<<" , <Qx>,<Qy>:  "<<inputHistos->CalibrationHistogramQ(0,ih,0)->GetBinContent(bin)/axentries<<"  "<<inputHistos->CalibrationHistogramQ(0,ih,1)->GetBinContent(bin)/axentries<<"  , <Q2x>,<Q2y>:  "<<cos2n<<"  "<<sin2n<<endl;
+    // gPrintOnce++;
+    // }
+
+    if(!(Lp>-99999999.&&Lp<99999999.)) continue;
+    if(!(Ln>-99999999.&&Ln<99999999.)) continue;
+    if(!(Ap>-99999999.&&Ap<99999999.)) continue;
+    if(!(An>-99999999.&&An<99999999.)) continue;
+
+
+    if(QvectorIn->CheckQnVectorStatus(ih, QnCorrectionsConstants::kUndefined)) continue;
+
+      Qx = QvectorIn->Qx(ih);
+      Qy = QvectorIn->Qy(ih);
+      QxTwist = Qx;
+      QyTwist = Qy;
+      if(doTwist){
+        QxTwist = (Qx-Ln*Qy)/(1-Ln*Lp);
+        QyTwist = (Qy-Lp*Qx)/(1-Ln*Lp);
+        QvectorTwist->SetQx( ih, QxTwist);
+        QvectorTwist->SetQy( ih, QyTwist);
+        //cout<<Qx<<"  "<<QxTwist<<"  "<<Lp<<"  "<<Ln<<"  "<<Ap<<"  "<<An<<"  "<<cos2n<<"  "<<sin2n<<endl;
+        QvectorTwist->SetQnVectorStatus(ih, QnCorrectionsConstants::kTwist);
+        QvectorRescale->SetQnVectorStatus(ih, QnCorrectionsConstants::kTwist);
+      }
+      
+
+      if(doRescaling){
+        QxRescaling = QxTwist / Ap;
+        QyRescaling = QyTwist / An;
+        QvectorRescale->SetQx( ih, QxRescaling);
+        QvectorRescale->SetQy( ih, QyRescaling);
+        QvectorRescale->SetQnVectorStatus(ih, QnCorrectionsConstants::kRescaling);
+      }
+
+   
+  }
+  return;
+}
+
+
+
+//_____________________________________________________________________
+void QnCorrectionsSteps::TwistAndRescale3DetectorCorrelation(QnCorrectionsQnVector* QvectorIn, QnCorrectionsQnVector* QvectorTwist, QnCorrectionsQnVector* QvectorRescale, QnCorrectionsHistograms* inputHistos, Int_t bin, Int_t minHar, Int_t maxHar, Bool_t doTwist, Bool_t doRescaling, Int_t eventClassParameter){
+
+  //
+  // Twist and rescaling correction with <Q2n>
+  //
+
+
+
+    Double_t Lp, Ln, Ap, An, Qx, Qy, QxTwist, QyTwist, QxRescaling, QyRescaling;
+    Double_t x1xt,y1yt,x1yt,x1x2,x2xt,x2yt;
+
+
+	    for(Int_t ih=minHar; ih<=maxHar; ++ih) {
+
+      //x1xt = inputHistos->CorrelationProf(0, 0, ih, 0, eventClassParameter)->GetBinContent(bin);
+      //y1yt = inputHistos->CorrelationProf(0, 0, ih, 3, eventClassParameter)->GetBinContent(bin);
+
+      //x1yt = inputHistos->CorrelationProf(0, 0, ih, 1, eventClassParameter)->GetBinContent(bin);
+
+      //x1x2 = inputHistos->CorrelationProf(0, 1, ih, 0, eventClassParameter)->GetBinContent(bin);
+      //x2xt = inputHistos->CorrelationProf(0, 2, ih, 0, eventClassParameter)->GetBinContent(bin);
+      //x2yt = inputHistos->CorrelationProf(0, 2, ih, 1, eventClassParameter)->GetBinContent(bin);
+
+      x1xt = inputHistos->CorrelationProf(0, 0, ih, 0, eventClassParameter)->GetBinContent(bin);
+      y1yt = inputHistos->CorrelationProf(0, 0, ih, 3, eventClassParameter)->GetBinContent(bin);
+
+      x1yt = inputHistos->CorrelationProf(0, 0, ih, 1, eventClassParameter)->GetBinContent(bin);
+
+      x1x2 = inputHistos->CorrelationProf(0, 2, ih, 0, eventClassParameter)->GetBinContent(bin);
+      x2xt = inputHistos->CorrelationProf(0, 1, ih, 0, eventClassParameter)->GetBinContent(bin);
+      x2yt = inputHistos->CorrelationProf(0, 1, ih, 1, eventClassParameter)->GetBinContent(bin);
+
+
+
+      Lp = x1yt/x1xt;
+      Ln = x1yt/y1yt;
+      Ap = TMath::Sqrt(2.*x1x2)*x1xt/TMath::Sqrt(x1xt*x2xt+x1yt*x2yt);
+      An = TMath::Sqrt(2.*x1x2)*y1yt/TMath::Sqrt(x1xt*x2xt+x1yt*x2yt);
+
+      //cout<<Lp<<"  "<<Ln<<"  "<<x1yt<<"  "<<x1xt<<"  "<<y1yt<<endl;
+
+    if(!(Lp>-99999999.&&Lp<99999999.)) continue;
+    if(!(Ln>-99999999.&&Ln<99999999.)) continue;
+    if(!(Ap>-99999999.&&Ap<99999999.)) continue;
+    if(!(An>-99999999.&&An<99999999.)) continue;
+
+
+    if(QvectorIn->CheckQnVectorStatus(ih, QnCorrectionsConstants::kUndefined)) continue;
+
+      Qx = QvectorIn->Qx(ih);
+      Qy = QvectorIn->Qy(ih);
+      QxTwist = Qx;
+      QyTwist = Qy;
+      if(doTwist){
+        QxTwist = (Qx-Ln*Qy)/(1-Ln*Lp);
+        QyTwist = (Qy-Lp*Qx)/(1-Ln*Lp);
+        QvectorTwist->SetQx( ih, QxTwist);
+        QvectorTwist->SetQy( ih, QyTwist);
+        //cout<<Qx<<"  "<<QxTwist<<"  "<<Lp<<"  "<<Ln<<"  "<<Ap<<"  "<<An<<"  "<<cos2n<<"  "<<sin2n<<endl;
+        QvectorTwist->SetQnVectorStatus(ih, QnCorrectionsConstants::kTwist);
+        QvectorRescale->SetQnVectorStatus(ih, QnCorrectionsConstants::kTwist);
+      }
+      
+
+      if(doRescaling){
+        QxRescaling = QxTwist / Ap;
+        QyRescaling = QyTwist / An;
+        QvectorRescale->SetQx( ih, QxRescaling);
+        QvectorRescale->SetQy( ih, QyRescaling);
+        QvectorRescale->SetQnVectorStatus(ih, QnCorrectionsConstants::kRescaling);
+      }
+
+   
+  }
+  return;
+}
 
 
 
@@ -759,18 +905,18 @@ return;
 //
 
 //_____________________________________________________________________
-void QnCorrectionsSteps::TwistQnVector() {
+//void QnCorrectionsSteps::TwistQnVector() {
 
   //
   // Recenter the detector event plane
   //
 
 
-  // Int_t bin=0;
-  // Int_t* var;
-  // Int_t maxHarmonic;
+  //Int_t bin=0;
+  //Int_t* var;
+  //Int_t maxHarmonic;
   //Int_t dim; 
-  // Double_t fillValues[20];
+  //Double_t fillValues[20];
 
 
  // QnCorrectionsConfiguration* QnConf = 0x0;
@@ -862,26 +1008,26 @@ void QnCorrectionsSteps::TwistQnVector() {
  //   }
  // }
 
-return;
-}
+//return;
+//}
 
 
 
 //_____________________________________________________________________
-void QnCorrectionsSteps::RescaleQnVector(Int_t u2npar) {
+//void QnCorrectionsSteps::RescaleQnVector(Int_t u2npar) {
 
   //
   // Recenter the detector event plane
   //
 
 
-  // Int_t bin=0;
-  // Int_t* var;
-  // Int_t maxHarmonic;
-  // Int_t dim;
+  //Int_t bin=0;
+  //Int_t* var;
+  //Int_t maxHarmonic;
+  //Int_t dim; 
 
 
-  // Double_t fillValues[20];
+  //Double_t fillValues[20];
 
   //QnCorrectionsConfiguration* QnConf = 0x0;
   //for(Int_t iconf=0; iconf<NumberOfQnConfigurations(); iconf++){
@@ -943,8 +1089,8 @@ void QnCorrectionsSteps::RescaleQnVector(Int_t u2npar) {
   //  }
   //}
 
-return;
-}
+//return;
+//}
 
 
 //

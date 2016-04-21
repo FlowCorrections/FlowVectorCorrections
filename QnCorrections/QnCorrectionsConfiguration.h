@@ -12,7 +12,6 @@
  
  
 
-#include <iostream>
 #include <Rtypes.h>
 #include <TArrayS.h>
 #include "QnCorrectionsAxes.h"
@@ -93,7 +92,7 @@ class QnCorrectionsConfiguration : public TObject {
   //void SetScaling(Bool_t set)             {fScaleQvec          =set;}
 
   
-  Bool_t UseCalibrationDirectoryNameAllEvents(Bool_t b=kFALSE)      {fUseLabel=(b ? kFALSE : kTRUE);}
+  void UseCalibrationDirectoryNameAllEvents(Bool_t b=kFALSE)      {fUseLabel=(b ? kFALSE : kTRUE);}
 
   //void SetCorrectionFlag(QnCorrectionsSteps::CorrectionSteps flag);  // which correction has to be applied at some point
 

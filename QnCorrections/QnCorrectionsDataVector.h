@@ -13,13 +13,12 @@
  
 
 #include "QnCorrectionsConstants.h"
-#include <iostream>
 #include <TObject.h>
 //#include <Rtypes.h>
 
 
 class QnCorrectionsQnVector;
-
+class TClonesArray;
 
 
 //_____________________________________________________________________

@@ -47,6 +47,7 @@ class QnCorrectionsQnVector : public TObject {
   void Add(Double_t phi, Double_t w=1.);
   void Normalize();
   void SetQoverM();
+  void SetQtimesM();
   void SetQoverSquareRootOfM();
   void Reset();
 
@@ -119,10 +120,12 @@ inline void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* qvec)
   // Add a Q-vector
   //
 
+  Int_t maxHar = nHarmonics();
+  if(maxHar>qvec->nHarmonics()) maxHar=qvec->nHarmonics(); // copy qvector with as far as smallest range goes
   fSumW=qvec->SumOfWeights();
   fN=qvec->N();
   fBin=qvec->Bin();
-  for(Int_t ih=1; ih<=nHarmonics(); ++ih){
+  for(Int_t ih=1; ih<=maxHar; ++ih){
     fQvectorX[ih-1]=qvec->Qx(ih);
     fQvectorY[ih-1]=qvec->Qy(ih);
     fQnVectorStatus[ih-1]=qvec->GetQnVectorStatus(ih);
@@ -202,6 +205,23 @@ inline void QnCorrectionsQnVector::SetQoverM()
   }
 }
 
+
+//_______________________________________________________________________________
+inline void QnCorrectionsQnVector::SetQtimesM() 
+{
+  //
+  // Do Q*M
+  //
+
+  Double_t qx,qy;
+  if(SumOfWeights()<10E-6) return;
+  for(Int_t ih=1; ih<=nHarmonics(); ++ih){
+    qx = Qx(ih)*SumOfWeights();
+    qy = Qy(ih)*SumOfWeights();
+    SetQx(ih,qx);
+    SetQy(ih,qy);
+  }
+}
 
 
 //_______________________________________________________________________________
