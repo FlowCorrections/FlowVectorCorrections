@@ -53,6 +53,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() : TNamed() {
   fHighestHarmonic = 0;
   fHarmonicMask = 0x0000;
   fGoodQuality = kFALSE;
+  fN = 0;
 }
 
 /// Normal constructor
@@ -99,6 +100,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmon
     fHarmonicMask |= harmonicNumberMask[currentHarmonic];
   }
   fGoodQuality = kFALSE;
+  fN = 0;
 }
 
 /// Copy constructor
@@ -111,6 +113,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
   fHighestHarmonic = Qn.fHighestHarmonic;
   fHarmonicMask = Qn.fHarmonicMask;
   fGoodQuality = Qn.fGoodQuality;
+  fN = Qn.fN;
 }
 
 /// Default destructor
@@ -198,6 +201,7 @@ void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn, Bool_t changename) {
   memcpy(fQnX, Qn->fQnX, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memcpy(fQnY, Qn->fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fGoodQuality = Qn->fGoodQuality;
+  fN = Qn->fN;
   if (changename) {
     SetName(Qn->GetName());
     SetTitle(Qn->GetTitle());
@@ -220,6 +224,7 @@ void QnCorrectionsQnVector::Reset() {
   memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fGoodQuality = kFALSE;
+  fN = 0;
 }
 
 /// Gets the event plane for the asked harmonic
@@ -254,7 +259,6 @@ ClassImp(QnCorrectionsQnVectorBuild);
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector() {
 
   fSumW = 0.0;
-  fN = 0;
 }
 
 /// Normal constructor
@@ -268,7 +272,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const char *name, Int_t n
     QnCorrectionsQnVector(name, nNoOfHarmonics, harmonicMap) {
 
   fSumW = 0.0;
-  fN = 0;
 }
 
 /// Copy constructor from a Q vector
@@ -277,7 +280,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVect
     QnCorrectionsQnVector(Qn) {
 
   fSumW = 0.0;
-  fN = 0;
 }
 
 /// Copy constructor
@@ -286,7 +288,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVect
     QnCorrectionsQnVector(Qn) {
 
   fSumW = Qn.fSumW;
-  fN = Qn.fN;
 }
 
 /// Default destructor
@@ -319,7 +320,6 @@ void QnCorrectionsQnVectorBuild::Set(QnCorrectionsQnVectorBuild* Qn) {
   /* the name is not copied from building Qn vectors */
   QnCorrectionsQnVector::Set(Qn,kFALSE);
   fSumW = Qn->fSumW;
-  fN = Qn->fN;
 }
 
 /// Adds a build Q vector
@@ -384,7 +384,6 @@ void QnCorrectionsQnVectorBuild::Reset() {
 
   QnCorrectionsQnVector::Reset();
   fSumW = 0.0;
-  fN = 0;
 }
 
 /// Print the Qn vector in a readable shape

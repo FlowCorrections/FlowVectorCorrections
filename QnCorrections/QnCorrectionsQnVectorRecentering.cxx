@@ -159,12 +159,15 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
+      /* we get the properties of the current Qn vector but its name */
+      fCorrectedQnVector->Set(fDetectorConfiguration->GetCurrentQnVector(),kFALSE);
       harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
       while (harmonic != -1) {
         Float_t widthX = 1.0;
         Float_t widthY = 1.0;
         if (fApplyWidthEqualization) {
           widthX = fInputHistograms->GetXBinError(harmonic, fInputHistograms->GetBin(variableContainer));
+          widthY = fInputHistograms->GetYBinError(harmonic, fInputHistograms->GetBin(variableContainer));
         }
         fCorrectedQnVector->SetQx(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic)
             - fInputHistograms->GetXBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
@@ -172,8 +175,6 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
         fCorrectedQnVector->SetQy(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic)
             - fInputHistograms->GetYBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
             / widthY);
-        /* done! */
-        fCorrectedQnVector->SetGood(kTRUE);
         harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
       }
     }

@@ -99,6 +99,9 @@ public:
   /// \return Qn vector quality flag
   Bool_t IsGoodQuality() const { return fGoodQuality; }
 
+  /// Gets the number of elements that were used for Q vector building
+  /// \return number of elements
+  Int_t GetN() const { return fN; }
   Double_t EventPlane(Int_t harmonic) const;
 
   virtual void Print(Option_t *) const;
@@ -122,6 +125,7 @@ protected:
   Int_t   fHighestHarmonic;                    ///< the highest harmonic number handled
   UInt_t  fHarmonicMask;                       ///< the mask for the supported harmonics
   Bool_t  fGoodQuality;                        ///< Qn vector good quality flag
+  Int_t fN;                                    ///< number of elements used for Qn vector building
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVector, 1);
@@ -169,9 +173,6 @@ public:
   /// Gets the sum of weights.
   /// \return sum of weights
   Float_t GetSumOfWeights() const { return fSumW; }
-  /// Gets the number of elements
-  /// \return number of elements
-  Int_t GetN() const { return fN; }
 
   virtual void Print(Option_t *) const;
 
@@ -187,7 +188,6 @@ private:
 protected:
 
   Float_t fSumW;   ///< the sum of weights
-  Int_t fN;        ///< number of elements
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVectorBuild, 1);
