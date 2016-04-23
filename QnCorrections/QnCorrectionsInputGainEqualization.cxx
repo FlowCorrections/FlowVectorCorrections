@@ -43,6 +43,11 @@ const char *QnCorrectionsInputGainEqualization::szKey = "CCCC";
 const char *QnCorrectionsInputGainEqualization::szSupportHistogramName = "Multiplicity";
 const char *QnCorrectionsInputGainEqualization::szQAHistogramName = "QA Multiplicity";
 
+/// Default value for the shift parameter
+#define GAINEQUALIZATION_SHIFTDEFAULT 0.0
+/// Default value for the scale parameter
+#define GAINEQUALIZATION_SCALEDEFAULT 1.0
+
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsInputGainEqualization);
@@ -57,8 +62,8 @@ QnCorrectionsInputGainEqualization::QnCorrectionsInputGainEqualization() :
   fQAMultiplicityBefore = NULL;
   fQAMultiplicityAfter = NULL;
   fEqualizationMethod = GEQUAL_noEqualization;
-  fA = 0.0;
-  fB = 1.0;
+  fShift = GAINEQUALIZATION_SHIFTDEFAULT;
+  fScale = GAINEQUALIZATION_SCALEDEFAULT;
   fUseChannelGroupsWeights = kFALSE;
   fHardCodedWeights = NULL;
 }
@@ -237,7 +242,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
           }
         }
         if (fMinimumSignificantValue < average)
-          dataVector->SetEqualizedWeight((fA + fB * (dataVector->EqualizedWeight() - average) / width) * groupweight);
+          dataVector->SetEqualizedWeight((fShift + fScale * (dataVector->EqualizedWeight() - average) / width) * groupweight);
         else
           dataVector->SetEqualizedWeight(0.0);
       }

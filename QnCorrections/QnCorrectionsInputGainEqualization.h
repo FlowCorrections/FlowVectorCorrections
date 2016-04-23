@@ -35,7 +35,7 @@
 /// \f]
 /// with A and B are parameters that are the same for all channels and
 /// \f$\sigma_{{M}_{c}}\f$ is the standard deviation of the signals of the channel \f$c\f$
-/// for the considered event class.
+/// for the considered event class
 /// \f[
 ///        \sigma_{{M}_{c}} = \sqrt{
 ///          \frac{1}{\mbox{N}_{ev}} \Sigma_{i}^{\mbox{N}_{ev}} \mbox{M}^2_{c,i} -
@@ -58,14 +58,54 @@
 /// But full protection will be reached when were possible declaring it
 /// as a class.
 ///
-typedef enum GAINEQUAL{
+typedef enum {
   GEQUAL_noEqualization,         ///< \f$ \mbox{M'} = \mbox{M}\f$
   GEQUAL_averageEqualization,    ///< \f$ \mbox{M}' = \frac{\mbox{M}}{\langle\mbox{M}\rangle} \f$
   GEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
 } QnGainEqualizationMethod;
 
 /// \class QnCorrectionsInputGainEqualization
-/// \brief Encapsulates the gain equalization step on input data
+/// \brief Encapsulates the gain equalization on input data correction step
+///
+/// Gain equalization is applied on raw data from the involved detector.
+/// Two procedures are implemented: average gain equalization and width equalization.
+///
+/// The average gain equalization is applied for the signal \f$ \mbox{M}_{c,i} \f$ of each detector
+/// channel \f$ c \f$ measured for event \f$ i \f$ according to:
+/// \f[
+///        \mbox{M}'_{c,i} = \frac{\mbox{M}_{c,i}}{\langle\mbox{M}_{c}\rangle}
+/// \f]
+/// where  \f$\langle\mbox{M}_{c}\rangle\f$ is an average over events in a given event class
+/// \f[
+///        \langle\mbox{M}_{c}\rangle = \frac{1}{\mbox{N}_{ev}} \Sigma_{i}^{\mbox{N}_{ev}} \mbox{M}_{c,i}
+/// \f]
+///
+/// The width equalization is applied for the signal \f$ \mbox{M}_{c,i} \f$ of each detector
+/// channel \f$ c \f$ measured for event \f$ i \f$ according to:
+/// \f[
+///     \mbox{M}'_{c,i} = \mbox{A} + \mbox{B} \frac{\mbox{M}_{c,i} - \langle\mbox{M}_{c}\rangle}
+///                               {\sigma_{{M}_{c}}}
+/// \f]
+/// with A and B are parameters that are the same for all channels and
+/// \f$\sigma_{{M}_{c}}\f$ is the standard deviation of the signals of the channel \f$c\f$
+/// for the considered event class
+/// \f[
+///        \sigma_{{M}_{c}} = \sqrt{
+///          \frac{1}{\mbox{N}_{ev}} \Sigma_{i}^{\mbox{N}_{ev}} \mbox{M}^2_{c,i} -
+///          \frac{1}{\mbox{N}^2_{ev}} \left(\Sigma_{i}^{\mbox{N}_{ev}} \mbox{M}_{c,i}\right)^2}
+/// \f]
+/// At the class level A is known as the shift and B is known as the scale.
+/// The class also provides support for group equalization where a group weight can be
+/// extracted from the channels that conform a group or could be passed as hard coded group
+/// weights at detector configuration definition.
+///
+/// The gain equalization is only applied if the class instance
+/// is in the correction status. In order to be in that status the instance
+/// should have been able to get the proper calibration histograms that will
+/// provide the required averages per event class and channel.
+/// If the class instance is not in the correction status then, it is
+/// in the calibration one, collecting data for producing, once merged in a
+/// further phase, the calibration histograms.
 
 class QnCorrectionsInputGainEqualization : public QnCorrectionsCorrectionOnInputData {
 public:
@@ -77,11 +117,15 @@ public:
   void SetEqualizationMethod(QnGainEqualizationMethod method)
   { fEqualizationMethod = method; }
 
-  /// Set the width equalization parameters
+  /// Set the shift (A) width equalization parameter
+  /// \param shift the shift parameter value
+  void SetShift(Float_t shift)
+  { fShift = shift; }
+  /// Set the scale (B) equalization parameter
   /// \param A the A parameter value
   /// \param B the B parameter value
-  void SetAandB(Float_t A, Float_t B)
-  { fA = A; fB = B; }
+  void SetScale(Float_t scale)
+  { fScale = scale; }
   /// Enable or disable the group weights extracted from channel multiplicity
   /// \param enable kTRUE / kFALSE for enable / disable it
   void SetUseChannelGroupsWeights(Bool_t enable)
@@ -109,8 +153,8 @@ private:
   QnCorrectionsProfileChannelized *fQAMultiplicityAfter;   //!<! the channel multiplicity histogram after gain equalization
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
 
-  Float_t fA;                                   ///< the A parameter for width equalization
-  Float_t fB;                                   ///< the B parameter for width equalization
+  Float_t fShift;                               ///< the shift (A) parameter for width equalization
+  Float_t fScale;                               ///< the scale (B) parameter for width equalization
   Bool_t fUseChannelGroupsWeights;              ///< use group weights extracted from channel multiplicity
   const Float_t *fHardCodedWeights;             //!<! group hard coded weights stored in the detector configuration
 
