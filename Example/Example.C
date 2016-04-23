@@ -151,12 +151,11 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
   cout<<"Total time:     "<<stopwatch.RealTime()<<" s"<<endl;
   cout<<"Time per event: "<<stopwatch.RealTime()*1000./nevents<<" ms"<<endl;
 
+  Finish(QnMan);
+
   outputFile->cd();
   QnMan->GetOutputHistogramsList()->Write(QnMan->GetOutputHistogramsList()->GetName(),TObject::kSingleKey);
   QnMan->GetQAHistogramsList()->Write(QnMan->GetQAHistogramsList()->GetName(),TObject::kSingleKey);
-
-  Finish(QnMan);
-
 
   if (inputFile) inputFile->Close();
   if (outputFile) outputFile->Close();
@@ -266,8 +265,9 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoA->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
-  eqA->SetAandB(1.0, 0.1);
+  eqA->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqA->SetShift(1.0);
+  eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
   myDetectorTwoA->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
@@ -285,8 +285,9 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoC->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GAINEQUAL::GEQUAL_widthEqualization);
-  eqC->SetAandB(1.0, 0.1);
+  eqC->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqC->SetShift(1.0);
+  eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoC->AddCorrectionOnInputData(eqC);
   myDetectorTwoC->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
