@@ -46,6 +46,7 @@ const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
 const char *QnCorrectionsManager::szCalibrationQAHistogramsKeyName = "CalibrationQAHistograms";
 const char *QnCorrectionsManager::szDummyProcessListName = "dummyprocess";
+const char *QnCorrectionsManager::szAllProcessesListName = "all data";
 
 /// Default constructor.
 /// The class owns the detectors and will be destroyed with it
@@ -357,6 +358,11 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
       else {
         TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
         processList->SetName(name);
+        /* and now the QA histograms list if needed */
+        if (GetShouldFillQAHistograms()) {
+          TList *processQAList = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
+          processQAList->SetName(name);
+        }
       }
 
       fProcessListName = name;
@@ -383,9 +389,17 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
   }
 }
 
-/// Produce the final output and release the framework
+/// Produce the final output and release the framework.
+/// Produce the all data lists that collect data from all concurrent processes.
 void QnCorrectionsManager::FinalizeQnCorrectionsFramework() {
 
+  TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
+  fSupportHistogramsList->Add(processList->Clone(szAllProcessesListName));
+  /* and now the QA histograms list if needed */
+  if (GetShouldFillQAHistograms()) {
+    TList *processQAList = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
+    fQAHistogramsList->Add(processQAList->Clone(szAllProcessesListName));
+  }
 }
 
 

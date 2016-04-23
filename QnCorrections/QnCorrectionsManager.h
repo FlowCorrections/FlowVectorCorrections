@@ -133,6 +133,7 @@ private:
   static const char *szCalibrationHistogramsKeyName; ///< the name of the key under which calibration histograms lists are stored
   static const char *szCalibrationQAHistogramsKeyName; ///< the name of the key under which calibration QA histograms lists are stored
   static const char *szDummyProcessListName;         ///< accepted temporary name before getting the definitive one
+  static const char *szAllProcessesListName;         ///< the name of the list that collects data from all concurrent processes
   TList fDetectorsSet;                  ///< the list of detectors
   QnCorrectionsDetector **fDetectorsIdMap; //!<! map between external detector Id and internal detector
   Float_t *fDataContainer;              //!<! the data variables bank
