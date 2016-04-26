@@ -676,7 +676,7 @@ void QnCorrectionsManager::CallStepRotateQvector(QnCorrectionsConfiguration* QnC
   TClonesArray &arr = *(fCorrectedQvectors[QnConf->GlobalIndex()][QnCorrectionsConstants::kAlignment]);
   QnCorrectionsQnVector* QvectorRotated = new(arr[0]) QnCorrectionsQnVector(*QvectorIn);
 
-  QnCorrectionsSteps::RecenterQvec( QvectorIn, QvectorRotated, fInputHistograms[iconf], bin, QnConf->MinimumHarmonic(), QnConf->MaximumHarmonic(), QnConf->AlignmentHarmonic());
+  QnCorrectionsSteps::RotateQvec( QvectorIn, QvectorRotated, fInputHistograms[iconf], bin, QnConf->MinimumHarmonic(), QnConf->MaximumHarmonic(), QnConf->AlignmentHarmonic());
 
   fLastStep[QnConf->GlobalIndex()]=QnCorrectionsConstants::kAlignment;
   return;
