@@ -114,7 +114,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
 void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 #endif
 
-  QnCorrectionsManager* QnMan = new QnCorrectionsManager();
+  QnCorrectionsManager* QnMan = QnCorrectionsManager::GetInstance();
 
   TFile* inputFile = TFile::Open(inputFileName,"READ");
   TFile* outputFile = TFile::Open(outputFileName,"RECREATE");
@@ -270,7 +270,13 @@ void Setup(QnCorrectionsManager* QnMan){
   eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoA->AddCorrectionOnInputData(eqA);
+  /* incorporate recentering correction step */
   myDetectorTwoA->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* incorporate alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignA = new QnCorrectionsQnVectorAlignment();
+  alignA->SetReferenceConfigurationForAlignment("Det1pos");
+  alignA->SetHarmonicNumberForAlignment(2);
+  myDetectorTwoA->AddCorrectionOnQnVector(alignA);
 
   QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
       new QnCorrectionsDetectorConfigurationChannels(
@@ -290,7 +296,13 @@ void Setup(QnCorrectionsManager* QnMan){
   eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
   myDetectorTwoC->AddCorrectionOnInputData(eqC);
+  /* incorporate recentering correction step */
   myDetectorTwoC->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  /* incorporate alignment correction step */
+  QnCorrectionsQnVectorAlignment *alignC = new QnCorrectionsQnVectorAlignment();
+  alignC->SetReferenceConfigurationForAlignment("Det1pos");
+  alignC->SetHarmonicNumberForAlignment(2);
+  myDetectorTwoC->AddCorrectionOnQnVector(alignC);
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);

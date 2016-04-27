@@ -25,6 +25,7 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsManager.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsInputGainEqualization.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorRecentering.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorAlignment.cxx"+debugString);
 
   gROOT->LoadMacro("Example.C"+debugString);
 
