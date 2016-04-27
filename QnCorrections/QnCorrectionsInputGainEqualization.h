@@ -122,8 +122,7 @@ public:
   void SetShift(Float_t shift)
   { fShift = shift; }
   /// Set the scale (B) equalization parameter
-  /// \param A the A parameter value
-  /// \param B the B parameter value
+  /// \param scale the scale parameter value
   void SetScale(Float_t scale)
   { fScale = scale; }
   /// Enable or disable the group weights extracted from channel multiplicity

@@ -23,13 +23,13 @@
 /// \f[
 ///        Q' = \mathcal{R}(\Delta \phi) Q
 /// \f]
-/// where the rotation angle \f$ \Delta \phi is given by
+/// where the rotation angle \f$ \Delta \phi \f$ is given by
 /// \f[
 ///        \Delta \phi_n = - \frac{1}{m} \tan^{-1}
 ///          \left(\frac{\langle{Q_n}_X{Q^A_m}_Y\rangle - \langle{Q_n}_Y{Q^A_m}_X\rangle}
 ///                    {\langle{Q_n}_X{Q^A_m}_X\rangle + \langle{Q_n}_Y{Q^A_m}_Y\rangle}\right)
 /// \f]
-/// with  \f$\langle \rangle\f$ as an average over events in a given event class, \f$ A \f$
+/// with  \f$ \langle \cdots \rangle \f$ as an average over events in a given event class, \f$ A \f$
 /// the detector configuration chosen as alignment reference and \f$ m \f$ the harmonic selected
 /// for alignment.
 ///
@@ -64,13 +64,13 @@
 /// \f[
 ///        Q' = \mathcal{R}(\Delta \phi) Q
 /// \f]
-/// where the rotation angle \f$ \Delta \phi is given by
+/// where the rotation angle \f$ \Delta \phi \f$ is given by
 /// \f[
 ///        \Delta \phi_n = - \frac{1}{m} \tan^{-1}
 ///          \left(\frac{\langle{Q_n}_X{Q^A_m}_Y\rangle - \langle{Q_n}_Y{Q^A_m}_X\rangle}
 ///                    {\langle{Q_n}_X{Q^A_m}_X\rangle + \langle{Q_n}_Y{Q^A_m}_Y\rangle}\right)
 /// \f]
-/// with  \f$\langle \rangle\f$ as an average over events in a given event class, \f$ A \f$
+/// with  \f$ \langle \cdots \rangle \f$ as an average over events in a given event class, \f$ A \f$
 /// the detector configuration chosen as alignment reference and \f$ m \f$ the harmonic selected
 /// for alignment.
 ///
