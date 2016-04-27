@@ -155,6 +155,10 @@ public:
   /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer) = 0;
 
+  /// Activate the processing for the passed harmonic
+  /// \param harmonic the desired harmonic number to activate
+  virtual void ActivateHarmonic(Int_t harmonic)
+  { fPlainQnVector.ActivateHarmonic(harmonic); fCorrectedQnVector.ActivateHarmonic(harmonic); }
   virtual void AddCorrectionOnQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn);
   virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
 
@@ -330,6 +334,10 @@ public:
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
 
+  /// Activate the processing for the passed harmonic
+  /// \param harmonic the desired harmonic number to activate
+  virtual void ActivateHarmonic(Int_t harmonic)
+  { QnCorrectionsDetectorConfigurationBase::ActivateHarmonic(harmonic); fRawQnVector.ActivateHarmonic(harmonic); }
   virtual Bool_t AttachCorrectionInputs(TList *list);
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
 
