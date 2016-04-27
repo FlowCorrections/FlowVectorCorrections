@@ -29,8 +29,8 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsInputGainEqualization.cxx
-/// \brief Implementation of procedures for gain equalization on input data.
+/// \file QnCorrectionsQnVectorRecentering.cxx
+/// \brief Implementation of procedures for Qn vector recentering.
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsCorrectionSteps.h"
