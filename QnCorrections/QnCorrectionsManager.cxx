@@ -41,6 +41,7 @@
 ClassImp(QnCorrectionsManager);
 /// \endcond
 
+QnCorrectionsManager *QnCorrectionsManager::fTheOnlyMangerInstance = NULL;
 const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
@@ -52,6 +53,7 @@ const char *QnCorrectionsManager::szAllProcessesListName = "all data";
 /// The class owns the detectors and will be destroyed with it
 QnCorrectionsManager::QnCorrectionsManager() :
     TObject(), fDetectorsSet(), fProcessListName(szDummyProcessListName) {
+  fTheOnlyManagerInstance = this;
 
   fDetectorsSet.SetOwner(kTRUE);
   fDetectorsIdMap = NULL;
@@ -76,6 +78,19 @@ QnCorrectionsManager::~QnCorrectionsManager() {
   if (fCalibrationHistogramsList != NULL) delete fCalibrationHistogramsList;
   if (fProcessesNames != NULL) delete fProcessesNames;
 }
+
+QnCorrectionsManager *QnCorrectionsManager::GetInstance() {
+  if (fTheOnlyManagerInstance == NULL) {
+    QnCorrectionsManager::fTheOnlyManagerInstance = new QnCorrectionsManager();
+  }
+  return fTheOnlyManagerInstance;
+}
+
+void QnCorrectionsManager::Destroy() {
+  delete QnCorrectionsManager::fTheOnlyManagerInstance;
+  QnCorrectionsManager::fTheOnlyManagerInstance = NULL;
+}
+
 
 /// Sets the base list that will own the input calibration histograms
 /// \param calibrationFile the file
