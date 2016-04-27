@@ -95,7 +95,7 @@ public:
   /// \param harmonic harmonic number
   void SetHarmonicNumberForAlignment(Int_t harmonic)
   { fHarmonicForAlignment = harmonic; }
-  void SetDetectorConfigurationForAlignment(const char *name);
+  void SetReferenceConfigurationForAlignment(const char *name);
 
   virtual Bool_t AttachInput(TList *list);
   virtual void CreateSupportDataStructures();

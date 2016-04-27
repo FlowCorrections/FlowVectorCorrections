@@ -46,7 +46,7 @@ const char *QnCorrectionsQnVectorAlignment::szCorrectedQnVectorName = "align";
 
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsQnVectorRecentering);
+ClassImp(QnCorrectionsQnVectorAlignment);
 /// \endcond
 
 /// Default constructor
@@ -70,7 +70,7 @@ QnCorrectionsQnVectorAlignment::~QnCorrectionsQnVectorAlignment() {
 
 /// Set the detector configuration used as reference for alignment
 /// \param name the name of the reference detector configuration
-void QnCorrectionsQnVectorAlignment::SetDetectorConfigurationForAlignment(const char *name) {
+void QnCorrectionsQnVectorAlignment::SetReferenceConfigurationForAlignment(const char *name) {
 
   if (QnCorrectionsManager::GetInstance()->FindDetectorConfiguration(name) != NULL) {
     fDetectorConfigurationForAlignment = QnCorrectionsManager::GetInstance()->FindDetectorConfiguration(name);
@@ -240,7 +240,7 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
 }
 
 /// Clean the correction to accept a new event
-void QnCorrectionsQnVectorRecentering::ClearCorrectionStep() {
+void QnCorrectionsQnVectorAlignment::ClearCorrectionStep() {
 
   fCorrectedQnVector->Reset();
 }
