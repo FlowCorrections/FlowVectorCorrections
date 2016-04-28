@@ -28,7 +28,7 @@
 /// as a class.
 ///
 /// M is the sum of weights.
-typedef enum QVECNORM {
+typedef enum {
   QVNORM_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
   QVNORM_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
   QVNORM_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
