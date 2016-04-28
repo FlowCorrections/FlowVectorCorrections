@@ -37,6 +37,7 @@
 #include <TClonesArray.h>
 /* end to exclude */
 
+#include "../QnCorrections/QnCorrectionsLog.h"
 #include "../QnCorrections/QnCorrectionsEventClasses.h"
 #include "../QnCorrections/QnCorrectionsCuts.h"
 #include "../QnCorrections/QnCorrectionsHistograms.h"
@@ -46,6 +47,7 @@
 #include "../QnCorrections/QnCorrectionsManager.h"
 #include "../QnCorrections/QnCorrectionsInputGainEqualization.h"
 #include "../QnCorrections/QnCorrectionsQnVectorRecentering.h"
+#include "../QnCorrections/QnCorrectionsQnVectorAlignment.h"
 
 void Setup(QnCorrectionsManager* QnMan);
 void Loop(QnCorrectionsManager* QnMan);
@@ -176,6 +178,9 @@ void Setup(QnCorrectionsManager* QnMan){
   }
 #endif
 
+  /* set some logging output */
+  QnCorrectionsSetTracingLevel(kInfo);
+
   /* our event classes variables: vertexZ and centrality */
   const Int_t nEventClassesDimensions = 2;
   QnCorrectionsEventClassVariablesSet *CorrEventClasses = new QnCorrectionsEventClassVariablesSet(nEventClassesDimensions);
@@ -210,7 +215,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOnePositive->SetCuts(myPositiveCuts);
-  myDetectorOnePositive->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  myDetectorOnePositive->SetQVectorNormalizationMethod(QVNORM_QoverM);
   myDetectorOnePositive->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
@@ -220,7 +225,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
-  myDetectorOneNegative->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  myDetectorOneNegative->SetQVectorNormalizationMethod(QVNORM_QoverM);
   myDetectorOneNegative->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configurations to the detector */
@@ -262,10 +267,10 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoA->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  myDetectorTwoA->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqA->SetEqualizationMethod(GEQUAL_averageEqualization);
   eqA->SetShift(1.0);
   eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
@@ -288,10 +293,10 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoC->SetQVectorNormalizationMethod(QVECNORM::QVNORM_QoverM);
+  myDetectorTwoC->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GEQUAL_widthEqualization);
+  eqC->SetEqualizationMethod(GEQUAL_averageEqualization);
   eqC->SetShift(1.0);
   eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
