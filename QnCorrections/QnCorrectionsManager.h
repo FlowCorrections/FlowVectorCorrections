@@ -157,10 +157,10 @@ private:
 private:
   /// Copy constructor
   /// Not allowed. Forced private.
-  QnCorrectionsManager(const QnCorrectionsManager &) {};
+  QnCorrectionsManager(const QnCorrectionsManager &);
   /// Assignment operator
   /// Not allowed. Forced private.
-  QnCorrectionsManager& operator= (const QnCorrectionsManager &) {};
+  QnCorrectionsManager& operator= (const QnCorrectionsManager &);
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsManager, 1);
