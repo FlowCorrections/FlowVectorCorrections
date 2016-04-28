@@ -74,16 +74,16 @@ void QnCorrectionsPrintMessageHandler(UInt_t type, const char* message,
     if (!(type < nLoggingLevel)) {
       switch (type) {
       case kInfo:
-        Info(Form("I-%s", (const char *) sLocation), "\n   %s", message);
+        Info(Form("I-%s", (const char *) sLocation), "%s", message);
         break;
       case kWarning:
-        Warning(Form("W-%s", (const char *) sLocation), "\n   %s", message);
+        Warning(Form("W-%s", (const char *) sLocation), "%s", message);
         break;
       case kError:
-        Error(Form("E-%s", (const char *) sLocation), "\n   %s", message);
+        Error(Form("E-%s", (const char *) sLocation), "%s", message);
         break;
       case kFatal:
-        Fatal(Form("FATAL-%s", (const char *) sLocation), "\n   %s", message);
+        Fatal(Form("FATAL-%s", (const char *) sLocation), "%s", message);
         break;
       }
     }
@@ -92,16 +92,16 @@ void QnCorrectionsPrintMessageHandler(UInt_t type, const char* message,
     if (!(type < nLoggingLevel)) {
       switch (type) {
       case kInfo:
-        Info(Form("I-%s", (const char *) sLocation), "\n   %s", " ");
+        Info(Form("I-%s", (const char *) sLocation), "%s", " ");
         break;
       case kWarning:
-        Warning(Form("W-%s", (const char *) sLocation), "\n   %s", " ");
+        Warning(Form("W-%s", (const char *) sLocation), "%s", " ");
         break;
       case kError:
-        Error(Form("E-%s", (const char *) sLocation), "\n   %s", " ");
+        Error(Form("E-%s", (const char *) sLocation), "%s", " ");
         break;
       case kFatal:
-        Fatal(Form("FATAL-%s", (const char *) sLocation), "\n   %s", " ");
+        Fatal(Form("FATAL-%s", (const char *) sLocation), "%s", " ");
         break;
       }
     }
