@@ -153,6 +153,10 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
   Int_t harmonic;
   switch (fState) {
   case QCORRSTEP_calibration:
+    /* logging */
+    QnCorrectionsInfo(Form("Alignment process in detector %s with reference %s: collecting data.",
+        fDetectorConfiguration->GetName(),
+        fDetectorConfigurationForAlignment->GetName()));
     /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
     if ((fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) &&
         (fDetectorConfigurationForAlignment->GetCurrentQnVector()->IsGoodQuality())) {
@@ -177,6 +181,10 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
+    /* logging */
+    QnCorrectionsInfo(Form("Alignment process in detector %s with reference %s: collecting data.",
+        fDetectorConfiguration->GetName(),
+        fDetectorConfigurationForAlignment->GetName()));
     /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
     if ((fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) &&
         (fDetectorConfigurationForAlignment->GetCurrentQnVector()->IsGoodQuality())) {
@@ -199,6 +207,10 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+    /* logging */
+    QnCorrectionsInfo(Form("Alignment process in detector %s with reference %s: applying correction.",
+        fDetectorConfiguration->GetName(),
+        fDetectorConfigurationForAlignment->GetName()));
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
       /* we get the properties of the current Qn vector but its name */
       fCorrectedQnVector->Set(fDetectorConfiguration->GetCurrentQnVector(),kFALSE);

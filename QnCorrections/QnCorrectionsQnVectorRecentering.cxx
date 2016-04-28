@@ -35,6 +35,7 @@
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsDetector.h"
+#include "QnCorrectionsLog.h"
 #include "QnCorrectionsQnVectorRecentering.h"
 
 const char *QnCorrectionsQnVectorRecentering::szCorrectionName = "Recentering and width equalization";
@@ -111,6 +112,7 @@ Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
 Bool_t QnCorrectionsQnVectorRecentering::AttachInput(TList *list) {
 
   if (fInputHistograms->AttachHistograms(list)) {
+    QnCorrectionsInfo(Form("Recentering on %s going to be applied", fDetectorConfiguration->GetName()));
     fState = QCORRSTEP_applyCollect;
     return kTRUE;
   }
@@ -134,6 +136,7 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
   Int_t harmonic;
   switch (fState) {
   case QCORRSTEP_calibration:
+    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
     /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
       harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
@@ -147,6 +150,7 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
+    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
     /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
       harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
@@ -158,6 +162,7 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+    QnCorrectionsInfo(Form("Recentering process in detector %s: applying correction.", fDetectorConfiguration->GetName()));
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
       /* we get the properties of the current Qn vector but its name */
       fCorrectedQnVector->Set(fDetectorConfiguration->GetCurrentQnVector(),kFALSE);
