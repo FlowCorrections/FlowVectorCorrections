@@ -226,7 +226,7 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
       Double_t deltaPhi = - TMath::ATan2((XY-YX),(XX+YY)) * (1.0 / fHarmonicForAlignment);
 
       /* protections!!! */
-      if (!((XY-YX)*(XY-YX)/(eXY*eXY+eYX*eYX) < 2.0)) {
+      if (!(TMath::Sqrt((XY-YX)*(XY-YX)/(eXY*eXY+eYX*eYX)) < 2.0)) {
         harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
         while (harmonic != -1) {
           fCorrectedQnVector->SetQx(harmonic,
