@@ -61,8 +61,9 @@
 class QnCorrectionsManager : public TObject {
 protected:
   static QnCorrectionsManager *fTheOnlyManagerInstance; ///< Qn correction manager is a singleton and this is its only instance
-
+public:
   QnCorrectionsManager();
+protected:
   virtual ~QnCorrectionsManager();
 
 public:

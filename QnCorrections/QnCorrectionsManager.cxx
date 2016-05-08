@@ -67,6 +67,8 @@ QnCorrectionsManager::QnCorrectionsManager() :
   fFillQAHistograms = kFALSE;
   fFillQnVectorTree = kFALSE;
   fProcessesNames = NULL;
+
+  QnCorrectionsWarning("WARNING: Corrections Manager constructor should only be called by the serialization process");
 }
 
 /// Default destructor
