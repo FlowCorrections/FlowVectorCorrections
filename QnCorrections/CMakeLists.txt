@@ -12,32 +12,34 @@ add_definitions(${ROOT_CXX_FLAGS})
 
 
 set (HEADERS
-QnCorrectionsCorrectionSteps.h
-QnCorrectionsCuts.h
-QnCorrectionsDataVector.h
-QnCorrectionsDetector.h
-QnCorrectionsEventClasses.h
-QnCorrectionsHistograms.h
-QnCorrectionsInputGainEqualization.h
-QnCorrectionsLog.h
-QnCorrectionsManager.h
-QnCorrectionsQnVector.h
-QnCorrectionsQnVectorRecentering.h
+  QnCorrectionsCorrectionSteps.h
+  QnCorrectionsCuts.h
+  QnCorrectionsDataVector.h
+  QnCorrectionsDetector.h
+  QnCorrectionsEventClasses.h
+  QnCorrectionsHistograms.h
+  QnCorrectionsInputGainEqualization.h
+  QnCorrectionsLog.h
+  QnCorrectionsManager.h
+  QnCorrectionsQnVector.h
+  QnCorrectionsQnVectorRecentering.h
+  QnCorrectionsQnVectorAlignment.h
 )
 
 
 set (SOURCES
-QnCorrectionsCorrectionSteps.cxx
-QnCorrectionsCuts.cxx
-QnCorrectionsDataVector.cxx
-QnCorrectionsDetector.cxx
-QnCorrectionsEventClasses.cxx
-QnCorrectionsHistograms.cxx
-QnCorrectionsInputGainEqualization.cxx
-QnCorrectionsLog.cxx
-QnCorrectionsManager.cxx
-QnCorrectionsQnVector.cxx
-QnCorrectionsQnVectorRecentering.cxx
+  QnCorrectionsCorrectionSteps.cxx
+  QnCorrectionsCuts.cxx
+  QnCorrectionsDataVector.cxx
+  QnCorrectionsDetector.cxx
+  QnCorrectionsEventClasses.cxx
+  QnCorrectionsHistograms.cxx
+  QnCorrectionsInputGainEqualization.cxx
+  QnCorrectionsLog.cxx
+  QnCorrectionsManager.cxx
+  QnCorrectionsQnVector.cxx
+  QnCorrectionsQnVectorRecentering.cxx
+  QnCorrectionsQnVectorAlignment.cxx
 )
 
 ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)

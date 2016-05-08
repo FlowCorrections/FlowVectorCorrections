@@ -47,5 +47,6 @@
 #pragma link C++ class QnCorrectionsQnVector+;
 #pragma link C++ class QnCorrectionsQnVectorBuild+;
 #pragma link C++ class QnCorrectionsQnVectorRecentering+;
+#pragma link C++ class QnCorrectionsQnVectorAlignment+;
 
 #endif
