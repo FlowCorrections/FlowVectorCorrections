@@ -81,6 +81,10 @@ public:
   virtual void Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight);
   virtual void FillX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
   virtual void FillY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
+  virtual void FillXX(const Float_t *variableContainer, Float_t weight);
+  virtual void FillXY(const Float_t *variableContainer, Float_t weight);
+  virtual void FillYX(const Float_t *variableContainer, Float_t weight);
+  virtual void FillYY(const Float_t *variableContainer, Float_t weight);
   virtual void FillXX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
   virtual void FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
   virtual void FillYX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
@@ -110,6 +114,10 @@ protected:
   static const char *szYYCorrelationComponentSuffix;     ///< The suffix for the name of YY correlation component histograms
   static const Int_t nMaxHarmonicNumberSupported;        ///< The maximum external harmonic number the framework support
   static const UInt_t harmonicNumberMask[];              ///< Mask for each external harmonic number
+  static const UInt_t correlationXXmask;                 ///< Maks for XX correlation component
+  static const UInt_t correlationXYmask;                 ///< Maks for XY correlation component
+  static const UInt_t correlationYXmask;                 ///< Maks for YX correlation component
+  static const UInt_t correlationYYmask;                 ///< Maks for YY correlation component
   static const Int_t nMinNoOfEntriesValidated;           ///< The minimum number of entries for validating a bin content
 };
 
@@ -508,7 +516,7 @@ public:
       Option_t *option="");
   virtual ~QnCorrectionsProfileCorrelationComponents();
 
-  Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList);
   virtual Bool_t AttachHistograms(TList *histogramList);
   /// wrong call for this class invoke base class behavior
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
@@ -518,29 +526,26 @@ public:
   /// wrong call for this class invoke base class behavior
   virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
-  virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinError(Int_t harmonic, Int_t bin);
+  virtual Float_t GetXXBinContent(Int_t bin);
+  virtual Float_t GetXYBinContent(Int_t bin);
+  virtual Float_t GetYXBinContent(Int_t bin);
+  virtual Float_t GetYYBinContent(Int_t bin);
+  virtual Float_t GetXXBinError(Int_t bin);
+  virtual Float_t GetXYBinError(Int_t bin);
+  virtual Float_t GetYXBinError(Int_t bin);
+  virtual Float_t GetYYBinError(Int_t bin);
 
-  virtual void FillXX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
-  virtual void FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
-  virtual void FillYX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
-  virtual void FillYY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
+  virtual void FillXX(const Float_t *variableContainer, Float_t weight);
+  virtual void FillXY(const Float_t *variableContainer, Float_t weight);
+  virtual void FillYX(const Float_t *variableContainer, Float_t weight);
+  virtual void FillYY(const Float_t *variableContainer, Float_t weight);
 
 private:
-  THnF **fXXValues;            //!<! XX component histogram for each requested harmonic
-  THnF **fXYValues;            //!<! XY component histogram for each requested harmonic
-  THnF **fYXValues;            //!<! YX component histogram for each requested harmonic
-  THnF **fYYValues;            //!<! YY component histogram for each requested harmonic
-  UInt_t fXXharmonicFillMask;  //!<! keeps track of harmonic XX component filled values
-  UInt_t fXYharmonicFillMask;  //!<! keeps track of harmonic XY component filled values
-  UInt_t fYXharmonicFillMask;  //!<! keeps track of harmonic YX component filled values
-  UInt_t fYYharmonicFillMask;  //!<! keeps track of harmonic YY component filled values
+  THnF *fXXValues;            //!<! XX component histogram
+  THnF *fXYValues;            //!<! XY component histogram
+  THnF *fYXValues;            //!<! YX component histogram
+  THnF *fYYValues;            //!<! YY component histogram
+  UInt_t fXXXYYXYYFillMask;   //!<! keeps track of component filled values
   UInt_t fFullFilled;          //!<! mask for the fully filled condition
   THnI  *fEntries;             //!<! Cumulates the number on each of the event classes
   /// \cond CLASSIMP
