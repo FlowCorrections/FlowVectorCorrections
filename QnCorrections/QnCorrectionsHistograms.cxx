@@ -210,6 +210,78 @@ Float_t QnCorrectionsHistogramBase::GetYBinContent(Int_t harmonic, Int_t bin) {
 }
 
 /// Get the bin XX component content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinContent, or GetXBinContent, GetYBinContent or GetXXBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetXXBinContent()"));
+  return 0.0;
+}
+
+/// Get the bin XY component content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinContent, or GetXBinContent, GetYBinContent or GetXYBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetXYBinContent()"));
+  return 0.0;
+}
+
+/// Get the bin YX component content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinContent, or GetXBinContent, GetYBinContent or GetYXBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetYXBinContent()"));
+  return 0.0;
+}
+
+/// Get the bin YY component content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinContent, or GetXBinContent, GetYBinContent or GetYYBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetYYBinContent()"));
+  return 0.0;
+}
+
+/// Get the bin XX component content for the passed bin number
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
@@ -344,6 +416,78 @@ Float_t QnCorrectionsHistogramBase::GetYBinError(Int_t harmonic, Int_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXXBinError ... GetYYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYBinError()"));
+  return 0.0;
+}
+
+/// Get the XX component bin content error for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// error is requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin content error
+Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinError, GetXBinError, GetYBinError or GetXXBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetXXBinError()"));
+  return 0.0;
+}
+
+/// Get the XY component bin content error for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// error is requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin content error
+Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinError, GetXBinError, GetYBinError or GetXYBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetXYBinError()"));
+  return 0.0;
+}
+
+/// Get the YX component bin content error for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// error is requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin content error
+Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinError, GetXBinError, GetYBinError or GetYXBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetYXBinError()"));
+  return 0.0;
+}
+
+/// Get the YY component bin content error for the passed bin number
+///
+/// The bin number identifies a desired event class whose content is
+/// error is requested
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param bin the interested bin number
+/// \return the bin content error
+Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t bin) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   GetBinError, GetXBinError, GetYBinError or GetYYBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::GetYYBinError()"));
   return 0.0;
 }
 
@@ -502,6 +646,78 @@ void QnCorrectionsHistogramBase::FillY(Int_t harmonic, const Float_t *variableCo
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   Fill or FillXX ... FillYY or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::FillY()"));
+}
+
+/// Fills the XX component histogram
+///
+/// The involved bin is computed according to the current variables
+/// content. The bin is then increased by the given weight and the
+/// entries also increased properly.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param weight the increment in the bin content
+void QnCorrectionsHistogramBase::FillXX(const Float_t *variableContainer, Float_t weight) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   Fill, FillX, FillY or FillXX(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::FillXX()"));
+}
+
+/// Fills the XY component histogram
+///
+/// The involved bin is computed according to the current variables
+/// content. The bin is then increased by the given weight and the
+/// entries also increased properly.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param weight the increment in the bin content
+void QnCorrectionsHistogramBase::FillXY(const Float_t *variableContainer, Float_t weight) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   Fill, FillX, FillY  or FillXY(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::FillXY()"));
+}
+
+/// Fills the YX component histogram
+///
+/// The involved bin is computed according to the current variables
+/// content. The bin is then increased by the given weight and the
+/// entries also increased properly.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param weight the increment in the bin content
+void QnCorrectionsHistogramBase::FillYX(const Float_t *variableContainer, Float_t weight) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   Fill, FillX, FillY  or FillYX(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::FillYX()"));
+}
+
+/// Fills the YY component histogram
+///
+/// The involved bin is computed according to the current variables
+/// content. The bin is then increased by the given weight and the
+/// entries also increased properly.
+///
+/// Interface declaration function.
+/// Default behavior. Base class should not be instantiated.
+/// Run time error to support debugging.
+///
+/// \param variableContainer the current variables content addressed by var Id
+/// \param weight the increment in the bin content
+void QnCorrectionsHistogramBase::FillYY(const Float_t *variableContainer, Float_t weight) {
+  QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
+      "   Fill, FillX, FillY  or FillXX(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
+      "QnCorrectionsHistogramBase::FillYY()"));
 }
 
 /// Fills the XX component for the corresponding harmonic histogram
@@ -2475,15 +2691,14 @@ Bool_t QnCorrectionsProfileCorrelationComponents::AttachHistograms(TList *histog
   fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
   if (fEntries != NULL && fEntries->GetEntries() != 0) {
     /* search the values multidimensional histograms */
-      fXXValues = (THnF *) histogramList->FindObject((const char *) histoXXName);
-      fXYValues = (THnF *) histogramList->FindObject((const char *) histoXYName);
-      fYXValues = (THnF *) histogramList->FindObject((const char *) histoYXName);
-      fYYValues = (THnF *) histogramList->FindObject((const char *) histoYYName);
+    fXXValues = (THnF *) histogramList->FindObject((const char *) histoXXName);
+    fXYValues = (THnF *) histogramList->FindObject((const char *) histoXYName);
+    fYXValues = (THnF *) histogramList->FindObject((const char *) histoYXName);
+    fYYValues = (THnF *) histogramList->FindObject((const char *) histoYYName);
 
-      /* and update the fully filled condition whether applicable */
-      if ((fXXValues != NULL) && (fXYValues != NULL) && (fYXValues != NULL) && (fYYValues != NULL))
-        fFullFilled = correlationXXmask | correlationXYmask | correlationYXmask | correlationYYmask;
-    }
+    /* and update the fully filled condition whether applicable */
+    if ((fXXValues != NULL) && (fXYValues != NULL) && (fYXValues != NULL) && (fYYValues != NULL))
+      fFullFilled = correlationXXmask | correlationXYmask | correlationYXmask | correlationYYmask;
   }
   else
     return kFALSE;

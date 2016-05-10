@@ -44,6 +44,7 @@
 #pragma link C++ class QnCorrectionsProfileChannelizedIngress+;
 #pragma link C++ class QnCorrectionsProfileComponents+;
 #pragma link C++ class QnCorrectionsProfileCorrelationComponents+;
+#pragma link C++ class QnCorrectionsProfileCorrelationComponentsHarmonics+;
 #pragma link C++ class QnCorrectionsQnVector+;
 #pragma link C++ class QnCorrectionsQnVectorBuild+;
 #pragma link C++ class QnCorrectionsQnVectorRecentering+;

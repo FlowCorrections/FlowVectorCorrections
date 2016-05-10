@@ -64,6 +64,10 @@ public:
   virtual Float_t GetBinContent(Int_t bin);
   virtual Float_t GetXBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetYBinContent(Int_t harmonic, Int_t bin);
+  virtual Float_t GetXXBinContent(Int_t bin);
+  virtual Float_t GetXYBinContent(Int_t bin);
+  virtual Float_t GetYXBinContent(Int_t bin);
+  virtual Float_t GetYYBinContent(Int_t bin);
   virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetXYBinContent(Int_t harmonic, Int_t bin);
   virtual Float_t GetYXBinContent(Int_t harmonic, Int_t bin);
@@ -72,6 +76,10 @@ public:
   virtual Float_t GetBinError(Int_t bin);
   virtual Float_t GetXBinError(Int_t harmonic, Int_t bin);
   virtual Float_t GetYBinError(Int_t harmonic, Int_t bin);
+  virtual Float_t GetXXBinError(Int_t bin);
+  virtual Float_t GetXYBinError(Int_t bin);
+  virtual Float_t GetYXBinError(Int_t bin);
+  virtual Float_t GetYYBinError(Int_t bin);
   virtual Float_t GetXXBinError(Int_t harmonic, Int_t bin);
   virtual Float_t GetXYBinError(Int_t harmonic, Int_t bin);
   virtual Float_t GetYXBinError(Int_t harmonic, Int_t bin);
