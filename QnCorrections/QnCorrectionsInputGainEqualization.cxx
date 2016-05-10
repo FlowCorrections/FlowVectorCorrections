@@ -118,12 +118,17 @@ void QnCorrectionsInputGainEqualization::CreateSupportDataStructures() {
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) {
-  QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
+
+  TString histoNameAndTitle = Form("%s %s",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
+
+QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
       static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
   if (fInputHistograms != NULL) delete fInputHistograms;
-  fInputHistograms = new QnCorrectionsProfileChannelizedIngress(szSupportHistogramName, szSupportHistogramName,
+  fInputHistograms = new QnCorrectionsProfileChannelizedIngress((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
-  fCalibrationHistograms = new QnCorrectionsProfileChannelized(szSupportHistogramName, szSupportHistogramName,
+  fCalibrationHistograms = new QnCorrectionsProfileChannelized((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
@@ -136,13 +141,21 @@ Bool_t QnCorrectionsInputGainEqualization::CreateSupportHistograms(TList *list) 
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
-  TString beforeName = szSupportHistogramName;
+  TString beforeName = Form("%s %s",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
   beforeName += "Before";
-  TString beforeTitle = szSupportHistogramName;
+  TString beforeTitle = Form("%s %s",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
   beforeTitle += " before gain equalization";
-  TString afterName = szSupportHistogramName;
+  TString afterName = Form("%s %s",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
   afterName += "After";
-  TString afterTitle = szSupportHistogramName;
+  TString afterTitle = Form("%s %s",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
   afterTitle += " after gain equalization";
   QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
       static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);

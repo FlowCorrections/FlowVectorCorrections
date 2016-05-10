@@ -40,7 +40,7 @@
 
 const char *QnCorrectionsQnVectorRecentering::szCorrectionName = "Recentering and width equalization";
 const char *QnCorrectionsQnVectorRecentering::szKey = "CCCC";
-const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn Components";
+const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn";
 const char *QnCorrectionsQnVectorRecentering::szCorrectedQnVectorName = "rec";
 
 
@@ -91,10 +91,14 @@ void QnCorrectionsQnVectorRecentering::CreateSupportDataStructures() {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
 
+  TString histoNameAndTitle = Form("%s %s ",
+      szSupportHistogramName,
+      fDetectorConfiguration->GetName());
+
   if (fInputHistograms != NULL) delete fInputHistograms;
-  fInputHistograms = new QnCorrectionsProfileComponents(szSupportHistogramName, szSupportHistogramName,
+  fInputHistograms = new QnCorrectionsProfileComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet(), "s");
-  fCalibrationHistograms = new QnCorrectionsProfileComponents(szSupportHistogramName, szSupportHistogramName,
+  fCalibrationHistograms = new QnCorrectionsProfileComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet(), "s");
 
   /* get information about the configured harmonics to pass it for histogram creation */
