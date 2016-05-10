@@ -41,7 +41,7 @@
 
 const char *QnCorrectionsQnVectorAlignment::szCorrectionName = "Alignment";
 const char *QnCorrectionsQnVectorAlignment::szKey = "EEEE";
-const char *QnCorrectionsQnVectorAlignment::szSupportHistogramName = "QnQn ";
+const char *QnCorrectionsQnVectorAlignment::szSupportHistogramName = "QnQn";
 const char *QnCorrectionsQnVectorAlignment::szCorrectedQnVectorName = "align";
 
 
