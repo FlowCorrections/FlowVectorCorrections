@@ -553,7 +553,7 @@ private:
   /// \endcond
 };
 
-/// \class QnCorrectionsProfileCorrelationComponentsHarmonic
+/// \class QnCorrectionsProfileCorrelationComponentsHarmonics
 /// \brief Base class for the correlation components based set of profiles
 ///
 /// Provides profile histograms for storing component, XX, XY, YX, YY, based
@@ -580,15 +580,15 @@ private:
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
 /// \date Jan 19, 2016
-class QnCorrectionsProfileCorrelationComponentsHarmonic : public QnCorrectionsHistogramBase {
+class QnCorrectionsProfileCorrelationComponentsHarmonics : public QnCorrectionsHistogramBase {
 public:
-  QnCorrectionsProfileCorrelationComponentsHarmonic();
-  QnCorrectionsProfileCorrelationComponentsHarmonic(
+  QnCorrectionsProfileCorrelationComponentsHarmonics();
+  QnCorrectionsProfileCorrelationComponentsHarmonics(
       const char *name,
       const char *title,
       QnCorrectionsEventClassVariablesSet &ecvs,
       Option_t *option="");
-  virtual ~QnCorrectionsProfileCorrelationComponentsHarmonic();
+  virtual ~QnCorrectionsProfileCorrelationComponentsHarmonics();
 
   Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
@@ -626,7 +626,7 @@ private:
   UInt_t fFullFilled;          //!<! mask for the fully filled condition
   THnI  *fEntries;             //!<! Cumulates the number on each of the event classes
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsProfileCorrelationComponentsHarmonic, 1);
+  ClassDef(QnCorrectionsProfileCorrelationComponentsHarmonics, 1);
   /// \endcond
 };
 
