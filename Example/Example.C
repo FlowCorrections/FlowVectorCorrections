@@ -270,7 +270,7 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoA->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
-  eqA->SetEqualizationMethod(GEQUAL_averageEqualization);
+  eqA->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
   eqA->SetShift(1.0);
   eqA->SetScale(0.1);
   eqA->SetUseChannelGroupsWeights(kTRUE);
@@ -296,7 +296,7 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoC->SetQVectorNormalizationMethod(QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
-  eqC->SetEqualizationMethod(GEQUAL_averageEqualization);
+  eqC->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
   eqC->SetShift(1.0);
   eqC->SetScale(0.1);
   eqC->SetUseChannelGroupsWeights(kTRUE);
@@ -801,8 +801,8 @@ void TestCorrelationComponentsHistograms(Option_t *option) {
   Int_t nNoOfHarmonics = 1;
   Int_t harmonicsMap[] = {2};
   Int_t myHarmonic = 2;
-  QnCorrectionsProfileCorrelationComponents *myProfile =
-      new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
+  QnCorrectionsProfileCorrelationComponentsHarmonics *myProfile =
+      new QnCorrectionsProfileCorrelationComponentsHarmonics("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
   /* and the list we need for create it */
   TList *myList = new TList(); myList->SetOwner(kTRUE);
   myProfile->CreateCorrelationComponentsProfileHistograms(myList,nNoOfHarmonics,harmonicsMap);
@@ -940,7 +940,7 @@ void TestCorrelationComponentsHistograms(Option_t *option) {
   delete myProfile;       /* should not delete the histograms owned by the list */
 
   /* we create it back */
-  myProfile = new QnCorrectionsProfileCorrelationComponents("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
+  myProfile = new QnCorrectionsProfileCorrelationComponentsHarmonics("QnCorrectionsProfileCorrelationComponents", "myCorrelationComponentsProfile", evtClassSet, option);
   if(myProfile->AttachHistograms(myList))
     cout << "OK: histograms properly attached to the Components Profile object\n";
   else
