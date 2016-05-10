@@ -73,7 +73,7 @@ public:
   { fCuts = cuts; }
   /// Sets the normalization method for Q vectors
   /// \param method the Qn vector normalizatio method
-  void SetQVectorNormalizationMethod(QnVectorNormalizationMethod method)
+  void SetQVectorNormalizationMethod(QnCorrectionsQnVector::QnVectorNormalizationMethod method)
   { fQnNormalizationMethod = method; }
 
 public:
@@ -198,7 +198,7 @@ protected:
   QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data
   QnCorrectionsQnVector fCorrectedQnVector; ///< Q vector after subsequent correction steps
   QnCorrectionsQnVectorBuild fTempQnVector; ///< temporary Qn vector for efficient Q vector building
-  QnVectorNormalizationMethod fQnNormalizationMethod; ///< the method for Q vector normalization
+  QnCorrectionsQnVector::QnVectorNormalizationMethod fQnNormalizationMethod; ///< the method for Q vector normalization
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   /// set of variables that define event classes
   QnCorrectionsEventClassVariablesSet    *fEventClassVariables; //->
