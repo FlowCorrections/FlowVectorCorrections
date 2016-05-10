@@ -51,19 +51,6 @@
 /// further phase, the calibration histograms.
 
 
-/// \typedef QnGainEqualizationMethod
-/// \brief The class of the id of the supported gain equalization methods
-///
-/// Actually it is not a class because the C++ level of implementation.
-/// But full protection will be reached when were possible declaring it
-/// as a class.
-///
-typedef enum {
-  GEQUAL_noEqualization,         ///< \f$ \mbox{M'} = \mbox{M}\f$
-  GEQUAL_averageEqualization,    ///< \f$ \mbox{M}' = \frac{\mbox{M}}{\langle\mbox{M}\rangle} \f$
-  GEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
-} QnGainEqualizationMethod;
-
 /// \class QnCorrectionsInputGainEqualization
 /// \brief Encapsulates the gain equalization on input data correction step
 ///
@@ -109,6 +96,19 @@ typedef enum {
 
 class QnCorrectionsInputGainEqualization : public QnCorrectionsCorrectionOnInputData {
 public:
+  /// \enum QnGainEqualizationMethod
+  /// \brief The class of the id of the supported gain equalization methods
+  ///
+  /// Actually it is not a class because the C++ level of implementation.
+  /// But full protection will be reached when were possible declaring it
+  /// as a class.
+  ///
+  enum QnGainEqualizationMethod {
+    GEQUAL_noEqualization,         ///< \f$ \mbox{M'} = \mbox{M}\f$
+    GEQUAL_averageEqualization,    ///< \f$ \mbox{M}' = \frac{\mbox{M}}{\langle\mbox{M}\rangle} \f$
+    GEQUAL_widthEqualization,      ///< \f$ \mbox{M}' = \mbox{A} + \mbox{B} \frac{\mbox{M} - \langle\mbox{M} \rangle}{\sigma_{{M}}} \f$
+  };
+
   QnCorrectionsInputGainEqualization();
   ~QnCorrectionsInputGainEqualization();
 

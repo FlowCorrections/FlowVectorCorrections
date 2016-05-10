@@ -20,21 +20,6 @@
 /// The maximum external harmonic number the framework currently support for Q vectors
 #define MAXHARMONICNUMBERSUPPORTED 15
 
-/// \typedef QnVectorNormalizationMethod
-/// \brief The class of the id of the supported Q vector normalization methods
-///
-/// Actually it is not a class because the C++ level of implementation.
-/// But full protection will be reached when were possible declaring it
-/// as a class.
-///
-/// M is the sum of weights.
-typedef enum {
-  QVNORM_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
-  QVNORM_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
-  QVNORM_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
-  QVNORM_QoverQlength   ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{|\mbox{Q}|} \f$
-} QnVectorNormalizationMethod;
-
 /// \class QnCorrectionsQnVector
 /// \brief Class that models and encapsulates a Q vector set
 ///
@@ -45,6 +30,21 @@ typedef enum {
 class QnCorrectionsQnVector : public TNamed {
 
 public:
+  /// \enum QnVectorNormalizationMethod
+  /// \brief The class of the id of the supported Q vector normalization methods
+  ///
+  /// Actually it is not a class because the C++ level of implementation.
+  /// But full protection will be reached when were possible declaring it
+  /// as a class.
+  ///
+  /// M is the sum of weights.
+  enum QnVectorNormalizationMethod {
+    QVNORM_noCalibration, ///< \f$ \mbox{Q'} = \mbox{Q}\f$
+    QVNORM_QoverSqrtM,    ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\sqrt{\mbox{M}}} \f$
+    QVNORM_QoverM,        ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{\mbox{M}} \f$
+    QVNORM_QoverQlength   ///< \f$ \mbox{Q'} = \frac{\mbox{Q}}{|\mbox{Q}|} \f$
+  };
+
   QnCorrectionsQnVector();
   QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
   QnCorrectionsQnVector(const QnCorrectionsQnVector &Q);
