@@ -2541,8 +2541,6 @@ QnCorrectionsProfileCorrelationComponents::~QnCorrectionsProfileCorrelationCompo
 /// The whole set of histograms are added to the passed histogram list
 ///
 /// \param histogramList list where the histograms have to be added
-/// \param nNoOfHarmonics the desired number of harmonics
-/// \param harmonicMap ordered array with the external number of the harmonics
 /// \return true if properly created
 Bool_t QnCorrectionsProfileCorrelationComponents::CreateCorrelationComponentsProfileHistograms(TList *histogramList) {
   /* let's build the histograms names and titles */
