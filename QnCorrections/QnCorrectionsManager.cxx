@@ -382,6 +382,10 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
         }
       }
 
+      /* now get the process list on the calibration histograms list if any */
+      /* and pass it to the detectors for input calibration histograms attachment, */
+      /* we accept no calibration histograms list and no process list in case we */
+      /* are in calibrating phase. We should TODO this. */
       fProcessListName = name;
       if (fCalibrationHistogramsList != NULL) {
         TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
@@ -393,6 +397,17 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
             ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
           }
         }
+      }
+      /* build the Qn vectors list  now that all histograms are loaded */
+      if (fQnVectorList == NULL) {
+        /* first we build it if it isn't already there */
+        fQnVectorList = new TList();
+        /* the list does not own the Qn vectors */
+        fQnVectorList->SetOwner(kFALSE);
+      }
+      /* pass it to the detectors for Qn vector creation and attachment */
+      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->IncludeQnVectors(fQnVectorList);
       }
     }
     else {

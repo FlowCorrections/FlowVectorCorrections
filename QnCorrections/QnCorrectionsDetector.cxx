@@ -391,19 +391,34 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
 /// Always includes first the fully corrected Qn vector,
 /// and then includes the plain Qn vector and asks to the different correction
 /// steps to include their partially corrected Qn vectors.
+/// The check if we are already there is because it could be late information
+/// about the process name and then the correction histograms could still not
+/// be attached and the constructed list does not contain the final Qn vectors.
 /// \param list list where the corrected Qn vector should be added
 inline void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *list) {
 
-  TList *detectorConfigurationList = new TList();
-  detectorConfigurationList->SetName(this->GetName());
-  detectorConfigurationList->SetOwner(kFALSE);
+  /* we check whether we are already there and if so we clean it and go again */
+  Bool_t bAlreadyThere;
+  TList *detectorConfigurationList;
+  if (list->FindObject(this->GetName())) {
+    detectorConfigurationList = (TList*) list->FindObject(this->GetName());
+    detectorConfigurationList->Clear();
+    bAlreadyThere = kTRUE;
+  }
+  else {
+    detectorConfigurationList = new TList();
+    detectorConfigurationList->SetName(this->GetName());
+    detectorConfigurationList->SetOwner(kFALSE);
+    bAlreadyThere = kFALSE;
+  }
 
   detectorConfigurationList->Add(&fCorrectedQnVector);
   detectorConfigurationList->Add(&fPlainQnVector);
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->IncludeCorrectedQnVector(detectorConfigurationList);
   }
-  list->Add(detectorConfigurationList);
+  if (!bAlreadyThere)
+    list->Add(detectorConfigurationList);
 }
 
 /// \cond CLASSIMP
@@ -746,12 +761,27 @@ void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t 
 /// and then includes the raw Qn vector and the plain Qn vector and then
 /// asks to the different correction
 /// steps to include their partially corrected Qn vectors.
+///
+/// The check if we are already there is because it could be late information
+/// about the process name and then the correction histograms could still not
+/// be attached and the constructed list does not contain the final Qn vectors.
 /// \param list list where the corrected Qn vector should be added
 inline void QnCorrectionsDetectorConfigurationChannels::IncludeQnVectors(TList *list) {
 
-  TList *detectorConfigurationList = new TList();
-  detectorConfigurationList->SetName(this->GetName());
-  detectorConfigurationList->SetOwner(kFALSE);
+  /* we check whether we are already there and if so we clean it and go again */
+  Bool_t bAlreadyThere;
+  TList *detectorConfigurationList;
+  if (list->FindObject(this->GetName())) {
+    detectorConfigurationList = (TList*) list->FindObject(this->GetName());
+    detectorConfigurationList->Clear();
+    bAlreadyThere = kTRUE;
+  }
+  else {
+    detectorConfigurationList = new TList();
+    detectorConfigurationList->SetName(this->GetName());
+    detectorConfigurationList->SetOwner(kFALSE);
+    bAlreadyThere = kFALSE;
+  }
 
   detectorConfigurationList->Add(&fCorrectedQnVector);
   detectorConfigurationList->Add(&fRawQnVector);
@@ -759,7 +789,8 @@ inline void QnCorrectionsDetectorConfigurationChannels::IncludeQnVectors(TList *
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     fQnVectorCorrections.At(ixCorrection)->IncludeCorrectedQnVector(detectorConfigurationList);
   }
-  list->Add(detectorConfigurationList);
+  if (!bAlreadyThere)
+    list->Add(detectorConfigurationList);
 }
 
 
