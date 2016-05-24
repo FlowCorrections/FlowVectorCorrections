@@ -22,8 +22,8 @@ set (HEADERS
   QnCorrectionsLog.h
   QnCorrectionsManager.h
   QnCorrectionsQnVector.h
-  QnCorrectionsQnVectorRecentering.h
   QnCorrectionsQnVectorAlignment.h
+  QnCorrectionsQnVectorRecentering.h
 )
 
 
@@ -38,8 +38,8 @@ set (SOURCES
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx
   QnCorrectionsQnVector.cxx
-  QnCorrectionsQnVectorRecentering.cxx
   QnCorrectionsQnVectorAlignment.cxx
+  QnCorrectionsQnVectorRecentering.cxx
 )
 
 ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)
