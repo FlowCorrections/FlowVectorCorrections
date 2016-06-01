@@ -196,7 +196,7 @@ class QnCorrectionsManager : public TObject {
 
   TString fRunList; // list of run labels separated by a semi-colon
 
-  ClassDef(QnCorrectionsManager, 1);
+  ClassDef(QnCorrectionsManager, 2);
   
 };
 
