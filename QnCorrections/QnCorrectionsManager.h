@@ -127,6 +127,7 @@ public:
   { return szCalibrationQAHistogramsKeyName; }
 
 
+  void PrintFrameworkConfiguration() const;
   void InitializeQnCorrectionsFramework();
   Int_t AddDataVector(Int_t detectorId, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
   const char *GetAcceptedDataDetectorConfigurationName(Int_t detectorId, Int_t index) const;

@@ -37,6 +37,11 @@
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsLog.h"
 
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+using namespace std;
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsManager);
 /// \endcond
@@ -419,7 +424,240 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
     QnCorrectionsFatal(Form("Changing process list name on the fly is not supported." \
         " Current name: %s, new name: %s", (const char *)fProcessListName, name));
   }
+
+  /* now that we have everything let's print the configuration before we start */
+  PrintFrameworkConfiguration();
 }
+
+/// Produce an understandable picture of current correction configuration
+void QnCorrectionsManager::PrintFrameworkConfiguration() const {
+  /* first get the list of detector configurations */
+  TList *detectorList = new TList();
+  detectorList->SetOwner(kTRUE);
+  detectorList->SetName("Detector configurations list");
+  /* pass it to the detectors for detector configurations name inclusion */
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->FillDetectorConfigurationNameList(detectorList);
+  }
+
+  /* now the list of input correction steps */
+  /* First we get an overall list of correction instances that we don't own*/
+  TList *inputCorrections = new TList();
+  inputCorrections->SetOwner(kFALSE);
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->FillOverallInputCorrectionStepList(inputCorrections);
+  }
+  /* and now we build the correction step names list */
+  TList *inputStepList = new TList();
+  /* this one we own its items */
+  inputStepList->SetOwner(kTRUE);
+  inputStepList->SetName("Input data correction steps");
+  for (Int_t i = 0; i < inputCorrections->GetEntries(); i++) {
+    /* we got them in execution order which we keep */
+    inputStepList->Add(new TObjString(inputCorrections->At(i)->GetName()));
+  }
+  /* enough for now */
+  delete inputCorrections;
+
+  /* now the list of Qn vector correction steps */
+  /* First we get an overall list of correction instances that we don't own*/
+  TList *vectorCorrections = new TList();
+  vectorCorrections->SetOwner(kFALSE);
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->FillOverallQnVectorCorrectionStepList(vectorCorrections);
+  }
+  /* and now we build the correction step names list */
+  TList *vectorStepList = new TList();
+  /* this one we own its items */
+  vectorStepList->SetOwner(kTRUE);
+  vectorStepList->SetName("Qn vector correction steps");
+  for (Int_t i = 0; i < vectorCorrections->GetEntries(); i++) {
+    /* we got them in execution order which we keep */
+    vectorStepList->Add(new TObjString(vectorCorrections->At(i)->GetName()));
+  }
+  /* enough for now */
+  delete vectorCorrections;
+
+  /* and finally the list of correction steps applied to each detector configuration */
+  TList *detectorCorrectionsList = new TList(); detectorCorrectionsList->SetOwner(kTRUE); detectorCorrectionsList->SetName("Assigned corrections");
+  TList *detectorCalibratingCorrectionsList = new TList(); detectorCalibratingCorrectionsList->SetOwner(kTRUE); detectorCalibratingCorrectionsList->SetName("Calibrating corrections");
+  TList *detectorApplyingCorrectionsList = new TList(); detectorApplyingCorrectionsList->SetOwner(kTRUE); detectorApplyingCorrectionsList->SetName("Applying corrections");
+  /* pass it to the detectors for detector configuration correction steps inclusion */
+  for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+    ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->
+        ReportOnCorrections(detectorCorrectionsList, detectorCalibratingCorrectionsList, detectorApplyingCorrectionsList);
+  }
+
+  /* let in a first try print everything in a quick way */
+  if (kFALSE) {
+    detectorList->Print("",-1);
+    inputStepList->Print("",-1);
+    vectorStepList->Print("",-1);
+    detectorCorrectionsList->Print("",-1);
+    detectorCalibratingCorrectionsList->Print("",-1);
+    detectorApplyingCorrectionsList->Print("",-1);
+  }
+
+  /* get the steps involved and the current one */
+  Int_t nNoOfSteps = inputStepList->GetEntries() + vectorStepList->GetEntries();
+  Int_t nCurrentStep = 0;
+  for (Int_t i = 0; i < detectorApplyingCorrectionsList->GetEntries(); i++) {
+    if (nCurrentStep < ((TList*) detectorApplyingCorrectionsList->At(i))->GetEntries()) {
+      nCurrentStep = ((TList*) detectorApplyingCorrectionsList->At(i))->GetEntries();
+    }
+  }
+
+  /* let's take some parameters */
+  Int_t correctionFieldSize = 0;
+  Int_t detectorFieldSize = 0;
+  Int_t margin = 3;
+
+  /* the input data correction steps */
+  for (Int_t i = 0; i < inputStepList->GetEntries(); i++) {
+    if (strlen(inputStepList->At(i)->GetName()) > correctionFieldSize) {
+      correctionFieldSize = strlen(inputStepList->At(i)->GetName());
+    }
+  }
+  /* the Qn vector correction steps */
+  for (Int_t i = 0; i < vectorStepList->GetEntries(); i++) {
+    if (strlen(vectorStepList->At(i)->GetName()) > correctionFieldSize) {
+      correctionFieldSize = strlen(vectorStepList->At(i)->GetName());
+    }
+  }
+  /* add pre-margin */
+  correctionFieldSize += margin;
+
+  /* the detector configurations */
+  for (Int_t i = 0; i < detectorList->GetEntries(); i++) {
+    if (strlen(detectorList->At(i)->GetName()) > detectorFieldSize) {
+      detectorFieldSize = strlen(detectorList->At(i)->GetName());
+    }
+  }
+  /* add pre-margin */
+  detectorFieldSize += margin;
+
+  TString correctionFieldLine('-',correctionFieldSize + margin);
+  TString detectorsFieldLine('-', detectorList->GetEntries() * (detectorFieldSize + margin));
+  TString correctionFieldSpace(' ',correctionFieldSize + margin);
+  TString detectorsFieldSpace(' ', detectorList->GetEntries() * (detectorFieldSize + margin));
+
+  TString line;
+  Int_t textAnchor;
+  /* the header */
+  cout << correctionFieldLine << detectorsFieldLine << endl;
+  line = Form("FLOW VECTOR FRAMEWORK (v2.0) - PASS %d/%d", nCurrentStep, nNoOfSteps);
+  textAnchor = detectorsFieldLine.Length() / 2 + line.Length() / 2;
+  cout << setw(correctionFieldSize+margin) << "|" << setw(textAnchor) << line << setw(detectorsFieldLine.Length() - textAnchor) << "|" << endl;
+  cout << correctionFieldSpace << detectorsFieldLine << endl;
+  /* detectors header */
+  line = "--FLOW VECTORS--";
+  textAnchor = detectorsFieldLine.Length() / 2 + line.Length() / 2;
+  cout << setw(correctionFieldSize+margin) << "|" << setw(textAnchor) << line << setw(detectorsFieldLine.Length() - textAnchor) << "|" << endl;
+  cout << setw(correctionFieldSize+margin) << "|";
+  for (Int_t i = 0; i < detectorList->GetEntries(); i++) {
+    cout << setw(detectorFieldSize) << detectorList->At(i)->GetName() << setw(margin) << "|";
+  }
+  cout << endl;
+
+  /* now the correction steps */
+  cout << setw(correctionFieldSize) << "CORRECTIONS" << setw(margin) << "-" << detectorsFieldLine << endl;
+  /* first the input correction steps */
+  for (Int_t ixInCorr = 0; ixInCorr < inputStepList->GetEntries(); ixInCorr++) {
+    cout << setw(correctionFieldSize) << inputStepList->At(ixInCorr)->GetName() << setw(margin) << "|";
+    for (Int_t ixDet = 0; ixDet < detectorList->GetEntries(); ixDet++) {
+      TString detOut = "-";
+      if (detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+        if (((TList*) detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(inputStepList->At(ixInCorr)->GetName())) {
+          detOut = "0";
+          if (detectorApplyingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+            if (((TList*) detectorApplyingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(inputStepList->At(ixInCorr)->GetName())) {
+              detOut = "x";
+            }
+          }
+        }
+      }
+      cout << setw(detectorFieldSize) << detOut << setw(margin) << "|";
+    }
+    cout << endl;
+  }
+  /* now the Qn vector correction steps */
+  for (Int_t ixInCorr = 0; ixInCorr < vectorStepList->GetEntries(); ixInCorr++) {
+    cout << setw(correctionFieldSize) << vectorStepList->At(ixInCorr)->GetName() << setw(margin) << "|";
+    for (Int_t ixDet = 0; ixDet < detectorList->GetEntries(); ixDet++) {
+      TString detOut = "-";
+      if (detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+        if (((TList*) detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(vectorStepList->At(ixInCorr)->GetName())) {
+          detOut = "0";
+          if (detectorApplyingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+            if (((TList*) detectorApplyingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(vectorStepList->At(ixInCorr)->GetName())) {
+              detOut = "x";
+            }
+          }
+        }
+      }
+      cout << setw(detectorFieldSize) << detOut << setw(margin) << "|";
+    }
+    cout << endl;
+  }
+
+  /* now the calibration histograms */
+  cout << setw(correctionFieldSize) << "FILL HISTS" << setw(margin) << "-" << detectorsFieldLine << endl;
+  /* first the input correction steps */
+  for (Int_t ixInCorr = 0; ixInCorr < inputStepList->GetEntries(); ixInCorr++) {
+    cout << setw(correctionFieldSize) << inputStepList->At(ixInCorr)->GetName() << setw(margin) << "|";
+    for (Int_t ixDet = 0; ixDet < detectorList->GetEntries(); ixDet++) {
+      TString detOut = "-";
+      if (detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+        if (((TList*) detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(inputStepList->At(ixInCorr)->GetName())) {
+          detOut = "0";
+          if (detectorCalibratingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+            if (((TList*) detectorCalibratingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(inputStepList->At(ixInCorr)->GetName())) {
+              detOut = "x";
+            }
+          }
+        }
+      }
+      cout << setw(detectorFieldSize) << detOut << setw(margin) << "|";
+    }
+    cout << endl;
+  }
+  /* now the Qn vector correction steps */
+  for (Int_t ixInCorr = 0; ixInCorr < vectorStepList->GetEntries(); ixInCorr++) {
+    cout << setw(correctionFieldSize) << vectorStepList->At(ixInCorr)->GetName() << setw(margin) << "|";
+    for (Int_t ixDet = 0; ixDet < detectorList->GetEntries(); ixDet++) {
+      TString detOut = "-";
+      if (detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+        if (((TList*) detectorCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(vectorStepList->At(ixInCorr)->GetName())) {
+          detOut = "0";
+          if (detectorCalibratingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()) != NULL) {
+            if (((TList*) detectorCalibratingCorrectionsList->FindObject(detectorList->At(ixDet)->GetName()))->FindObject(vectorStepList->At(ixInCorr)->GetName())) {
+              detOut = "x";
+            }
+          }
+        }
+      }
+      cout << setw(detectorFieldSize) << detOut << setw(margin) << "|";
+    }
+    cout << endl;
+  }
+
+  /* finally the legend */
+  cout << correctionFieldLine << detectorsFieldLine << endl;
+  line = "x: this pass      0: future pass        -: N/A";
+  textAnchor = detectorsFieldLine.Length() / 2 + line.Length() / 2;
+  cout << setw(correctionFieldSize) << "Legend" << setw(margin) << "|" << setw(textAnchor) << line << setw(detectorsFieldLine.Length() - textAnchor) << "|" << endl;
+  cout << correctionFieldLine << detectorsFieldLine << endl;
+  cout << endl;
+
+  /* back to clean */
+  delete detectorList;
+  delete inputStepList;
+  delete vectorStepList;
+  delete detectorCorrectionsList;
+  delete detectorCalibratingCorrectionsList;
+  delete detectorApplyingCorrectionsList;
+}
+
 
 /// Produce the final output and release the framework.
 /// Produce the all data lists that collect data from all concurrent processes.
