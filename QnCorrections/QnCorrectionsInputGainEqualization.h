@@ -139,6 +139,7 @@ public:
   /// Clean the correction to accept a new event
   /// Does nothing for the time being
   virtual void ClearCorrectionStep() {}
+  virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:
   static const Float_t  fMinimumSignificantValue;     ///< the minimum value that will be considered as meaningful for processing

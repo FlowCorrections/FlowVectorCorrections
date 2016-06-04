@@ -180,6 +180,42 @@ void QnCorrectionsCorrectionsSetOnInputData::AddCorrection(QnCorrectionsCorrecti
   }
 }
 
+/// Fill the global list of correction steps
+/// \param correctionlist (partial) global list of corrections ordered by correction key
+void QnCorrectionsCorrectionsSetOnInputData::FillOverallCorrectionsList(TList *correctionlist) const {
+  if (!IsEmpty()) {
+    if (!correctionlist->IsEmpty()) {
+      for (Int_t ix = 0; ix < GetEntries(); ix++) {
+        if (correctionlist->FindObject(At(ix)->GetName()) != NULL) {
+          /* already in the list, skip it */
+          continue;
+        }
+        else {
+          /* not in the list, include it in its proper place */
+          if (At(ix)->Before((QnCorrectionsCorrectionOnQvector *) correctionlist->First())) {
+              correctionlist->AddFirst(At(ix));
+          }
+          else if (((QnCorrectionsCorrectionOnQvector *) correctionlist->Last())->Before(At(ix))) {
+            correctionlist->AddLast(At(ix));
+          }
+          else {
+            for (Int_t jx = 0; jx < correctionlist->GetEntries(); jx++) {
+              if (!At(ix)->Before((QnCorrectionsCorrectionOnQvector *) correctionlist->At(jx))) {
+                correctionlist->AddAt(At(ix), jx-1);
+              }
+            }
+          }
+        }
+      }
+    }
+    else {
+      /* the passed list is empty so we include all present corrections keeping the order */
+      for (Int_t ix = 0; ix < GetEntries(); ix++)
+        correctionlist->Add(At(ix));
+    }
+  }
+}
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsCorrectionsSetOnQvector);
 /// \endcond
@@ -213,6 +249,42 @@ void QnCorrectionsCorrectionsSetOnQvector::AddCorrection(QnCorrectionsCorrection
       if (!correction->Before(At(ix))) {
         AddAt(correction, ix-1);
       }
+    }
+  }
+}
+
+/// Fill the global list of correction steps
+/// \param correctionlist (partial) global list of corrections ordered by correction key
+void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *correctionlist) const {
+  if (!IsEmpty()) {
+    if (!correctionlist->IsEmpty()) {
+      for (Int_t ix = 0; ix < GetEntries(); ix++) {
+        if (correctionlist->FindObject(At(ix)->GetName()) != NULL) {
+          /* already in the list, skip it */
+          continue;
+        }
+        else {
+          /* not in the list, include it in its proper place */
+          if (At(ix)->Before((QnCorrectionsCorrectionOnQvector *) correctionlist->First())) {
+              correctionlist->AddFirst(At(ix));
+          }
+          else if (((QnCorrectionsCorrectionOnQvector *) correctionlist->Last())->Before(At(ix))) {
+            correctionlist->AddLast(At(ix));
+          }
+          else {
+            for (Int_t jx = 0; jx < correctionlist->GetEntries(); jx++) {
+              if (!At(ix)->Before((QnCorrectionsCorrectionOnQvector *) correctionlist->At(jx))) {
+                correctionlist->AddAt(At(ix), jx-1);
+              }
+            }
+          }
+        }
+      }
+    }
+    else {
+      /* the passed list is empty so we include all present corrections keeping the order */
+      for (Int_t ix = 0; ix < GetEntries(); ix++)
+        correctionlist->Add(At(ix));
     }
   }
 }

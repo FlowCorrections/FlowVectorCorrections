@@ -104,6 +104,7 @@ public:
 
   virtual Bool_t Process(const Float_t *variableContainer);
   virtual void ClearCorrectionStep();
+  virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:
   static const char *szCorrectionName;               ///< the name of the correction step

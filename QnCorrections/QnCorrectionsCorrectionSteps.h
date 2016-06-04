@@ -95,6 +95,16 @@ public:
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
+  /// Report on correction usage
+  /// Pure virtual function
+  /// Correction step should incorporate its name in calibration
+  /// list if it is producing information calibration in the ongoing
+  /// step and in the apply list if it is applying correction in
+  /// the ongoing step.
+  /// \param calibrationList list containing the correction steps producing calibration information
+  /// \param applyList list containing the correction steps applying corrections
+  /// \return kTRUE if the correction step is being applied
+  virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList) = 0;
 protected:
   /// Stores the detector configuration owner
   /// \param detectorConfiguration the detector configuration owner
@@ -162,6 +172,16 @@ public:
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
+  /// Report on correction usage
+  /// Pure virtual function
+  /// Correction step should incorporate its name in calibration
+  /// list if it is producing information calibration in the ongoing
+  /// step and in the apply list if it is applying correction in
+  /// the ongoing step.
+  /// \param calibrationList list containing the correction steps producing calibration information
+  /// \param applyList list containing the correction steps applying corrections
+  /// \return kTRUE if the correction step is being applied
+  virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList) = 0;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionOnInputData, 1);
 /// \endcond
@@ -206,6 +226,16 @@ public:
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
+  /// Report on correction usage
+  /// Pure virtual function
+  /// Correction step should incorporate its name in calibration
+  /// list if it is producing information calibration in the ongoing
+  /// step and in the apply list if it is applying correction in
+  /// the ongoing step.
+  /// \param calibrationList list containing the correction steps producing calibration information
+  /// \param applyList list containing the correction steps applying corrections
+  /// \return kTRUE if the correction step is being applied
+  virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList) = 0;
 
 private:
   /// Copy constructor
@@ -248,6 +278,7 @@ public:
     { return (QnCorrectionsCorrectionOnInputData *) TList::At(i);}
 
   void AddCorrection(QnCorrectionsCorrectionOnInputData *correction);
+  void FillOverallCorrectionsList(TList *correctionlist) const;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionsSetOnInputData, 1);
 /// \endcond
@@ -279,6 +310,7 @@ public:
     { return (QnCorrectionsCorrectionOnQvector *) TList::At(i);}
 
   void AddCorrection(QnCorrectionsCorrectionOnQvector *correction);
+  void FillOverallCorrectionsList(TList *correctionlist) const;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionsSetOnQvector, 1);
 /// \endcond

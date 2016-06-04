@@ -35,6 +35,7 @@
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsDetector.h"
+#include "QnCorrectionsLog.h"
 #include "QnCorrectionsInputGainEqualization.h"
 
 const Float_t  QnCorrectionsInputGainEqualization::fMinimumSignificantValue = 1E-6;
@@ -269,6 +270,33 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
         fQAMultiplicityAfter->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
       }
     }
+    break;
+  }
+  return kTRUE;
+}
+
+/// Report on correction usage
+/// Correction step should incorporate its name in calibration
+/// list if it is producing information calibration in the ongoing
+/// step and in the apply list if it is applying correction in
+/// the ongoing step.
+/// \param calibrationList list containing the correction steps producing calibration information
+/// \param applyList list containing the correction steps applying corrections
+/// \return kTRUE if the correction step is being applied
+Bool_t QnCorrectionsInputGainEqualization::ReportUsage(TList *calibrationList, TList *applyList) {
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    /* we are collecting */
+    calibrationList->Add(new TObjString(szCorrectionName));
+    /* but not applying */
+    return kFALSE;
+    break;
+  case QCORRSTEP_applyCollect:
+    /* we are collecting */
+    calibrationList->Add(new TObjString(szCorrectionName));
+  case QCORRSTEP_apply:
+    /* and applying */
+    applyList->Add(new TObjString(szCorrectionName));
     break;
   }
   return kTRUE;
