@@ -171,6 +171,25 @@ public:
   /// Pure virtual function
   /// \param list list where the Qn vectors list should be added
   virtual void IncludeQnVectors(TList *list) = 0;
+  /// Include only one instance of each input correction step
+  /// in execution order
+  ///
+  /// Pure virtual function
+  /// \param list list where the correction steps should be incorporated
+  virtual void FillOverallInputCorrectionStepList(TList *list) const = 0;
+  /// Include only one instance of each Qn vector correction step
+  /// in execution order
+  ///
+  /// Pure virtual function
+  /// \param list list where the correction steps should be incorporated
+  virtual void FillOverallQnVectorCorrectionStepList(TList *list) const = 0;
+  /// Provide information about assigned corrections
+  ///
+  /// Pure virtual function
+  /// \param steps list for incorporating the list of assigned correction steps
+  /// \param calib list for incorporating the list of steps in calibrating status
+  /// \param apply list for incorporating the list of steps in applying status
+  virtual void ReportOnCorrections(TList *steps, TList *calib, TList *apply) const = 0;
 
   /// New data vector for the detector configuration
   /// Pure virtual function
@@ -257,6 +276,9 @@ public:
 
   virtual void BuildQnVector();
   virtual void IncludeQnVectors(TList *list);
+  virtual void FillOverallInputCorrectionStepList(TList *list) const;
+  virtual void FillOverallQnVectorCorrectionStepList(TList *list) const;
+  virtual void ReportOnCorrections(TList *steps, TList *calib, TList *apply) const;
 
   /// Checks if the current content of the variable bank applies to
   /// the detector configuration
@@ -348,6 +370,9 @@ public:
   virtual void BuildQnVector();
   void BuildRawQnVector();
   virtual void IncludeQnVectors(TList *list);
+  virtual void FillOverallInputCorrectionStepList(TList *list) const;
+  virtual void FillOverallQnVectorCorrectionStepList(TList *list) const;
+  virtual void ReportOnCorrections(TList *steps, TList *calib, TList *apply) const;
 
   /// Checks if the current content of the variable bank applies to
   /// the detector configuration for the passed channel.
@@ -475,6 +500,10 @@ public:
 
   void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
   QnCorrectionsDetectorConfigurationBase *FindDetectorConfiguration(const char *name);
+  void FillDetectorConfigurationNameList(TList *list) const;
+  void FillOverallInputCorrectionStepList(TList *list) const;
+  void FillOverallQnVectorCorrectionStepList(TList *list) const;
+  virtual void ReportOnCorrections(TList *steps, TList *calib, TList *apply) const;
 
   Int_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 

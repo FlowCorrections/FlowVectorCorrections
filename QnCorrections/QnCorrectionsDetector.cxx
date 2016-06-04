@@ -164,6 +164,49 @@ void QnCorrectionsDetector::IncludeQnVectors(TList *list) {
   }
 }
 
+/// Include the name of each detector configuration into the passed list
+///
+/// \param list the list where to incorporate detector configurations name
+void QnCorrectionsDetector::FillDetectorConfigurationNameList(TList *list) const {
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    list->Add(new TObjString(fConfigurations.At(ixConfiguration)->GetName()));
+  }
+}
+
+/// Include the name of the input correction steps on each detector
+/// configuration into the passed list
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the corrected Qn vector should be added
+void QnCorrectionsDetector::FillOverallInputCorrectionStepList(TList *list) const {
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->FillOverallInputCorrectionStepList(list) ;
+  }
+}
+
+/// Include the name of the Qn vector correction steps on each detector
+/// configuration into the passed list
+///
+/// The request is transmitted to the attached detector configurations
+/// \param list list where the corrected Qn vector should be added
+void QnCorrectionsDetector::FillOverallQnVectorCorrectionStepList(TList *list) const {
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->FillOverallQnVectorCorrectionStepList(list) ;
+  }
+}
+
+
+/// Provide information about assigned corrections on each of the detector configurations
+///
+/// The request is transmitted to the attached detector configurations
+/// \param steps list for incorporating the list of assigned correction steps
+/// \param calib list for incorporating the list of steps in calibrating status
+/// \param apply list for incorporating the list of steps in applying status
+void QnCorrectionsDetector::ReportOnCorrections(TList *steps, TList *calib, TList *apply) const {
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->ReportOnCorrections(steps, calib, apply) ;
+  }
+}
 
 
 /// \cond CLASSIMP
@@ -395,7 +438,7 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
 /// about the process name and then the correction histograms could still not
 /// be attached and the constructed list does not contain the final Qn vectors.
 /// \param list list where the corrected Qn vector should be added
-inline void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *list) {
+void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *list) {
 
   /* we check whether we are already there and if so we clean it and go again */
   Bool_t bAlreadyThere;
@@ -420,6 +463,59 @@ inline void QnCorrectionsDetectorConfigurationTracks::IncludeQnVectors(TList *li
   if (!bAlreadyThere)
     list->Add(detectorConfigurationList);
 }
+
+/// Include only one instance of each input correction step
+/// in execution order
+///
+/// There are not input correction so we do nothing
+/// \param list list where the correction steps should be incorporated
+void QnCorrectionsDetectorConfigurationTracks::FillOverallInputCorrectionStepList(TList *list) const {
+
+}
+
+/// Include only one instance of each Qn vector correction step
+/// in execution order
+///
+/// The request is transmitted to the set of Qn vector corrections
+/// \param list list where the correction steps should be incorporated
+void QnCorrectionsDetectorConfigurationTracks::FillOverallQnVectorCorrectionStepList(TList *list) const {
+
+  fQnVectorCorrections.FillOverallCorrectionsList(list);
+}
+
+/// Provide information about assigned corrections
+///
+/// We create three list which items they own, incorporate info from the
+/// correction steps and add them to the passed list
+/// \param steps list for incorporating the list of assigned correction steps
+/// \param calib list for incorporating the list of steps in calibrating status
+/// \param apply list for incorporating the list of steps in applying status
+void QnCorrectionsDetectorConfigurationTracks::ReportOnCorrections(TList *steps, TList *calib, TList *apply) const {
+  TList *mysteps = new TList();
+  mysteps->SetOwner(kTRUE);
+  mysteps->SetName(GetName());
+  TList *mycalib = new TList();
+  mycalib->SetOwner(kTRUE);
+  mycalib->SetName(GetName());
+  TList *myapply = new TList();
+  myapply->SetOwner(kTRUE);
+  myapply->SetName(GetName());
+
+  /* incorporate Qn vector corrections */
+  Bool_t keepIncorporating = kTRUE;
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    mysteps->Add(new TObjString(fQnVectorCorrections.At(ixCorrection)->GetName()));
+    /* incorporate additional info if the step will be reached */
+    if (keepIncorporating) {
+      Bool_t keep = fQnVectorCorrections.At(ixCorrection)->ReportUsage(mycalib,myapply);
+      keepIncorporating = keepIncorporating && keep;
+    }
+  }
+  steps->Add(mysteps);
+  calib->Add(mycalib);
+  apply->Add(myapply);
+}
+
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationChannels);
@@ -793,6 +889,67 @@ inline void QnCorrectionsDetectorConfigurationChannels::IncludeQnVectors(TList *
     list->Add(detectorConfigurationList);
 }
 
+/// Include only one instance of each input correction step
+/// in execution order
+///
+/// The request is transmitted to the set of Qn vector corrections
+/// \param list list where the correction steps should be incorporated
+void QnCorrectionsDetectorConfigurationChannels::FillOverallInputCorrectionStepList(TList *list) const {
+
+  fInputDataCorrections.FillOverallCorrectionsList(list);
+}
+
+/// Include only one instance of each Qn vector correction step
+/// in execution order
+///
+/// The request is transmitted to the set of Qn vector corrections
+/// \param list list where the correction steps should be incorporated
+void QnCorrectionsDetectorConfigurationChannels::FillOverallQnVectorCorrectionStepList(TList *list) const {
+
+  fQnVectorCorrections.FillOverallCorrectionsList(list);
+}
+
+/// Provide information about assigned corrections
+///
+/// We create three list which items they own, incorporate info from the
+/// correction steps and add them to the passed list
+/// \param steps list for incorporating the list of assigned correction steps
+/// \param calib list for incorporating the list of steps in calibrating status
+/// \param apply list for incorporating the list of steps in applying status
+void QnCorrectionsDetectorConfigurationChannels::ReportOnCorrections(TList *steps, TList *calib, TList *apply) const {
+  TList *mysteps = new TList();
+  mysteps->SetOwner(kTRUE);
+  mysteps->SetName(GetName());
+  TList *mycalib = new TList();
+  mycalib->SetOwner(kTRUE);
+  mycalib->SetName(GetName());
+  TList *myapply = new TList();
+  myapply->SetOwner(kTRUE);
+  myapply->SetName(GetName());
+
+  /* first the input data corrections */
+  Bool_t keepIncorporating = kTRUE;
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    mysteps->Add(new TObjString(fInputDataCorrections.At(ixCorrection)->GetName()));
+    /* incorporate additional info if the step will be reached */
+    if (keepIncorporating) {
+      Bool_t keep = fInputDataCorrections.At(ixCorrection)->ReportUsage(mycalib,myapply);
+      keepIncorporating = keepIncorporating && keep;
+    }
+  }
+  /* now the Qn vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    mysteps->Add(new TObjString(fQnVectorCorrections.At(ixCorrection)->GetName()));
+    /* incorporate additional info if the step will be reached */
+    if (keepIncorporating) {
+      Bool_t keep = fQnVectorCorrections.At(ixCorrection)->ReportUsage(mycalib,myapply);
+      keepIncorporating = keepIncorporating && keep;
+    }
+  }
+  steps->Add(mysteps);
+  calib->Add(mycalib);
+  apply->Add(myapply);
+}
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsDetectorConfigurationSet);
