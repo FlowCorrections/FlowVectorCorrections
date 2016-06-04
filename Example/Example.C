@@ -215,7 +215,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOnePositive->SetCuts(myPositiveCuts);
-  myDetectorOnePositive->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  myDetectorOnePositive->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   myDetectorOnePositive->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
@@ -225,7 +225,7 @@ void Setup(QnCorrectionsManager* QnMan){
           nNoOfHarmonics,
           harmonicsMap);
   myDetectorOneNegative->SetCuts(myNegativeCuts);
-  myDetectorOneNegative->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  myDetectorOneNegative->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   myDetectorOneNegative->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
 
   /* add the configurations to the detector */
@@ -267,7 +267,7 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoA->SetChannelsScheme(bUsedChannelDetectorTwoA, nChannelGroupDetectorTwoA);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoA->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  myDetectorTwoA->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqA = new QnCorrectionsInputGainEqualization();
   eqA->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
@@ -293,7 +293,7 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorTwoC->SetChannelsScheme(bUsedChannelDetectorTwoC, nChannelGroupDetectorTwoC);
 
   /* let's configure the Q vector calibration */
-  myDetectorTwoC->SetQVectorNormalizationMethod(QVNORM_QoverM);
+  myDetectorTwoC->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   /* lets configure the equalization of input data */
   QnCorrectionsInputGainEqualization *eqC = new QnCorrectionsInputGainEqualization();
   eqC->SetEqualizationMethod(QnCorrectionsInputGainEqualization::GEQUAL_averageEqualization);
@@ -320,11 +320,11 @@ void Setup(QnCorrectionsManager* QnMan){
   QnMan->SetShouldFillQAHistograms(kTRUE);
   QnMan->SetShouldFillOutputHistograms(kTRUE);
 
-  /* here we should be able to store produced data vectors */
-  QnMan->SetCurrentProcessListName("Example");
-
   /* initialize the corrections framework */
   QnMan->InitializeQnCorrectionsFramework();
+
+  /* here we should be able to store produced data vectors */
+  QnMan->SetCurrentProcessListName("Example");
 }
 
 /// the final output and clean up routine
@@ -430,7 +430,7 @@ void Loop(QnCorrectionsManager* QnMan){
 
   QnMan->ProcessEvent();
 
-  PrintQnVectorList(QnMan->GetQnVectorList());
+//  PrintQnVectorList(QnMan->GetQnVectorList());
 }
 
 /* print the Qn vector list */
