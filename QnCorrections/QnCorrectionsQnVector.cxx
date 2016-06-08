@@ -343,11 +343,11 @@ void QnCorrectionsQnVectorBuild::Add(QnCorrectionsQnVectorBuild* Qn) {
 ///
 /// Normalizes the build Q vector as \f$ Qn = \frac{Qn}{M} \f$.
 /// A check for significant value is made. Not passing it
-/// does nothing
+/// does set the Q vector quality as bad
 void QnCorrectionsQnVectorBuild::NormalizeQoverM() {
 
   if(fSumW < fMinimumSignificantValue) {
-
+    SetGood(kFALSE);
   }
   else {
     for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
@@ -363,11 +363,11 @@ void QnCorrectionsQnVectorBuild::NormalizeQoverM() {
 ///
 /// Normalizes the build Q vector as \f$ Qn = \frac{Qn}{\sqrt{M}} \f$.
 /// A check for significant value is made. Not passing it
-/// does nothing
+/// does set the Q vector quality as bad
 void QnCorrectionsQnVectorBuild::NormalizeQoverSquareRootOfM() {
 
   if(fSumW < fMinimumSignificantValue) {
-
+    SetGood(kFALSE);
   }
   else {
     for(Int_t h = 1; h < fHighestHarmonic + 1; h++){

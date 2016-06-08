@@ -76,14 +76,8 @@ public:
   /// \param harmonic the intended harmonic
   /// \return the square root of components square sum
   Float_t Length(Int_t harmonic) const { return  TMath::Sqrt(Qx(harmonic)*Qx(harmonic)+Qy(harmonic)*Qy(harmonic));}
-  /// Provides the X component normalized to one of the Q vector for the considered harmonic
-  /// \param harmonic the intended harmonic
-  /// \return X component of the normalized Q vector
-  Float_t QxNorm(Int_t harmonic) const { return  Qx(harmonic)/Length(harmonic);}
-  /// Provides the Y component normalized to one of the Q vector for the considered harmonic
-  /// \param harmonic the intended harmonic
-  /// \return Y component of the normalized Q vector
-  Float_t QyNorm(Int_t harmonic) const { return  Qy(harmonic)/Length(harmonic);}
+  Float_t QxNorm(Int_t harmonic) const;
+  Float_t QyNorm(Int_t harmonic) const;
 
   virtual void Reset();
 
@@ -217,8 +211,34 @@ inline Int_t QnCorrectionsQnVector::GetNextHarmonic(Int_t harmonic) const {
   return -1;
 }
 
+/// Provides the X component normalized to one of the Q vector for the considered harmonic
+/// A check for Q vector length significant value is made. Not passing it returns a zero value.
+/// \param harmonic the intended harmonic
+/// \return X component of the normalized Q vector
+inline Float_t QnCorrectionsQnVector::QxNorm(Int_t harmonic) const {
+  if (Length(harmonic) < fMinimumSignificantValue) {
+    return 0.0;
+  }
+  else {
+      return  Qx(harmonic)/Length(harmonic);
+  }
+}
+
+/// Provides the Y component normalized to one of the Q vector for the considered harmonic
+/// A check for Q vector length significant value is made. Not passing it returns a zero value.
+/// \param harmonic the intended harmonic
+/// \return Y component of the normalized Q vector
+inline Float_t QnCorrectionsQnVector::QyNorm(Int_t harmonic) const {
+  if (Length(harmonic) < fMinimumSignificantValue) {
+    return 0.0;
+  }
+  else {
+    return  Qy(harmonic)/Length(harmonic);
+  }
+}
 
 /// Adds a contribution to the build Q vector
+/// A check for weight significant value is made. Not passing it ignores the contribution.
 /// \param phi azimuthal angle contribution
 /// \param weight the weight of the contribution
 inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
@@ -233,6 +253,7 @@ inline void QnCorrectionsQnVectorBuild::Add(Double_t phi, Double_t weight) {
   fSumW += weight;
   fN += 1;
 }
+
 
 /// Calibrates the Q vector according to the method passed
 /// \param method the method of calibration
