@@ -125,7 +125,7 @@ Bool_t QnCorrectionsHistogramBase::AttachHistograms(TList *histogramList, const 
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer) {
+Long64_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
       "you are using a channelized profile without passing the channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBin()"));
@@ -144,7 +144,7 @@ Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer, Int_t nChannel) {
+Long64_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer, Int_t nChannel) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means you have instantiated a base class or\n" \
       "you are using a non channelized profile passing a channel number. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBin()"));
@@ -162,7 +162,7 @@ Int_t QnCorrectionsHistogramBase::GetBin(const Float_t *variableContainer, Int_t
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetBinContent(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetXBinContent or GetYBinContent, or GetXXBinContent ... GetYYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBinContent()"));
@@ -182,7 +182,7 @@ Float_t QnCorrectionsHistogramBase::GetBinContent(Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetXBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXXBinContent ... GetYYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXBinContent()"));
@@ -202,7 +202,7 @@ Float_t QnCorrectionsHistogramBase::GetXBinContent(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetYBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXXBinContent ... GetYYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYBinContent()"));
@@ -220,7 +220,7 @@ Float_t QnCorrectionsHistogramBase::GetYBinContent(Int_t harmonic, Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXXBinContent(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent, GetYBinContent or GetXXBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXXBinContent()"));
@@ -238,7 +238,7 @@ Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXYBinContent(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent, GetYBinContent or GetXYBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXYBinContent()"));
@@ -256,7 +256,7 @@ Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYXBinContent(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent, GetYBinContent or GetYXBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYXBinContent()"));
@@ -274,7 +274,7 @@ Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYYBinContent(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent, GetYBinContent or GetYYBinContent(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYYBinContent()"));
@@ -294,7 +294,7 @@ Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent or GetYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXXBinContent()"));
@@ -314,7 +314,7 @@ Float_t QnCorrectionsHistogramBase::GetXXBinContent(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent or GetYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXYBinContent()"));
@@ -334,7 +334,7 @@ Float_t QnCorrectionsHistogramBase::GetXYBinContent(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent or GetYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYXBinContent()"));
@@ -354,7 +354,7 @@ Float_t QnCorrectionsHistogramBase::GetYXBinContent(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinContent, or GetXBinContent or GetYBinContent, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYYBinContent()"));
@@ -372,7 +372,7 @@ Float_t QnCorrectionsHistogramBase::GetYYBinContent(Int_t harmonic, Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
-Float_t QnCorrectionsHistogramBase::GetBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetBinError(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetXBinError or GetYBinError, or GetXXBinError ... GetYYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetBinError()"));
@@ -392,7 +392,7 @@ Float_t QnCorrectionsHistogramBase::GetBinError(Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetXBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXXBinError ... GetYYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXBinError()"));
@@ -412,7 +412,7 @@ Float_t QnCorrectionsHistogramBase::GetXBinError(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetYBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXXBinError ... GetYYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYBinError()"));
@@ -430,7 +430,7 @@ Float_t QnCorrectionsHistogramBase::GetYBinError(Int_t harmonic, Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXXBinError(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, GetXBinError, GetYBinError or GetXXBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXXBinError()"));
@@ -448,7 +448,7 @@ Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXYBinError(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, GetXBinError, GetYBinError or GetXYBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXYBinError()"));
@@ -466,7 +466,7 @@ Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYXBinError(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, GetXBinError, GetYBinError or GetYXBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYXBinError()"));
@@ -484,7 +484,7 @@ Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYYBinError(Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, GetXBinError, GetYBinError or GetYYBinError(harmonic), or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYYBinError()"));
@@ -504,7 +504,7 @@ Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXBinError or GetYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXXBinError()"));
@@ -524,7 +524,7 @@ Float_t QnCorrectionsHistogramBase::GetXXBinError(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXBinError or GetYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetXYBinError()"));
@@ -544,7 +544,7 @@ Float_t QnCorrectionsHistogramBase::GetXYBinError(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXBinError or GetYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYXBinError()"));
@@ -564,7 +564,7 @@ Float_t QnCorrectionsHistogramBase::GetYXBinError(Int_t harmonic, Int_t bin) {
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t harmonic, Int_t bin) {
+Float_t QnCorrectionsHistogramBase::GetYYBinError(Int_t harmonic, Long64_t bin) {
   QnCorrectionsFatal(Form("You have reached base member %s. This means either you should have used\n" \
       "   GetBinError, or GetXBinError or GetYBinError, or you have instantiated a base class. FIX IT, PLEASE.",
       "QnCorrectionsHistogramBase::GetYYBinError()"));
@@ -812,7 +812,7 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
   Bool_t bErrorMessage = kFALSE;
   Int_t nNotValidatedBins = 0;
 
-  for (Int_t bin = 0; bin < hResult->GetNbins(); bin++){
+  for (Long64_t bin = 0; bin < hResult->GetNbins(); bin++){
     value = hValues->GetBinContent(bin);
     nEntries = Int_t(hEntries->GetBinContent(bin));
     error2 = hValues->GetBinError2(bin);
@@ -884,7 +884,7 @@ void QnCorrectionsHistogramBase::CopyTHnFDimension(THnF *hDest, THnF *hSource, I
   /* are all variables settled */
   if (dimension < fEventClassVariables.GetEntriesFast()) {
     /* no then, scan this dimension and move to the next one */
-    for (Int_t bin = 0; bin < hSource->GetAxis(dimension)->GetNbins(); bin++) {
+    for (Long64_t bin = 0; bin < hSource->GetAxis(dimension)->GetNbins(); bin++) {
       binsArray[dimension] = bin + 1;
       CopyTHnFDimension(hDest, hSource, binsArray, dimension +1);
     }
@@ -994,9 +994,10 @@ Bool_t QnCorrectionsHistogramChannelized::CreateChannelizedHistogram(TList *hist
     }
   }
 
-  /* TODO: there will be a wrong external view of the channel number especially */
+  /* There will be a wrong external view of the channel number especially */
   /* manifested when there are holes in the channel assignment */
   /* so, lets complete the dimension information */
+  /* WARNING: be aware that ROOT does not keep label information when projecting THn */
   minvals[nVariables] = -0.5;
   maxvals[nVariables] = -0.5 + fActualNoOfChannels;
   nbins[nVariables] = fActualNoOfChannels;
@@ -1041,11 +1042,21 @@ Bool_t QnCorrectionsHistogramChannelized::CreateChannelizedHistogram(TList *hist
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsHistogramChannelized::GetBin(const Float_t *variableContainer, Int_t nChannel) {
+Long64_t QnCorrectionsHistogramChannelized::GetBin(const Float_t *variableContainer, Int_t nChannel) {
 
   FillBinAxesValues(variableContainer, fChannelMap[nChannel]);
   /* store the channel number */
   return fValues->GetBin(fBinAxesValues);
+}
+
+/// Check the validity of the content of the passed bin
+/// This kind of histograms cannot validate the bin content so, it
+/// is always valid.
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsHistogramChannelized::BinContentValidated(Long64_t) {
+
+  return kTRUE;
 }
 
 /// Get the bin content for the passed bin number
@@ -1055,7 +1066,7 @@ Int_t QnCorrectionsHistogramChannelized::GetBin(const Float_t *variableContainer
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsHistogramChannelized::GetBinContent(Int_t bin) {
+Float_t QnCorrectionsHistogramChannelized::GetBinContent(Long64_t bin) {
 
   return fValues->GetBinContent(bin);
 }
@@ -1067,7 +1078,7 @@ Float_t QnCorrectionsHistogramChannelized::GetBinContent(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
-Float_t QnCorrectionsHistogramChannelized::GetBinError(Int_t bin) {
+Float_t QnCorrectionsHistogramChannelized::GetBinError(Long64_t bin) {
 
   return fValues->GetBinError(bin);
 }
@@ -1207,11 +1218,6 @@ Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
   else
     return kFALSE;
 
-/* TODO: pending to decide whether we divide the histograms and modify the
- * get content and get errors functions accordingly or we split the class
- * in created histograms and attached histograms. So far we leave it as
- * it is and we'll see the penalty for not having them divided.
- */
   return kTRUE;
 }
 
@@ -1222,27 +1228,43 @@ Bool_t QnCorrectionsProfile::AttachHistograms(TList *histogramList) {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfile::GetBin(const Float_t *variableContainer) {
+Long64_t QnCorrectionsProfile::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
+}
+
+/// Check the validity of the content of the passed bin
+/// If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin content is not considered valid and kFALSE is returned,
+/// otherwise kTRUE is returned
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfile::BinContentValidated(Long64_t bin) {
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return kFALSE;
+  }
+  else {
+    return kTRUE;
+  }
 }
 
 /// Get the bin content for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// is requested. If the bin content is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfile::GetBinContent(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -1250,18 +1272,16 @@ Float_t QnCorrectionsProfile::GetBinContent(Int_t bin) {
 /// Get the bin content error for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
-Float_t QnCorrectionsProfile::GetBinError(Int_t bin) {
+Float_t QnCorrectionsProfile::GetBinError(Long64_t bin) {
   Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
   Float_t values = fValues->GetBinContent(bin);
   Float_t error2 = fValues->GetBinError2(bin);
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
@@ -1420,9 +1440,10 @@ Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogram
     }
   }
 
-  /* TODO: there will be a wrong external view of the channel number especially */
+  /* There will be a wrong external view of the channel number especially */
   /* manifested when there are holes in the channel assignment */
   /* so, lets complete the dimension information */
+  /* WARNING: be aware that ROOT does not keep label information when projecting THn */
   minvals[nVariables] = -0.5;
   maxvals[nVariables] = -0.5 + fActualNoOfChannels;
   nbins[nVariables] = fActualNoOfChannels;
@@ -1474,30 +1495,45 @@ Bool_t QnCorrectionsProfileChannelized::CreateProfileHistograms(TList *histogram
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileChannelized::GetBin(const Float_t *variableContainer, Int_t nChannel) {
+Long64_t QnCorrectionsProfileChannelized::GetBin(const Float_t *variableContainer, Int_t nChannel) {
 
   FillBinAxesValues(variableContainer, fChannelMap[nChannel]);
   /* store the channel number */
   return fEntries->GetBin(fBinAxesValues);
 }
 
-/// Get the bin content for the passed bin number
-///
-/// The bin number identifies a desired event class whose content
-/// is requested.If the number of entries is lower
+/// Check the validity of the content of the passed bin
+/// If the number of entries is lower
 /// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
-///
-/// \param bin the interested bin number
-/// \return the bin number content
-Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
-
+/// the bin content is not considered valid and kFALSE is returned,
+/// otherwise kTRUE is returned
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfileChannelized::BinContentValidated(Long64_t bin) {
   Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
   if (nEntries < nMinNoOfEntriesValidated) {
+    return kFALSE;
+  }
+  else {
+    return kTRUE;
+  }
+}
+
+/// Get the bin content for the passed bin number
+///
+/// The bin number identifies a desired event class whose content
+/// is requested. If the bin content is not validated zero is returned.
+///
+/// \param bin the interested bin number
+/// \return the bin number content
+Float_t QnCorrectionsProfileChannelized::GetBinContent(Long64_t bin) {
+
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -1505,21 +1541,20 @@ Float_t QnCorrectionsProfileChannelized::GetBinContent(Int_t bin) {
 /// Get the bin content error for the passed bin number
 ///
 /// The bin number identifies a desired event class whose content
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
-Float_t QnCorrectionsProfileChannelized::GetBinError(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
-  Float_t values = fValues->GetBinContent(bin);
-  Float_t error2 = fValues->GetBinError2(bin);
+Float_t QnCorrectionsProfileChannelized::GetBinError(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fValues->GetBinContent(bin);
+    Float_t error2 = fValues->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -1769,9 +1804,10 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
       /* get the multidimensional structure */
       fEventClassVariables.GetMultidimensionalConfiguration(nbins,minvals,maxvals);
 
-      /* TODO: there will be a wrong external view of the channel number especially */
+      /* There will be a wrong external view of the channel number especially */
       /* manifested when there are holes in the channel assignment */
       /* so, lets complete the dimension information */
+      /* WARNING: be aware that ROOT does not keep label information when projecting THn */
       minvals[nVariables] = -0.5;
       maxvals[nVariables] = -0.5 + fActualNoOfGroups;
       nbins[nVariables] = fActualNoOfGroups;
@@ -1878,11 +1914,22 @@ Bool_t QnCorrectionsProfileChannelizedIngress::AttachHistograms(TList *histogram
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileChannelizedIngress::GetBin(const Float_t *variableContainer, Int_t nChannel) {
+Long64_t QnCorrectionsProfileChannelizedIngress::GetBin(const Float_t *variableContainer, Int_t nChannel) {
 
   /* store also the channel number */
   FillBinAxesValues(variableContainer, fChannelMap[nChannel]);
   return fValues->GetBin(fBinAxesValues);
+}
+
+/* TODO: incorporate a bin validity structure */
+/// Check the validity of the content of the passed bin
+/// For the time being this kind of histograms cannot check
+/// bin content validity so, kTRUE is returned.
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfileChannelizedIngress::BinContentValidated(Long64_t) {
+
+  return kTRUE;
 }
 
 /// Get the bin content for the passed bin number
@@ -1892,7 +1939,7 @@ Int_t QnCorrectionsProfileChannelizedIngress::GetBin(const Float_t *variableCont
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileChannelizedIngress::GetBinContent(Int_t bin) {
+Float_t QnCorrectionsProfileChannelizedIngress::GetBinContent(Long64_t bin) {
 
   return fValues->GetBinContent(bin);
 }
@@ -1904,7 +1951,7 @@ Float_t QnCorrectionsProfileChannelizedIngress::GetBinContent(Int_t bin) {
 ///
 /// \param bin the interested bin number
 /// \return the bin number content error
-Float_t QnCorrectionsProfileChannelizedIngress::GetBinError(Int_t bin) {
+Float_t QnCorrectionsProfileChannelizedIngress::GetBinError(Long64_t bin) {
 
   return fValues->GetBinError(bin);
 }
@@ -1917,7 +1964,7 @@ Float_t QnCorrectionsProfileChannelizedIngress::GetBinError(Int_t bin) {
 /// \param variableContainer the current variables content addressed by var Id
 /// \param nChannel the interested external channel number which group number is asked
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileChannelizedIngress::GetGrpBin(const Float_t *variableContainer, Int_t nChannel) {
+Long64_t QnCorrectionsProfileChannelizedIngress::GetGrpBin(const Float_t *variableContainer, Int_t nChannel) {
 
   /* check the groups structures are in place */
   if (fUseGroups) {
@@ -1935,7 +1982,7 @@ Int_t QnCorrectionsProfileChannelizedIngress::GetGrpBin(const Float_t *variableC
 ///
 /// \param bin the interested group bin number
 /// \return the group bin number content
-Float_t QnCorrectionsProfileChannelizedIngress::GetGrpBinContent(Int_t bin) {
+Float_t QnCorrectionsProfileChannelizedIngress::GetGrpBinContent(Long64_t bin) {
 
   /* check the groups structures are in place */
   if (fUseGroups) {
@@ -1951,7 +1998,7 @@ Float_t QnCorrectionsProfileChannelizedIngress::GetGrpBinContent(Int_t bin) {
 ///
 /// \param bin the interested group bin number
 /// \return the bin number content error
-Float_t QnCorrectionsProfileChannelizedIngress::GetGrpBinError(Int_t bin) {
+Float_t QnCorrectionsProfileChannelizedIngress::GetGrpBinError(Long64_t bin) {
 
   /* check the groups structures are in place */
   if (fUseGroups) {
@@ -2211,11 +2258,6 @@ Bool_t QnCorrectionsProfileComponents::AttachHistograms(TList *histogramList) {
   else
     return kFALSE;
 
-/* TODO: pending to decide whether we divide the histograms and modify the
- * get content and get errors functions accordingly or we split the class
- * in created histograms and attached histograms. So far we leave it as
- * it is and we'll see the penalty for not having them divided.
- */
   /* check that we actually got something */
   if (fFullFilled != 0x0000)
     return kTRUE;
@@ -2230,24 +2272,39 @@ Bool_t QnCorrectionsProfileComponents::AttachHistograms(TList *histogramList) {
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileComponents::GetBin(const Float_t *variableContainer) {
+Long64_t QnCorrectionsProfileComponents::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
+}
+
+/// Check the validity of the content of the passed bin
+/// If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin content is not considered valid and kFALSE is returned,
+/// otherwise kTRUE is returned
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfileComponents::BinContentValidated(Long64_t bin) {
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return kFALSE;
+  }
+  else {
+    return kTRUE;
+  }
 }
 
 /// Get the X component bin content for the passed bin number
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXValues[harmonic] == NULL) {
@@ -2255,10 +2312,11 @@ Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Int_t bin
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2267,15 +2325,12 @@ Float_t QnCorrectionsProfileComponents::GetXBinContent(Int_t harmonic, Int_t bin
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYValues[harmonic] == NULL) {
@@ -2283,10 +2338,11 @@ Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Int_t bin
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2295,15 +2351,12 @@ Float_t QnCorrectionsProfileComponents::GetYBinContent(Int_t harmonic, Int_t bin
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXValues[harmonic] == NULL) {
@@ -2311,13 +2364,14 @@ Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) 
     return 0.0;
   }
 
-  Float_t values = fXValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fXValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fXValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fXValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -2339,15 +2393,12 @@ Float_t QnCorrectionsProfileComponents::GetXBinError(Int_t harmonic, Int_t bin) 
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileComponents::GetYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileComponents::GetYBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYValues[harmonic] == NULL) {
@@ -2355,13 +2406,14 @@ Float_t QnCorrectionsProfileComponents::GetYBinError(Int_t harmonic, Int_t bin) 
     return 0.0;
   }
 
-  Float_t values = fYValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fYValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fYValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fYValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -2701,11 +2753,6 @@ Bool_t QnCorrectionsProfileCorrelationComponents::AttachHistograms(TList *histog
   else
     return kFALSE;
 
-/* TODO: pending to decide whether we divide the histograms and modify the
- * get content and get errors functions accordingly or we split the class
- * in created histograms and attached histograms. So far we leave it as
- * it is and we'll see the penalty for not having them divided.
- */
   /* check that we actually got something */
   if (fFullFilled != 0x0000)
     return kTRUE;
@@ -2720,27 +2767,43 @@ Bool_t QnCorrectionsProfileCorrelationComponents::AttachHistograms(TList *histog
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileCorrelationComponents::GetBin(const Float_t *variableContainer) {
+Long64_t QnCorrectionsProfileCorrelationComponents::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
+}
+
+/// Check the validity of the content of the passed bin
+/// If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin content is not considered valid and kFALSE is returned,
+/// otherwise kTRUE is returned
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfileCorrelationComponents::BinContentValidated(Long64_t bin) {
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return kFALSE;
+  }
+  else {
+    return kTRUE;
+  }
 }
 
 /// Get the XX correlation component bin content.
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinContent(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinContent(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fXXValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2748,19 +2811,17 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinContent(Int_t bin) {
 /// Get the XY correlation component bin content.
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinContent(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinContent(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fXYValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2768,19 +2829,17 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinContent(Int_t bin) {
 /// Get the YX correlation component bin content.
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinContent(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinContent(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fYXValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2788,19 +2847,17 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinContent(Int_t bin) {
 /// Get the YY correlation component bin content.
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinContent(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinContent(Long64_t bin) {
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fYYValues->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -2808,22 +2865,20 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinContent(Int_t bin) {
 /// Get the XX correlation component bin content error for the passed bin number.
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Long64_t bin) {
 
-  Float_t values = fXXValues->GetBinContent(bin);
-  Float_t error2 = fXXValues->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fXXValues->GetBinContent(bin);
+    Float_t error2 = fXXValues->GetBinError2(bin);
+
     Double_t average = values / Float_t(nEntries);
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / Float_t(nEntries) - average * average));
     switch (fErrorMode) {
@@ -2844,22 +2899,20 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXXBinError(Int_t bin) {
 /// Get the XY correlation component bin content error for the passed bin number.
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Long64_t bin) {
 
-  Float_t values = fXYValues->GetBinContent(bin);
-  Float_t error2 = fXYValues->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fXYValues->GetBinContent(bin);
+    Float_t error2 = fXYValues->GetBinError2(bin);
+
     Double_t average = values / Float_t(nEntries);
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / Float_t(nEntries) - average * average));
     switch (fErrorMode) {
@@ -2880,22 +2933,20 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetXYBinError(Int_t bin) {
 /// Get the YX correlation component bin content error for the passed bin number.
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Long64_t bin) {
 
-  Float_t values = fYXValues->GetBinContent(bin);
-  Float_t error2 = fYXValues->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fYXValues->GetBinContent(bin);
+    Float_t error2 = fYXValues->GetBinError2(bin);
+
     Double_t average = values / Float_t(nEntries);
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / Float_t(nEntries) - average * average));
     switch (fErrorMode) {
@@ -2916,22 +2967,20 @@ Float_t QnCorrectionsProfileCorrelationComponents::GetYXBinError(Int_t bin) {
 /// Get the YY correlation component bin content error for the passed bin number.
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin is not validated zero is returned.
 ///
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinError(Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponents::GetYYBinError(Long64_t bin) {
 
-  Float_t values = fYYValues->GetBinContent(bin);
-  Float_t error2 = fYYValues->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fYYValues->GetBinContent(bin);
+    Float_t error2 = fYYValues->GetBinError2(bin);
+
     Double_t average = values / Float_t(nEntries);
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / Float_t(nEntries) - average * average));
     switch (fErrorMode) {
@@ -3405,11 +3454,6 @@ Bool_t QnCorrectionsProfileCorrelationComponentsHarmonics::AttachHistograms(TLis
   else
     return kFALSE;
 
-/* TODO: pending to decide whether we divide the histograms and modify the
- * get content and get errors functions accordingly or we split the class
- * in created histograms and attached histograms. So far we leave it as
- * it is and we'll see the penalty for not having them divided.
- */
   /* check that we actually got something */
   if (fFullFilled != 0x0000)
     return kTRUE;
@@ -3424,24 +3468,39 @@ Bool_t QnCorrectionsProfileCorrelationComponentsHarmonics::AttachHistograms(TLis
 ///
 /// \param variableContainer the current variables content addressed by var Id
 /// \return the associated bin to the current variables content
-Int_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetBin(const Float_t *variableContainer) {
+Long64_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetBin(const Float_t *variableContainer) {
   FillBinAxesValues(variableContainer);
   return fEntries->GetBin(fBinAxesValues);
+}
+
+/// Check the validity of the content of the passed bin
+/// If the number of entries is lower
+/// than the minimum number of entries to validate it
+/// the bin content is not considered valid and kFALSE is returned,
+/// otherwise kTRUE is returned
+/// \param bin the bin to check its content validity
+/// \return kTRUE if the content is valid kFALSE otherwise
+Bool_t QnCorrectionsProfileCorrelationComponentsHarmonics::BinContentValidated(Long64_t bin) {
+  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+
+  if (nEntries < nMinNoOfEntriesValidated) {
+    return kFALSE;
+  }
+  else {
+    return kTRUE;
+  }
 }
 
 /// Get the XX correlation component bin content for the passed bin number
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
@@ -3449,10 +3508,11 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinContent(Int_
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fXXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -3461,15 +3521,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinContent(Int_
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
@@ -3477,10 +3534,11 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinContent(Int_
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fXYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -3489,15 +3547,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinContent(Int_
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
@@ -3505,10 +3560,11 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinContent(Int_
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fYXValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -3517,15 +3573,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinContent(Int_
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin number content
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinContent(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinContent(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {
@@ -3533,10 +3586,11 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinContent(Int_
     return 0.0;
   }
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
     return fYYValues[harmonic]->GetBinContent(bin) / Float_t(nEntries);
   }
 }
@@ -3545,15 +3599,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinContent(Int_
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXXValues[harmonic] == NULL) {
@@ -3561,13 +3612,14 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinError(Int_t 
     return 0.0;
   }
 
-  Float_t values = fXXValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fXXValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fXXValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fXXValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -3589,15 +3641,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXXBinError(Int_t 
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fXYValues[harmonic] == NULL) {
@@ -3605,13 +3654,14 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinError(Int_t 
     return 0.0;
   }
 
-  Float_t values = fXYValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fXYValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fXYValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fXYValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -3633,15 +3683,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetXYBinError(Int_t 
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYXValues[harmonic] == NULL) {
@@ -3649,13 +3696,14 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinError(Int_t 
     return 0.0;
   }
 
-  Float_t values = fYXValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fYXValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fYXValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fYXValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {
@@ -3677,15 +3725,12 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYXBinError(Int_t 
 /// for the corresponding harmonic
 ///
 /// The bin number identifies a desired event class whose content is
-/// error is requested. If the number of entries is lower
-/// than the minimum number of entries to validate it
-/// the bin is not considered valid and zero is returned.
+/// error is requested. If the bin content is not validated zero is returned.
 ///
 /// \param harmonic the interested external harmonic number
 /// \param bin the interested bin number
 /// \return the bin content error
-Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinError(Int_t harmonic, Int_t bin) {
-  Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinError(Int_t harmonic, Long64_t bin) {
 
   /* sanity check */
   if (fYYValues[harmonic] == NULL) {
@@ -3693,13 +3738,14 @@ Float_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetYYBinError(Int_t 
     return 0.0;
   }
 
-  Float_t values = fYYValues[harmonic]->GetBinContent(bin);
-  Float_t error2 = fYYValues[harmonic]->GetBinError2(bin);
-
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (!BinContentValidated(bin)) {
     return 0.0;
   }
   else {
+    Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
+    Float_t values = fYYValues[harmonic]->GetBinContent(bin);
+    Float_t error2 = fYYValues[harmonic]->GetBinError2(bin);
+
     Double_t average = values / nEntries;
     Double_t serror = TMath::Sqrt(TMath::Abs(error2 / nEntries - average * average));
     switch (fErrorMode) {

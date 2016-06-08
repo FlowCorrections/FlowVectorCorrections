@@ -205,33 +205,40 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
     if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
       /* we get the properties of the current Qn vector but its name */
       fCorrectedQnVector->Set(fDetectorConfiguration->GetCurrentQnVector(),kFALSE);
-      Double_t XX  = fInputHistograms->GetXXBinContent(fInputHistograms->GetBin(variableContainer));
-      Double_t YY  = fInputHistograms->GetYYBinContent(fInputHistograms->GetBin(variableContainer));
-      Double_t XY  = fInputHistograms->GetXYBinContent(fInputHistograms->GetBin(variableContainer));
-      Double_t YX  = fInputHistograms->GetYXBinContent(fInputHistograms->GetBin(variableContainer));
-      Double_t eXX = fInputHistograms->GetXXBinError(fInputHistograms->GetBin(variableContainer));
-      Double_t eYY = fInputHistograms->GetYYBinError(fInputHistograms->GetBin(variableContainer));
-      Double_t eXY = fInputHistograms->GetXYBinError(fInputHistograms->GetBin(variableContainer));
-      Double_t eYX = fInputHistograms->GetYXBinError(fInputHistograms->GetBin(variableContainer));
 
-      Double_t deltaPhi = - TMath::ATan2((XY-YX),(XX+YY)) * (1.0 / fHarmonicForAlignment);
+      /* let's check the correction histograms */
+      Long64_t bin = fInputHistograms->GetBin(variableContainer);
+      if (fInputHistograms->BinContentValidated(bin)) {
+        /* the bin content is validated so, apply the correction */
+        Double_t XX  = fInputHistograms->GetXXBinContent(bin);
+        Double_t YY  = fInputHistograms->GetYYBinContent(bin);
+        Double_t XY  = fInputHistograms->GetXYBinContent(bin);
+        Double_t YX  = fInputHistograms->GetYXBinContent(bin);
+        Double_t eXY = fInputHistograms->GetXYBinError(bin);
+        Double_t eYX = fInputHistograms->GetYXBinError(bin);
 
-      /* significant correction? */
-      if (!(TMath::Sqrt((XY-YX)*(XY-YX)/(eXY*eXY+eYX*eYX)) < 2.0)) {
-        Int_t harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-        while (harmonic != -1) {
-          fCorrectedQnVector->SetQx(harmonic,
-              fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic) * TMath::Cos(((Double_t) harmonic) * deltaPhi)
-              + fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic) * TMath::Sin (((Double_t) harmonic) * deltaPhi));
-          fCorrectedQnVector->SetQy(harmonic,
-              fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic) * TMath::Cos(((Double_t) harmonic) * deltaPhi)
-              - fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic) * TMath::Sin (((Double_t) harmonic) * deltaPhi));
-          harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
-        }
+        Double_t deltaPhi = - TMath::ATan2((XY-YX),(XX+YY)) * (1.0 / fHarmonicForAlignment);
+
+        /* significant correction? */
+        if (!(TMath::Sqrt((XY-YX)*(XY-YX)/(eXY*eXY+eYX*eYX)) < 2.0)) {
+          Int_t harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
+          while (harmonic != -1) {
+            fCorrectedQnVector->SetQx(harmonic,
+                fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic) * TMath::Cos(((Double_t) harmonic) * deltaPhi)
+                + fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic) * TMath::Sin (((Double_t) harmonic) * deltaPhi));
+            fCorrectedQnVector->SetQy(harmonic,
+                fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic) * TMath::Cos(((Double_t) harmonic) * deltaPhi)
+                - fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic) * TMath::Sin (((Double_t) harmonic) * deltaPhi));
+            harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+          }
+        } /* if the correction is not significant we leave the Q vector untouched */
+      } /* if the correction bin is not validated we leave the Q vector untouched */
+      else {
+        /* TODO: Fill QA histogram */
       }
     }
     else {
-      /* not done! */
+      /* not done! input Q vector with bad quality */
       fCorrectedQnVector->SetGood(kFALSE);
     }
     /* and update the current Qn vector */

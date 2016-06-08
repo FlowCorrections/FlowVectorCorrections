@@ -171,24 +171,33 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
       /* we get the properties of the current Qn vector but its name */
       fCorrectedQnVector->Set(fDetectorConfiguration->GetCurrentQnVector(),kFALSE);
       harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-      while (harmonic != -1) {
-        Float_t widthX = 1.0;
-        Float_t widthY = 1.0;
-        if (fApplyWidthEqualization) {
-          widthX = fInputHistograms->GetXBinError(harmonic, fInputHistograms->GetBin(variableContainer));
-          widthY = fInputHistograms->GetYBinError(harmonic, fInputHistograms->GetBin(variableContainer));
+
+      /* let's check the correction histograms */
+      Long64_t bin = fInputHistograms->GetBin(variableContainer);
+      if (fInputHistograms->BinContentValidated(bin)) {
+        /* correction information validated */
+        while (harmonic != -1) {
+          Float_t widthX = 1.0;
+          Float_t widthY = 1.0;
+          if (fApplyWidthEqualization) {
+            widthX = fInputHistograms->GetXBinError(harmonic, bin);
+            widthY = fInputHistograms->GetYBinError(harmonic, bin);
+          }
+          fCorrectedQnVector->SetQx(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic)
+              - fInputHistograms->GetXBinContent(harmonic, bin))
+              / widthX);
+          fCorrectedQnVector->SetQy(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic)
+              - fInputHistograms->GetYBinContent(harmonic, bin))
+              / widthY);
+          harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
         }
-        fCorrectedQnVector->SetQx(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic)
-            - fInputHistograms->GetXBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
-            / widthX);
-        fCorrectedQnVector->SetQy(harmonic, (fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic)
-            - fInputHistograms->GetYBinContent(harmonic, fInputHistograms->GetBin(variableContainer)))
-            / widthY);
-        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
+      } /* correction information not validated, we leave the Q vector untouched */
+      else {
+        /* TODO: fill QA histogram */
       }
     }
     else {
-      /* not done! */
+      /* not done! input vector with bad quality */
       fCorrectedQnVector->SetGood(kFALSE);
     }
     /* and update the current Qn vector */

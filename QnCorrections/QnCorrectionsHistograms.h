@@ -59,31 +59,38 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList);
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup);
 
-  virtual Int_t GetBin(const Float_t *variableContainer);
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel);
-  virtual Float_t GetBinContent(Int_t bin);
-  virtual Float_t GetXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXXBinContent(Int_t bin);
-  virtual Float_t GetXYBinContent(Int_t bin);
-  virtual Float_t GetYXBinContent(Int_t bin);
-  virtual Float_t GetYYBinContent(Int_t bin);
-  virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinContent(Int_t harmonic, Int_t bin);
 
-  virtual Float_t GetBinError(Int_t bin);
-  virtual Float_t GetXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXXBinError(Int_t bin);
-  virtual Float_t GetXYBinError(Int_t bin);
-  virtual Float_t GetYXBinError(Int_t bin);
-  virtual Float_t GetYYBinError(Int_t bin);
-  virtual Float_t GetXXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinError(Int_t harmonic, Int_t bin);
+  virtual Long64_t GetBin(const Float_t *variableContainer);
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel);
+  /// Check the validity of the content of the passed bin
+  /// Pure virtual function
+  /// \param bin the bin to check its content validity
+  /// \return kTRUE if the content is valid kFALSE otherwise
+  virtual Bool_t BinContentValidated(Long64_t bin) = 0;
+
+  virtual Float_t GetBinContent(Long64_t bin);
+  virtual Float_t GetXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXXBinContent(Long64_t bin);
+  virtual Float_t GetXYBinContent(Long64_t bin);
+  virtual Float_t GetYXBinContent(Long64_t bin);
+  virtual Float_t GetYYBinContent(Long64_t bin);
+  virtual Float_t GetXXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXYBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYYBinContent(Int_t harmonic, Long64_t bin);
+
+  virtual Float_t GetBinError(Long64_t bin);
+  virtual Float_t GetXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXXBinError(Long64_t bin);
+  virtual Float_t GetXYBinError(Long64_t bin);
+  virtual Float_t GetYXBinError(Long64_t bin);
+  virtual Float_t GetYYBinError(Long64_t bin);
+  virtual Float_t GetXXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXYBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYYBinError(Int_t harmonic, Long64_t bin);
 
   virtual void Fill(const Float_t *variableContainer, Float_t weight);
   virtual void Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight);
@@ -181,11 +188,12 @@ public:
   Bool_t CreateChannelizedHistogram(TList *histogramList, const Bool_t *bUsedChannel);
 
   /// wrong call for this class invoke base class behaviour
-  virtual Int_t GetBin(const Float_t *variableContainer)
+  virtual Long64_t GetBin(const Float_t *variableContainer)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer); }
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel);
-  virtual Float_t GetBinContent(Int_t bin);
-  virtual Float_t GetBinError(Int_t bin);
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetBinContent(Long64_t bin);
+  virtual Float_t GetBinError(Long64_t bin);
 
   /// wrong call for this class invoke base class behavior
   virtual void Fill(const Float_t *variableContainer, Float_t weight)
@@ -247,12 +255,13 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
   { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
-  virtual Int_t GetBin(const Float_t *variableContainer);
+  virtual Long64_t GetBin(const Float_t *variableContainer);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel)
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
-  virtual Float_t GetBinContent(Int_t bin);
-  virtual Float_t GetBinError(Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetBinContent(Long64_t bin);
+  virtual Float_t GetBinError(Long64_t bin);
 
   virtual void Fill(const Float_t *variableContainer, Float_t weight);
   /// wrong call for this class invoke base class behavior
@@ -323,12 +332,13 @@ public:
 
   Bool_t CreateProfileHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup);
 
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel);
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer)
+  virtual Long64_t GetBin(const Float_t *variableContainer)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer); }
-  virtual Float_t GetBinContent(Int_t bin);
-  virtual Float_t GetBinError(Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetBinContent(Long64_t bin);
+  virtual Float_t GetBinError(Long64_t bin);
 
   virtual void Fill(const Float_t *variableContainer, Int_t nChannel, Float_t weight);
   /// wrong call for this class invoke base class behavior
@@ -396,15 +406,16 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList)
   { return QnCorrectionsHistogramBase::AttachHistograms(histogramList); }
 
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel);
-  virtual Int_t GetGrpBin(const Float_t *variableContainer, Int_t nChannel);
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel);
+  virtual Long64_t GetGrpBin(const Float_t *variableContainer, Int_t nChannel);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer)
+  virtual Long64_t GetBin(const Float_t *variableContainer)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer); }
-  virtual Float_t GetBinContent(Int_t bin);
-  virtual Float_t GetGrpBinContent(Int_t bin);
-  virtual Float_t GetBinError(Int_t bin);
-  virtual Float_t GetGrpBinError(Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetBinContent(Long64_t bin);
+  virtual Float_t GetGrpBinContent(Long64_t bin);
+  virtual Float_t GetBinError(Long64_t bin);
+  virtual Float_t GetGrpBinError(Long64_t bin);
 
 private:
   THnF *fValues;              //!<! the values and errors on each event class and channel
@@ -474,14 +485,15 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
   { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
-  virtual Int_t GetBin(const Float_t *variableContainer);
+  virtual Long64_t GetBin(const Float_t *variableContainer);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel)
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
-  virtual Float_t GetXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYBinError(Int_t harmonic, Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYBinError(Int_t harmonic, Long64_t bin);
 
   virtual void FillX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
   virtual void FillY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
@@ -530,18 +542,19 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
   { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
-  virtual Int_t GetBin(const Float_t *variableContainer);
+  virtual Long64_t GetBin(const Float_t *variableContainer);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel)
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
-  virtual Float_t GetXXBinContent(Int_t bin);
-  virtual Float_t GetXYBinContent(Int_t bin);
-  virtual Float_t GetYXBinContent(Int_t bin);
-  virtual Float_t GetYYBinContent(Int_t bin);
-  virtual Float_t GetXXBinError(Int_t bin);
-  virtual Float_t GetXYBinError(Int_t bin);
-  virtual Float_t GetYXBinError(Int_t bin);
-  virtual Float_t GetYYBinError(Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetXXBinContent(Long64_t bin);
+  virtual Float_t GetXYBinContent(Long64_t bin);
+  virtual Float_t GetYXBinContent(Long64_t bin);
+  virtual Float_t GetYYBinContent(Long64_t bin);
+  virtual Float_t GetXXBinError(Long64_t bin);
+  virtual Float_t GetXYBinError(Long64_t bin);
+  virtual Float_t GetYXBinError(Long64_t bin);
+  virtual Float_t GetYYBinError(Long64_t bin);
 
   virtual void FillXX(const Float_t *variableContainer, Float_t weight);
   virtual void FillXY(const Float_t *variableContainer, Float_t weight);
@@ -604,18 +617,19 @@ public:
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
   { return QnCorrectionsHistogramBase::AttachHistograms(histogramList, bUsedChannel, nChannelGroup); }
 
-  virtual Int_t GetBin(const Float_t *variableContainer);
+  virtual Long64_t GetBin(const Float_t *variableContainer);
   /// wrong call for this class invoke base class behavior
-  virtual Int_t GetBin(const Float_t *variableContainer, Int_t nChannel)
+  virtual Long64_t GetBin(const Float_t *variableContainer, Int_t nChannel)
   { return QnCorrectionsHistogramBase::GetBin(variableContainer, nChannel); }
-  virtual Float_t GetXXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinContent(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetXYBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYXBinError(Int_t harmonic, Int_t bin);
-  virtual Float_t GetYYBinError(Int_t harmonic, Int_t bin);
+  virtual Bool_t BinContentValidated(Long64_t bin);
+  virtual Float_t GetXXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXYBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYXBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYYBinContent(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetXYBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYXBinError(Int_t harmonic, Long64_t bin);
+  virtual Float_t GetYYBinError(Int_t harmonic, Long64_t bin);
 
   virtual void FillXX(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
   virtual void FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight);
