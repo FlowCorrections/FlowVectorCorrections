@@ -39,7 +39,7 @@
 
 #include "../QnCorrections/QnCorrectionsLog.h"
 #include "../QnCorrections/QnCorrectionsEventClasses.h"
-#include "../QnCorrections/QnCorrectionsCuts.h"
+#include "../QnCorrections/QnCorrectionsCutsBase.h"
 #include "../QnCorrections/QnCorrectionsHistograms.h"
 #include "../QnCorrections/QnCorrectionsDataVector.h"
 #include "../QnCorrections/QnCorrectionsQnVector.h"
@@ -1087,8 +1087,8 @@ void TestCuts() {
   /* let's create few cuts */
   /* first the cuts set storage */
   QnCorrectionsCutsSet mySetOfCuts;
-  mySetOfCuts.Add(new QnCorrectionsCutBitSet(kValueToFilterBit, kBit3, kTRUE));
-  mySetOfCuts.Add(new QnCorrectionsCutBitSet(kValueToFilterBit, kBit7, kFALSE));
+  mySetOfCuts.Add(new QnCorrectionsCutSetBit(kValueToFilterBit, kBit3, kTRUE));
+  mySetOfCuts.Add(new QnCorrectionsCutSetBit(kValueToFilterBit, kBit7, kFALSE));
   mySetOfCuts.Add(new QnCorrectionsCutAbove(kVariableAbove, 3.5));
   mySetOfCuts.Add(new QnCorrectionsCutBelow(kVariableBelow, 1.7));
   mySetOfCuts.Add(new QnCorrectionsCutWithin(kVariableWithin, -0.8, 0.8));

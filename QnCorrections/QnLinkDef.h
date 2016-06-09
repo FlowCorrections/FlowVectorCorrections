@@ -19,9 +19,9 @@
 #pragma link C++ class QnCorrectionsCorrectionsSetOnQvector+;
 #pragma link C++ class QnCorrectionsCorrectionStepBase+;
 #pragma link C++ class QnCorrectionsCutAbove+;
-#pragma link C++ class QnCorrectionsCutBase+;
+#pragma link C++ class QnCorrectionsCutsBase+;
 #pragma link C++ class QnCorrectionsCutBelow+;
-#pragma link C++ class QnCorrectionsCutBitSet+;
+#pragma link C++ class QnCorrectionsCutSetBit+;
 #pragma link C++ class QnCorrectionsCutOutside+;
 #pragma link C++ class QnCorrectionsCutsSet+;
 #pragma link C++ class QnCorrectionsCutValue+;

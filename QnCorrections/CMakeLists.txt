@@ -11,25 +11,16 @@ include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
 add_definitions(${ROOT_CXX_FLAGS})
 
 
-set (HEADERS
-  QnCorrectionsCorrectionSteps.h
-  QnCorrectionsCuts.h
-  QnCorrectionsDataVector.h
-  QnCorrectionsDetector.h
-  QnCorrectionsEventClasses.h
-  QnCorrectionsHistograms.h
-  QnCorrectionsInputGainEqualization.h
-  QnCorrectionsLog.h
-  QnCorrectionsManager.h
-  QnCorrectionsQnVector.h
-  QnCorrectionsQnVectorAlignment.h
-  QnCorrectionsQnVectorRecentering.h
-)
-
-
 set (SOURCES
   QnCorrectionsCorrectionSteps.cxx
-  QnCorrectionsCuts.cxx
+  QnCorrectionsCutAbove.cxx
+  QnCorrectionsCutBelow.cxx
+  QnCorrectionsCutOutside.cxx
+  QnCorrectionsCutsBase.cxx
+  QnCorrectionsCutSetBit.cxx
+  QnCorrectionsCutsSet.cxx
+  QnCorrectionsCutValue.cxx
+  QnCorrectionsCutWithin.cxx
   QnCorrectionsDataVector.cxx
   QnCorrectionsDetector.cxx
   QnCorrectionsEventClasses.cxx
@@ -41,6 +32,8 @@ set (SOURCES
   QnCorrectionsQnVectorAlignment.cxx
   QnCorrectionsQnVectorRecentering.cxx
 )
+
+string(REPLACE ".cxx" ".h" HEADERS "${SRCS}")
 
 ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)
 

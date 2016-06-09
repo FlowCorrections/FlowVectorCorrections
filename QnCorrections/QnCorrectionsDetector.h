@@ -20,7 +20,7 @@
 #include <TObjArray.h>
 #include <TClonesArray.h>
 #include <TH3.h>
-#include "QnCorrectionsCuts.h"
+#include "QnCorrectionsCutsSet.h"
 #include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsQnVector.h"
