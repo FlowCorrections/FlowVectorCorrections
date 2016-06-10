@@ -28,7 +28,8 @@ set (SOURCES
   QnCorrectionsDataVector.cxx
   QnCorrectionsDataVectorChannelized.cxx
   QnCorrectionsDetector.cxx
-  QnCorrectionsEventClasses.cxx
+  QnCorrectionsEventClassVariable.cxx
+  QnCorrectionsEventClassVariablesSet.cxx
   QnCorrectionsHistograms.cxx
   QnCorrectionsInputGainEqualization.cxx
   QnCorrectionsLog.cxx

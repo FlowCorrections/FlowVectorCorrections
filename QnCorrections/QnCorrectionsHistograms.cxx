@@ -3,7 +3,7 @@
 
 #include "TList.h"
 
-#include "QnCorrectionsEventClasses.h"
+#include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsLog.h"
 

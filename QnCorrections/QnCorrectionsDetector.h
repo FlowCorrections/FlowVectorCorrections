@@ -23,7 +23,7 @@
 #include "QnCorrectionsCutsSet.h"
 #include "QnCorrectionsCorrectionsSetOnInputData.h"
 #include "QnCorrectionsCorrectionsSetOnQnVector.h"
-#include "QnCorrectionsEventClasses.h"
+#include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsQnVectorBuild.h"
 #include "QnCorrectionsDataVector.h"

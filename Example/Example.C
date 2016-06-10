@@ -38,7 +38,7 @@
 /* end to exclude */
 
 #include "../QnCorrections/QnCorrectionsLog.h"
-#include "../QnCorrections/QnCorrectionsEventClasses.h"
+#include "../QnCorrections/QnCorrectionsEventClassVariablesSet.h"
 #include "../QnCorrections/QnCorrectionsCutsBase.h"
 #include "../QnCorrections/QnCorrectionsHistograms.h"
 #include "../QnCorrections/QnCorrectionsDataVector.h"

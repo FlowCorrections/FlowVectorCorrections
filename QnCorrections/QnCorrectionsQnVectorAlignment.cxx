@@ -31,7 +31,7 @@
 
 /// \file QnCorrectionsQnVectorAlignment.cxx
 /// \brief Implementation of procedures for Qn vector alignment correction.
-#include "QnCorrectionsEventClasses.h"
+#include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsHistograms.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
