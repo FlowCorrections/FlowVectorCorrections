@@ -28,6 +28,10 @@ set (SOURCES
   QnCorrectionsDataVector.cxx
   QnCorrectionsDataVectorChannelized.cxx
   QnCorrectionsDetector.cxx
+  QnCorrectionsDetectorConfigurationBase.cxx
+  QnCorrectionsDetectorConfigurationChannels.cxx
+  QnCorrectionsDetectorConfigurationsSet.cxx
+  QnCorrectionsDetectorConfigurationTracks.cxx
   QnCorrectionsEventClassVariable.cxx
   QnCorrectionsEventClassVariablesSet.cxx
   QnCorrectionsHistograms.cxx

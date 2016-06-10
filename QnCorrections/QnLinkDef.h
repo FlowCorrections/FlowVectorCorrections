@@ -31,7 +31,7 @@
 #pragma link C++ class QnCorrectionsDetector+;
 #pragma link C++ class QnCorrectionsDetectorConfigurationBase+;
 #pragma link C++ class QnCorrectionsDetectorConfigurationChannels+;
-#pragma link C++ class QnCorrectionsDetectorConfigurationSet+;
+#pragma link C++ class QnCorrectionsDetectorConfigurationsSet+;
 #pragma link C++ class QnCorrectionsDetectorConfigurationTracks+;
 #pragma link C++ class QnCorrectionsEventClassVariable+;
 #pragma link C++ class QnCorrectionsEventClassVariablesSet+;
