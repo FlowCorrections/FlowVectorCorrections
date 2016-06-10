@@ -33,7 +33,6 @@
 /// \brief Implementation of procedures for gain equalization on input data.
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsHistograms.h"
-#include "QnCorrectionsCorrectionSteps.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsInputGainEqualization.h"

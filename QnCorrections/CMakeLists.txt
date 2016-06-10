@@ -12,7 +12,11 @@ add_definitions(${ROOT_CXX_FLAGS})
 
 
 set (SOURCES
-  QnCorrectionsCorrectionSteps.cxx
+  QnCorrectionsCorrectionOnInputData.cxx
+  QnCorrectionsCorrectionOnQnVector.cxx
+  QnCorrectionsCorrectionsSetOnInputData.cxx
+  QnCorrectionsCorrectionsSetOnQnVector.cxx
+  QnCorrectionsCorrectionStepBase.cxx
   QnCorrectionsCutAbove.cxx
   QnCorrectionsCutBelow.cxx
   QnCorrectionsCutOutside.cxx

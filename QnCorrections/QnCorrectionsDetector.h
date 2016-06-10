@@ -21,7 +21,8 @@
 #include <TClonesArray.h>
 #include <TH3.h>
 #include "QnCorrectionsCutsSet.h"
-#include "QnCorrectionsCorrectionSteps.h"
+#include "QnCorrectionsCorrectionsSetOnInputData.h"
+#include "QnCorrectionsCorrectionsSetOnQnVector.h"
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsDataVector.h"

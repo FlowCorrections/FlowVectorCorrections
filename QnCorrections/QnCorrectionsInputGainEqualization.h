@@ -50,6 +50,7 @@
 /// in the calibration one, collecting data for producing, once merged in a
 /// further phase, the calibration histograms.
 
+#include "QnCorrectionsCorrectionOnInputData.h"
 
 /// \class QnCorrectionsInputGainEqualization
 /// \brief Encapsulates the gain equalization on input data correction step
