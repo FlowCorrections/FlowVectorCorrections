@@ -25,6 +25,7 @@
 #include "QnCorrectionsCorrectionsSetOnQnVector.h"
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsQnVector.h"
+#include "QnCorrectionsQnVectorBuild.h"
 #include "QnCorrectionsDataVector.h"
 #include "QnCorrectionsDataVectorChannelized.h"
 

@@ -34,6 +34,7 @@ set (SOURCES
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx
   QnCorrectionsQnVector.cxx
+  QnCorrectionsQnVectorBuild.cxx
   QnCorrectionsQnVectorAlignment.cxx
   QnCorrectionsQnVectorRecentering.cxx
 )
