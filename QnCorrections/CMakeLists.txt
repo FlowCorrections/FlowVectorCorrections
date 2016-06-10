@@ -26,6 +26,7 @@ set (SOURCES
   QnCorrectionsCutValue.cxx
   QnCorrectionsCutWithin.cxx
   QnCorrectionsDataVector.cxx
+  QnCorrectionsDataVectorChannelized.cxx
   QnCorrectionsDetector.cxx
   QnCorrectionsEventClasses.cxx
   QnCorrectionsHistograms.cxx

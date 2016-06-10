@@ -12,7 +12,7 @@
  ***************************************************************************/
 
 /// \file QnCorrectionsDataVector.h
-/// \brief Classes that model data vectors from detectors within the Q vector correction framework
+/// \brief Class that model data vectors from detectors within the Q vector correction framework
 ///
 /// As it is today, a data vector is just an azimuthal angle. As
 /// it is intended to be incorporated into an array of clones the
@@ -66,42 +66,6 @@ protected:
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDataVector, 1);
-/// \endcond
-};
-
-/// \class QnCorrectionsDataVectorChannelized
-/// \brief Data vector class from a channelized detector
-///
-/// The class expands the data vector one to incorporate channel id and
-/// two set of weights to support channel equalization procedures.
-///
-/// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
-/// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
-/// \author Víctor González <victor.gonzalez@cern.ch>, UCM
-/// \date Jan 27, 2016
-class QnCorrectionsDataVectorChannelized : public QnCorrectionsDataVector{
-public:
-
-  QnCorrectionsDataVectorChannelized();
-  QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight);
-  virtual ~QnCorrectionsDataVectorChannelized();
-
-  /// Sets the equalized weight
-  /// \param weight equalized weight after channel equalization
-  void SetEqualizedWeight( Float_t weight) { fEqualizedWeight = weight; }
-
-  /// Gets the weight for the data vector
-  /// \return the raw weight
-  virtual Float_t Weight() { return fWeight; }
-  /// Gets the equalized weight for the data vector
-  /// \return the equalized weight
-  virtual Float_t EqualizedWeight() { return fEqualizedWeight; }
-
-private:
-  Float_t fEqualizedWeight;       //!<! equalized weight after channel equalization
-
-/// \cond CLASSIMP
-  ClassDef(QnCorrectionsDataVectorChannelized, 1);
 /// \endcond
 };
 

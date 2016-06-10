@@ -29,36 +29,32 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsDataVector.cxx
-/// \brief Implementation of data vector class
+/// \file QnCorrectionsDataVectorChannelized.cxx
+/// \brief Implementation of data vectors from channelized detectors class
 
-#include "QnCorrectionsDataVector.h"
+#include "QnCorrectionsDataVectorChannelized.h"
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsDataVector);
+ClassImp(QnCorrectionsDataVectorChannelized);
 /// \endcond
 
-const Float_t QnCorrectionsDataVector::fMinimumSignificantValue = 1.e-6;
-
 /// Default constructor
-QnCorrectionsDataVector::QnCorrectionsDataVector() : TObject() {
-  fPhi = 0.0;
-  fId = -1;
-  fWeight = 1.0;
+QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized() :
+    QnCorrectionsDataVector() {
+  fEqualizedWeight = 1.0;
 }
 
 /// Normal constructor
-/// \param id the id associated with the data vector
+/// \param channelId channel number
 /// \param phi the azimuthal angle
 /// \param weight the data vector weight
-QnCorrectionsDataVector::QnCorrectionsDataVector(Int_t id, Float_t phi, Float_t weight) : TObject() {
-  fPhi = phi;
-  fId = id;
-  fWeight = weight;
+QnCorrectionsDataVectorChannelized::QnCorrectionsDataVectorChannelized(Int_t channelId, Float_t phi, Float_t weight) :
+    QnCorrectionsDataVector(channelId, phi, weight) {
+  fEqualizedWeight = weight;
 }
 
 /// Default destructor
-QnCorrectionsDataVector::~QnCorrectionsDataVector() {
+QnCorrectionsDataVectorChannelized::~QnCorrectionsDataVectorChannelized() {
 
 }
 

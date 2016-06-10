@@ -26,6 +26,7 @@
 #include "QnCorrectionsEventClasses.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsDataVector.h"
+#include "QnCorrectionsDataVectorChannelized.h"
 
 class QnCorrectionsDetectorConfigurationSet;
 class QnCorrectionsDetectorConfigurationBase;
