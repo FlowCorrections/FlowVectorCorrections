@@ -508,9 +508,9 @@ void QnCorrectionsManager::PrintFrameworkConfiguration() const {
   }
 
   /* let's take some parameters */
-  Int_t correctionFieldSize = 0;
-  Int_t detectorFieldSize = 0;
-  Int_t margin = 3;
+  size_t correctionFieldSize = 0;
+  size_t detectorFieldSize = 0;
+  size_t margin = 3;
 
   /* the input data correction steps */
   for (Int_t i = 0; i < inputStepList->GetEntries(); i++) {
@@ -548,7 +548,7 @@ void QnCorrectionsManager::PrintFrameworkConfiguration() const {
   line = Form("FLOW VECTOR FRAMEWORK (v2.0) - PASS %d/%d", nCurrentStep, nNoOfSteps);
   textAnchor = detectorsFieldLine.Length() / 2 + line.Length() / 2;
   cout << setw(correctionFieldSize+margin) << "|" << setw(textAnchor) << line << setw(detectorsFieldLine.Length() - textAnchor) << "|" << endl;
-  cout << correctionFieldSpace << detectorsFieldLine << endl;
+  cout << setw(correctionFieldSize+margin) << "-" << detectorsFieldLine << endl;
   /* detectors header */
   line = "--FLOW VECTORS--";
   textAnchor = detectorsFieldLine.Length() / 2 + line.Length() / 2;
