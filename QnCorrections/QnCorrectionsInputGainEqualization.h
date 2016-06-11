@@ -52,6 +52,9 @@
 
 #include "QnCorrectionsCorrectionOnInputData.h"
 
+class QnCorrectionsProfileChannelizedIngress;
+class QnCorrectionsProfileChannelized;
+
 /// \class QnCorrectionsInputGainEqualization
 /// \brief Encapsulates the gain equalization on input data correction step
 ///

@@ -32,7 +32,7 @@
 /// \file QnCorrectionsQnVectorRecentering.cxx
 /// \brief Implementation of procedures for Qn vector recentering.
 #include "QnCorrectionsEventClassVariablesSet.h"
-#include "QnCorrectionsHistograms.h"
+#include "QnCorrectionsProfileComponents.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsQnVectorRecentering.h"

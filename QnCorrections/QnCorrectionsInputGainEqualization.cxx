@@ -32,7 +32,8 @@
 /// \file QnCorrectionsInputGainEqualization.cxx
 /// \brief Implementation of procedures for gain equalization on input data.
 #include "QnCorrectionsEventClassVariablesSet.h"
-#include "QnCorrectionsHistograms.h"
+#include "QnCorrectionsProfileChannelizedIngress.h"
+#include "QnCorrectionsProfileChannelized.h"
 #include "QnCorrectionsDetectorConfigurationChannels.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsInputGainEqualization.h"

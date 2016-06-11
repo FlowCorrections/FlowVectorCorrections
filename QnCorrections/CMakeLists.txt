@@ -34,10 +34,17 @@ set (SOURCES
   QnCorrectionsDetectorConfigurationTracks.cxx
   QnCorrectionsEventClassVariable.cxx
   QnCorrectionsEventClassVariablesSet.cxx
-  QnCorrectionsHistograms.cxx
+  QnCorrectionsHistogramsBase.cxx
+  QnCorrectionsHistogramsChannelized.cxx
   QnCorrectionsInputGainEqualization.cxx
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx
+  QnCorrectionsProfile.cxx
+  QnCorrectionsProfileChannelized.cxx
+  QnCorrectionsProfileChannelizedIngress.cxx
+  QnCorrectionsProfileComponents.cxx
+  QnCorrectionsProfileCorrelationComponents.cxx
+  QnCorrectionsProfileCorrelationComponentsHarmonics.cxx
   QnCorrectionsQnVector.cxx
   QnCorrectionsQnVectorBuild.cxx
   QnCorrectionsQnVectorAlignment.cxx
