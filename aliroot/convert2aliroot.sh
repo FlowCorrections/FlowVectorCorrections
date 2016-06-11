@@ -27,7 +27,42 @@ fi
 
 rsync -av $inputfolder/ $outputfolder
 
-listclasses="Manager Axes DataVector QnVector Cuts Steps Histograms Configuration Constants"
+listclasses="CorrectionOnInputData
+CorrectionOnQvector
+CorrectionsSetOnInputData
+CorrectionsSetOnQvector
+CorrectionStepBase
+CutAbove
+CutsBase
+CutBelow
+CutSetBit
+CutOutside
+CutsSet
+CutValue
+CutWithin
+DataVector
+DataVectorChannelized
+Detector
+DetectorConfigurationBase
+DetectorConfigurationChannels
+DetectorConfigurationsSet
+DetectorConfigurationTracks
+EventClassVariable
+EventClassVariablesSet
+HistogramBase
+HistogramChannelized
+InputGainEqualization
+Manager
+Profile
+ProfileChannelized
+ProfileChannelizedIngress
+ProfileComponents
+ProfileCorrelationComponents
+ProfileCorrelationComponentsHarmonics
+QnVector
+QnVectorBuild
+QnVectorRecentering
+QnVectorAlignment"
 
 for j in $listclasses; do
   mv $outputfolder/QnCorrections${j}.cxx $outputfolder/AliQnCorrections${j}.cxx

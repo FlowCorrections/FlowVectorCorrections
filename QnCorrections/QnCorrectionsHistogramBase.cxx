@@ -1,10 +1,10 @@
-/// \file QnCorrectionsHistogramsBase.cxx
+/// \file QnCorrectionsHistogramBase.cxx
 /// \brief Implementation of the multidimensional profile base class
 
 #include "TList.h"
 
 #include "QnCorrectionsEventClassVariablesSet.h"
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 #include "QnCorrectionsLog.h"
 
 const char *QnCorrectionsHistogramBase::szChannelAxisTitle = "Channel number";

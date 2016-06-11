@@ -29,81 +29,58 @@
  *                                                                                                *
  **************************************************************************************************/
 
-/// \file QnCorrectionsCorrectionsSetOnQnVector.cxx
-/// \brief Set of corrections on Qn vector class implementation
+/// \file QnCorrectionsCorrectionOnQvector.cxx
+/// \brief Correction steps on Qn vectors base class implementation
 
-#include "QnCorrectionsCorrectionsSetOnQnVector.h"
+#include "QnCorrectionsCorrectionOnQvector.h"
+#include "QnCorrectionsQnVector.h"
 
 /// \cond CLASSIMP
-ClassImp(QnCorrectionsCorrectionsSetOnQvector);
+ClassImp(QnCorrectionsCorrectionOnQvector);
 /// \endcond
 
-/// Default constructor
-QnCorrectionsCorrectionsSetOnQvector::QnCorrectionsCorrectionsSetOnQvector() : TList() {
 
+/// Default constructor
+QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
+    QnCorrectionsCorrectionStepBase() {
+
+  fCorrectedQnVector = NULL;
+}
+
+/// Normal constructor
+/// \param name of the correction step
+/// \param key the associated ordering key
+QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector(const char *name, const char *key) :
+    QnCorrectionsCorrectionStepBase(name, key) {
+
+  fCorrectedQnVector = NULL;
 }
 
 /// Default destructor
-QnCorrectionsCorrectionsSetOnQvector::~QnCorrectionsCorrectionsSetOnQvector() {
+QnCorrectionsCorrectionOnQvector::~QnCorrectionsCorrectionOnQvector() {
 
+  if (fCorrectedQnVector != NULL)
+    delete fCorrectedQnVector;
 }
 
-/// Adds a new correction to the set.
+/// Include the new corrected Qn vector into the passed list
 ///
-/// The correction is incorporated in its proper place according to
-/// its key
-void QnCorrectionsCorrectionsSetOnQvector::AddCorrection(QnCorrectionsCorrectionOnQvector *correction) {
-  if (IsEmpty()) {
-    AddFirst(correction);
-  }
-  else if (correction->Before((QnCorrectionsCorrectionOnQvector *) First())) {
-    AddFirst(correction);
-  }
-  else if (((QnCorrectionsCorrectionOnQvector *) Last())->Before(correction)) {
-    AddLast(correction);
-  }
-  else {
-    for (Int_t ix = 0; ix < GetEntries(); ix++) {
-      if (!correction->Before(At(ix))) {
-        AddAt(correction, ix-1);
-      }
-    }
+/// Adds the Qn vector to the passed list
+/// if the correction step is in correction states.
+/// \param list list where the corrected Qn vector should be added
+void QnCorrectionsCorrectionOnQvector::IncludeCorrectedQnVector(TList *list) {
+
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    /* collect the data needed to further produce correction parameters */
+    break;
+  case QCORRSTEP_applyCollect:
+    /* collect the data needed to further produce correction parameters */
+    /* and proceed to ... */
+  case QCORRSTEP_apply: /* apply the correction */
+    list->Add(fCorrectedQnVector);
+    break;
   }
 }
 
-/// Fill the global list of correction steps
-/// \param correctionlist (partial) global list of corrections ordered by correction key
-void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *correctionlist) const {
-  if (!IsEmpty()) {
-    if (!correctionlist->IsEmpty()) {
-      for (Int_t ix = 0; ix < GetEntries(); ix++) {
-        if (correctionlist->FindObject(At(ix)->GetName()) != NULL) {
-          /* already in the list, skip it */
-          continue;
-        }
-        else {
-          /* not in the list, include it in its proper place */
-          if (At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->First())) {
-              correctionlist->AddFirst(At(ix));
-          }
-          else if (((QnCorrectionsCorrectionStepBase *) correctionlist->Last())->Before(At(ix))) {
-            correctionlist->AddLast(At(ix));
-          }
-          else {
-            for (Int_t jx = 0; jx < correctionlist->GetEntries(); jx++) {
-              if (!At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->At(jx))) {
-                correctionlist->AddAt(At(ix), jx-1);
-              }
-            }
-          }
-        }
-      }
-    }
-    else {
-      /* the passed list is empty so we include all present corrections keeping the order */
-      for (Int_t ix = 0; ix < GetEntries(); ix++)
-        correctionlist->Add(At(ix));
-    }
-  }
-}
 

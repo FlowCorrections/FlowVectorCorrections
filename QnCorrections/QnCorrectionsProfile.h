@@ -4,7 +4,7 @@
 /// \file QnCorrectionsProfile.h
 /// \brief Single multidimensional profile class for the Q vector correction framework
 
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 
 /// \class QnCorrectionsProfile
 /// \brief Single profile class for the Q vector correction histograms

@@ -51,7 +51,7 @@
 /// Correction and data collecting during calibration is performed for all harmonics
 /// defined within the involved detector configuration
 
-#include "QnCorrectionsCorrectionOnQnVector.h"
+#include "QnCorrectionsCorrectionOnQvector.h"
 
 /// \class QnCorrectionsQnVectorRecentering
 /// \brief Encapsulates recentering and width equalization on Q vector

@@ -11,7 +11,7 @@
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
 
-/// \file QnCorrectionsCorrectionOnQnVector.h
+/// \file QnCorrectionsCorrectionOnQvector.h
 /// \brief Correction steps on Qn vectors support within Q vector correction framework
 ///
 

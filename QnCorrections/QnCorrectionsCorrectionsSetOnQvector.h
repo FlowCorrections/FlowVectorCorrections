@@ -11,7 +11,7 @@
  * See cxx source for GPL licence et. al.                                  *
  ***************************************************************************/
 
-/// \file QnCorrectionsCorrectionsSetOnQnVector.h
+/// \file QnCorrectionsCorrectionsSetOnQvector.h
 /// \brief Set of corrections on Qn vector support within Q vector correction framework
 ///
 
@@ -19,7 +19,7 @@
 #include <TList.h>
 
 #include "QnCorrectionsCorrectionStepBase.h"
-#include "QnCorrectionsCorrectionOnQnVector.h"
+#include "QnCorrectionsCorrectionOnQvector.h"
 
 /// \class QnCorrectionsCorrectionsSetOnQvector
 /// \brief Encapsulate the set of corrections to apply on Q vectors

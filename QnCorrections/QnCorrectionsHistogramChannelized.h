@@ -1,10 +1,10 @@
 #ifndef QNCORRECTIONS_HISTOGRAMSCHANNEL_H
 #define QNCORRECTIONS_HISTOGRAMSCHANNEL_H
 
-/// \file QnCorrectionsHistogramsChannelized.h
+/// \file QnCorrectionsHistogramChannelized.h
 /// \brief Single multidimensional histograms with channel support
 
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 
 /// \class QnCorrectionsHistogramChannelized
 /// \brief Single histogram class for the Q vector correction histograms

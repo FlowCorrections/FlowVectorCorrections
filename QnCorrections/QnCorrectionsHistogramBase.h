@@ -1,7 +1,7 @@
 #ifndef QNCORRECTIONS_HISTOGRAMSBASE_H
 #define QNCORRECTIONS_HISTOGRAMSBASE_H
 
-/// \file QnCorrectionsHistogramsBase.h
+/// \file QnCorrectionsHistogramBase.h
 /// \brief Multidimensional profile histograms base class for the Q vector correction framework
 
 #include "THn.h"

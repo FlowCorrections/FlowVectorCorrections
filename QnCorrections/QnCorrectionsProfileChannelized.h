@@ -4,7 +4,7 @@
 /// \file QnCorrectionsProfileChannelized.h
 /// \brief Channelized profile class for the Q vector correction framework
 
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 
 /// \class QnCorrectionsProfileChannelized
 /// \brief Channelized profile class for the Q vector correction histograms

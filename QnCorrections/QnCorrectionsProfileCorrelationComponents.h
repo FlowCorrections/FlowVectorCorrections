@@ -4,7 +4,7 @@
 /// \file QnCorrectionsProfileCorrelationComponents.h
 /// \brief Correlation components based set of profiles for the Q vector correction framework
 
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 
 /// \class QnCorrectionsProfileCorrelationComponents
 /// \brief Base class for the correlation components based set of profiles

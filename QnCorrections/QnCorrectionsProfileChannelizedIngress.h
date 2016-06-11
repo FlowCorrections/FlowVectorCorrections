@@ -4,7 +4,7 @@
 /// \file QnCorrectionsProfileChannelizedIngress.h
 /// \brief Ingress channelized profile for the Q vector correction framework
 
-#include "QnCorrectionsHistogramsBase.h"
+#include "QnCorrectionsHistogramBase.h"
 
 /// \class QnCorrectionsProfileChannelizedIngress
 /// \brief Ingress channelized profile class for the Q vector correction histograms

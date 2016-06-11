@@ -13,9 +13,9 @@ add_definitions(${ROOT_CXX_FLAGS})
 
 set (SOURCES
   QnCorrectionsCorrectionOnInputData.cxx
-  QnCorrectionsCorrectionOnQnVector.cxx
+  QnCorrectionsCorrectionOnQvector.cxx
   QnCorrectionsCorrectionsSetOnInputData.cxx
-  QnCorrectionsCorrectionsSetOnQnVector.cxx
+  QnCorrectionsCorrectionsSetOnQvector.cxx
   QnCorrectionsCorrectionStepBase.cxx
   QnCorrectionsCutAbove.cxx
   QnCorrectionsCutBelow.cxx
@@ -34,8 +34,8 @@ set (SOURCES
   QnCorrectionsDetectorConfigurationTracks.cxx
   QnCorrectionsEventClassVariable.cxx
   QnCorrectionsEventClassVariablesSet.cxx
-  QnCorrectionsHistogramsBase.cxx
-  QnCorrectionsHistogramsChannelized.cxx
+  QnCorrectionsHistogramBase.cxx
+  QnCorrectionsHistogramChannelized.cxx
   QnCorrectionsInputGainEqualization.cxx
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx

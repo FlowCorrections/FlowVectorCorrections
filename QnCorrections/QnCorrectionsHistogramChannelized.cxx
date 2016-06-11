@@ -1,10 +1,10 @@
-/// \file QnCorrectionsHistogramsChannelized.cxx
+/// \file QnCorrectionsHistogramChannelized.cxx
 /// \brief Implementation of the single multidimensional histograms with channel support
 
 #include "TList.h"
 
 #include "QnCorrectionsEventClassVariablesSet.h"
-#include "QnCorrectionsHistogramsChannelized.h"
+#include "QnCorrectionsHistogramChannelized.h"
 #include "QnCorrectionsLog.h"
 
 /// \cond CLASSIMP
