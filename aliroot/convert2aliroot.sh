@@ -14,6 +14,14 @@ replacenames ()
   sed -i "s/QNCORRECTIONS/ALIQNCORRECTIONS/g" $file
 }
 
+replacetracingnames ()
+{
+  file=$1
+  for j in $tracingnames; do
+    sed -i "s/QnCorrections${j}/Ali${j}/g" $file
+  done
+}
+
 
 inputfolder=$1
 outputfolder=$2
@@ -28,6 +36,29 @@ fi
 rsync -av $inputfolder/ $outputfolder
 
 listclasses="CorrectionOnInputData
+CorrectionOnQvector
+CorrectionsSetOnInputData
+CorrectionsSetOnQvector
+CorrectionStepBase
+CutAbove
+CutsBase
+CutBelow
+CutSetBit
+CutOutside
+CutsSet
+CutValue
+CutWithin
+DataVector
+Detector
+EventClassVariable
+HistogramBase
+HistogramChannelized
+InputGainEqualization
+Manager
+Profile
+QnVector"
+
+listclassesfiles="CorrectionOnInputData
 CorrectionOnQvector
 CorrectionsSetOnInputData
 CorrectionsSetOnQvector
@@ -64,13 +95,18 @@ QnVectorBuild
 QnVectorRecentering
 QnVectorAlignment"
 
-for j in $listclasses; do
+for j in $listclassesfiles; do
   mv $outputfolder/QnCorrections${j}.cxx $outputfolder/AliQnCorrections${j}.cxx
   mv $outputfolder/QnCorrections${j}.h $outputfolder/AliQnCorrections${j}.h
 done
 
+# remove the framework tracing support
+rm $outputfolder/QnCorrectionsLog.*
+
 listC=`find $outputfolder/ -name '*.cxx'`
 listH=`find $outputfolder/ -name '*.h'`
+listTXT=`find $outputfolder/ -name '*.txt'`
+listMD=`find $outputfolder/ -name '*.md'`
 
 for k in $listC; do
   replacenames "$k"
@@ -78,6 +114,21 @@ done
 for k in $listH; do
   replacenames "$k"
 done
+for k in $listTXT; do
+  replacenames "$k"
+done
+for k in $listMD; do
+  replacenames "$k"
+done
 
+# handle now the tracing fucntions
+tracingnames="Log Info Warning Error Fatal"
 
+# switch to ALICE logging
+for k in $listC; do
+  replacetracingnames "$k"
+done
+for k in $listH; do
+  replacetracingnames "$k"
+done
 
