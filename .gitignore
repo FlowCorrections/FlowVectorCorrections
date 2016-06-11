@@ -1,6 +1,6 @@
 # interface to Aliroot framework
-aliroot/AliQnCorrections
 QnCorrectionsInterface
+AliQnCorrections
 
 # ECLIPSE project files
 .cproject
@@ -16,3 +16,12 @@ QnCorrectionsInterface
 
 # the HTML output of doxygen
 HTML/
+
+# text files backup
+*.txt~
+*.sh~
+*.cxx~
+*.h~
+*.C~
+*.H~
+
