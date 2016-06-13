@@ -165,7 +165,7 @@ private:
   QnCorrectionsManager& operator= (const QnCorrectionsManager &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsManager, 1);
+  ClassDef(QnCorrectionsManager, 3);
 /// \endcond
 };
 

@@ -122,7 +122,7 @@ protected:
   Int_t fN;                                    ///< number of elements used for Qn vector building
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVector, 1);
+  ClassDef(QnCorrectionsQnVector, 2);
 /// \endcond
 };
 

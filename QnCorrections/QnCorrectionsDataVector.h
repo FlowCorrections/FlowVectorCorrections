@@ -65,7 +65,7 @@ protected:
   static const Float_t fMinimumSignificantValue;  ///< the minimum value that will be considered as meaningful for processing
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDataVector, 1);
+  ClassDef(QnCorrectionsDataVector, 3);
 /// \endcond
 };
 
