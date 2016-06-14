@@ -47,8 +47,8 @@ QnCorrectionsHistogramChannelized::QnCorrectionsHistogramChannelized(const char 
 /// Releases the memory taken
 QnCorrectionsHistogramChannelized::~QnCorrectionsHistogramChannelized() {
 
-  if (fUsedChannel != NULL) delete fUsedChannel;
-  if (fChannelMap != NULL) delete fChannelMap;
+  if (fUsedChannel != NULL) delete [] fUsedChannel;
+  if (fChannelMap != NULL) delete [] fChannelMap;
 }
 
 

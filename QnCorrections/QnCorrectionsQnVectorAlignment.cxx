@@ -94,7 +94,7 @@ void QnCorrectionsQnVectorAlignment::CreateSupportDataStructures() {
   /* and now create the corrected Qn vector */
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
   fCorrectedQnVector = new QnCorrectionsQnVector(szCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
-  delete harmonicsMap;
+  delete [] harmonicsMap;
 }
 
 /// Asks for support histograms creation

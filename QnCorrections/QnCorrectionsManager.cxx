@@ -80,8 +80,8 @@ QnCorrectionsManager::QnCorrectionsManager() :
 /// Deletes the memory taken
 QnCorrectionsManager::~QnCorrectionsManager() {
 
-  if (fDetectorsIdMap != NULL) delete fDetectorsIdMap;
-  if (fDataContainer != NULL) delete fDataContainer;
+  if (fDetectorsIdMap != NULL) delete [] fDetectorsIdMap;
+  if (fDataContainer != NULL) delete [] fDataContainer;
   if (fCalibrationHistogramsList != NULL) delete fCalibrationHistogramsList;
   if (fProcessesNames != NULL) delete fProcessesNames;
 }

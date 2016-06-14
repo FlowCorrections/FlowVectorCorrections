@@ -59,9 +59,9 @@ QnCorrectionsProfileChannelized::QnCorrectionsProfileChannelized(const char *nam
 /// Releases the memory taken
 QnCorrectionsProfileChannelized::~QnCorrectionsProfileChannelized() {
 
-  if (fUsedChannel != NULL) delete fUsedChannel;
-  if (fChannelGroup != NULL) delete fChannelGroup;
-  if (fChannelMap != NULL) delete fChannelMap;
+  if (fUsedChannel != NULL) delete [] fUsedChannel;
+  if (fChannelGroup != NULL) delete [] fChannelGroup;
+  if (fChannelMap != NULL) delete [] fChannelMap;
 }
 
 
