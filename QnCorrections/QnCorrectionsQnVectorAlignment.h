@@ -98,6 +98,7 @@ public:
   { fHarmonicForAlignment = harmonic; }
   void SetReferenceConfigurationForAlignment(const char *name);
 
+  virtual void AttachedToFrameworkManager();
   virtual Bool_t AttachInput(TList *list);
   virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
@@ -116,6 +117,7 @@ private:
   QnCorrectionsProfileCorrelationComponents *fCalibrationHistograms; //!<! the histogram for building calibration information
 
   Int_t  fHarmonicForAlignment;              ///< the harmonic number to be used for Qn vector alignment correction
+  TString fDetectorConfigurationForAlignmentName; ///< storage for the name of the reference detector configuration for alignment correction
   QnCorrectionsDetectorConfigurationBase *fDetectorConfigurationForAlignment; ///< pointer to the detector configuration used as reference for alingment
 
 /// \cond CLASSIMP

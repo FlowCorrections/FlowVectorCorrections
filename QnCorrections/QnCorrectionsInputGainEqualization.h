@@ -134,6 +134,10 @@ public:
   void SetUseChannelGroupsWeights(Bool_t enable)
   { fUseChannelGroupsWeights = enable; }
 
+  /// Informs when the detector configuration has been attached to the framework manager
+  /// Basically this allows interaction between the different framework sections at configuration time
+  /// No action for input gain equalization
+  virtual void AttachedToFrameworkManager() {}
   virtual Bool_t AttachInput(TList *list);
   virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);

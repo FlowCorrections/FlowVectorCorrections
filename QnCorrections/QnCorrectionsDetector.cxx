@@ -47,6 +47,7 @@ QnCorrectionsDetector::QnCorrectionsDetector() : TNamed(),
 
   fDetectorId = -1;
   fDataVectorAcceptedConfigurations.SetOwner(kFALSE);
+  fCorrectionsManager = NULL;
 }
 
 /// Normal constructor
@@ -59,6 +60,7 @@ QnCorrectionsDetector::QnCorrectionsDetector(const char *name, Int_t id) :
 
   fDetectorId = id;
   fDataVectorAcceptedConfigurations.SetOwner(kFALSE);
+  fCorrectionsManager = NULL;
 }
 
 /// Default destructor
@@ -118,6 +120,17 @@ Bool_t QnCorrectionsDetector::AttachCorrectionInputs(TList *list) {
   return retValue;
 }
 
+/// Stores the framework manager pointer and transmits it to the incorporated detector configurations if any
+///
+/// \param manager the framework manager
+void QnCorrectionsDetector::AttachCorrectionsManager(QnCorrectionsManager *manager) {
+  fCorrectionsManager = manager;
+
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntries(); ixConfiguration++) {
+    fConfigurations.At(ixConfiguration)->AttachCorrectionsManager(manager);
+  }
+}
+
 /// Adds a new detector configuration to the current detector
 ///
 /// Raise an execution error if the configuration detector reference
@@ -140,6 +153,7 @@ void QnCorrectionsDetector::AddDetectorConfiguration(QnCorrectionsDetectorConfig
     return;
   }
   detectorConfiguration->SetDetectorOwner(this);
+  detectorConfiguration->AttachCorrectionsManager(fCorrectionsManager);
   fConfigurations.Add(detectorConfiguration);
 }
 
