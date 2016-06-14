@@ -21,6 +21,7 @@
 class QnCorrectionsDetectorConfigurationsSet;
 class QnCorrectionsDetectorConfigurationBase;
 class QnCorrectionsDetector;
+class QnCorrectionsManager;
 
 /// \class QnCorrectionsDetector
 /// \brief Detector class within Q vector correction framework
@@ -65,6 +66,7 @@ public:
   const char *GetAcceptedDataDetectorConfigurationName(Int_t index) const
   { return fDataVectorAcceptedConfigurations.At(index)->GetName(); }
 
+  void AttachCorrectionsManager(QnCorrectionsManager *manager);
   void AddDetectorConfiguration(QnCorrectionsDetectorConfigurationBase *detectorConfiguration);
   QnCorrectionsDetectorConfigurationBase *FindDetectorConfiguration(const char *name);
   void FillDetectorConfigurationNameList(TList *list) const;
@@ -80,6 +82,7 @@ private:
   Int_t fDetectorId;            ///< detector Id
   QnCorrectionsDetectorConfigurationsSet fConfigurations;  ///< the set of configurations defined for this detector
   QnCorrectionsDetectorConfigurationsSet fDataVectorAcceptedConfigurations; ///< the set of configurations that accepted a data vector
+  QnCorrectionsManager *fCorrectionsManager; ///< the framework correction manager
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetector, 1);

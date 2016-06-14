@@ -109,6 +109,10 @@ public:
   void SetApplyWidthEqualization(Bool_t apply)
   { fApplyWidthEqualization = apply; }
 
+  /// Informs when the detector configuration has been attached to the framework manager
+  /// Basically this allows interaction between the different framework sections at configuration time
+  /// No action for Qn vector recentering
+  virtual void AttachedToFrameworkManager() {}
   virtual Bool_t AttachInput(TList *list);
   virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
