@@ -40,7 +40,7 @@
 #include "../QnCorrections/QnCorrectionsLog.h"
 #include "../QnCorrections/QnCorrectionsEventClassVariablesSet.h"
 #include "../QnCorrections/QnCorrectionsCutsBase.h"
-#include "../QnCorrections/QnCorrectionsHistograms.h"
+#include "../QnCorrections/QnCorrectionsHistogramBase.h"
 #include "../QnCorrections/QnCorrectionsDataVector.h"
 #include "../QnCorrections/QnCorrectionsQnVector.h"
 #include "../QnCorrections/QnCorrectionsDetector.h"
