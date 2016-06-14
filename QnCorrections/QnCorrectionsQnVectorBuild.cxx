@@ -37,6 +37,9 @@
 #include "QnCorrectionsQnVectorBuild.h"
 #include "QnCorrectionsLog.h"
 
+using std::cout;
+using std::endl;
+
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsQnVectorBuild);
 /// \endcond
