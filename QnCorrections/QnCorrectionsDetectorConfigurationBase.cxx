@@ -46,6 +46,7 @@ const char *QnCorrectionsDetectorConfigurationBase::szPlainQnVectorName = "plain
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
     fPlainQnVector(), fCorrectedQnVector(), fTempQnVector(), fQnVectorCorrections() {
   fDetector = NULL;
+  fCorrectionsManager = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
   fQnNormalizationMethod = QnCorrectionsQnVector::QVNORM_noCalibration;
@@ -68,6 +69,7 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
           fQnVectorCorrections() {
 
   fDetector = NULL;
+  fCorrectionsManager = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
   fQnNormalizationMethod = QnCorrectionsQnVector::QVNORM_noCalibration;
