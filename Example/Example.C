@@ -39,15 +39,39 @@
 
 #include "../QnCorrections/QnCorrectionsLog.h"
 #include "../QnCorrections/QnCorrectionsEventClassVariablesSet.h"
-#include "../QnCorrections/QnCorrectionsCutsBase.h"
-#include "../QnCorrections/QnCorrectionsHistograms.h"
+#include "../QnCorrections/QnCorrectionsCutAbove.h"
+#include "../QnCorrections/QnCorrectionsCutBelow.h"
+#include "../QnCorrections/QnCorrectionsCutOutside.h"
+#include "../QnCorrections/QnCorrectionsCutsSet.h"
+#include "../QnCorrections/QnCorrectionsCutSetBit.h"
+#include "../QnCorrections/QnCorrectionsCutValue.h"
+#include "../QnCorrections/QnCorrectionsCutWithin.h"
+#include "../QnCorrections/QnCorrectionsHistogramChannelized.h"
+#include "../QnCorrections/QnCorrectionsProfile.h"
+#include "../QnCorrections/QnCorrectionsProfileChannelized.h"
+#include "../QnCorrections/QnCorrectionsProfileChannelizedIngress.h"
+#include "../QnCorrections/QnCorrectionsProfileComponents.h"
+#include "../QnCorrections/QnCorrectionsProfileCorrelationComponents.h"
+#include "../QnCorrections/QnCorrectionsProfileCorrelationComponentsHarmonics.h"
 #include "../QnCorrections/QnCorrectionsDataVector.h"
+#include "../QnCorrections/QnCorrectionsDataVectorChannelized.h"
 #include "../QnCorrections/QnCorrectionsQnVector.h"
+#include "../QnCorrections/QnCorrectionsQnVectorBuild.h"
+#include "../QnCorrections/QnCorrectionsCorrectionsSetOnInputData.h"
+#include "../QnCorrections/QnCorrectionsCorrectionsSetOnQvector.h"
+#include "../QnCorrections/QnCorrectionsCorrectionOnInputData.h"
+#include "../QnCorrections/QnCorrectionsCorrectionOnQvector.h"
 #include "../QnCorrections/QnCorrectionsDetector.h"
+#include "../QnCorrections/QnCorrectionsDetectorConfigurationsSet.h"
+#include "../QnCorrections/QnCorrectionsDetectorConfigurationChannels.h"
+#include "../QnCorrections/QnCorrectionsDetectorConfigurationTracks.h"
 #include "../QnCorrections/QnCorrectionsManager.h"
 #include "../QnCorrections/QnCorrectionsInputGainEqualization.h"
 #include "../QnCorrections/QnCorrectionsQnVectorRecentering.h"
 #include "../QnCorrections/QnCorrectionsQnVectorAlignment.h"
+
+using std::cout;
+using std::endl;
 
 void Setup(QnCorrectionsManager* QnMan);
 void Loop(QnCorrectionsManager* QnMan);
