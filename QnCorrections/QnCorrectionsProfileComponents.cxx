@@ -286,7 +286,7 @@ Long64_t QnCorrectionsProfileComponents::GetBin(const Float_t *variableContainer
 Bool_t QnCorrectionsProfileComponents::BinContentValidated(Long64_t bin) {
   Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (nEntries < fMinNoOfEntriesToValidate) {
     return kFALSE;
   }
   else {

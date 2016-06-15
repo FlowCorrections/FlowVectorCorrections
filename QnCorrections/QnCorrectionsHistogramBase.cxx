@@ -25,7 +25,7 @@ const UInt_t QnCorrectionsHistogramBase::correlationXXmask = 0x0001;
 const UInt_t QnCorrectionsHistogramBase::correlationXYmask = 0x0002;
 const UInt_t QnCorrectionsHistogramBase::correlationYXmask = 0x0004;
 const UInt_t QnCorrectionsHistogramBase::correlationYYmask = 0x0008;
-const Int_t QnCorrectionsHistogramBase::nMinNoOfEntriesValidated = 2;
+const Int_t QnCorrectionsHistogramBase::nDefaultMinNoOfEntriesValidated = 2;
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsHistogramBase);
@@ -38,6 +38,7 @@ QnCorrectionsHistogramBase::QnCorrectionsHistogramBase() :
   fBinAxesValues(NULL) {
 
   fErrorMode = kERRORMEAN;
+  fMinNoOfEntriesToValidate = nDefaultMinNoOfEntriesValidated;
 }
 
 /// Default destructor
@@ -81,6 +82,7 @@ QnCorrectionsHistogramBase::QnCorrectionsHistogramBase(const char *name,
   opt.ToLower();
   fErrorMode = kERRORMEAN;
   if (opt.Contains("s")) fErrorMode = kERRORSPREAD;
+  fMinNoOfEntriesToValidate = nDefaultMinNoOfEntriesValidated;
 }
 
 /// Attaches existing histograms as the supporting histograms
@@ -799,11 +801,13 @@ void QnCorrectionsHistogramBase::FillYY(Int_t harmonic, const Float_t *variableC
 /// Divide two THn histograms
 ///
 /// Creates a value / error multidimensional histogram from
-/// a values and entries multidimensional histograms
+/// a values and entries multidimensional histograms.
+/// The validation histogram is filled according to entries threshold value.
 /// \param hValues the values multidimensional histogram
 /// \param hEntries the entries multidimensional histogram
+/// \param hValid optional multidimensional histogram where validation information is stored
 /// \return the values / error multidimensional histogram
-THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
+THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries, THnC *hValid) {
 
   THnF *hResult =  (THnF*) THn::CreateHn(hValues->GetName(), hValues->GetTitle(), hValues);
 
@@ -817,10 +821,11 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
     nEntries = Int_t(hEntries->GetBinContent(bin));
     error2 = hValues->GetBinError2(bin);
 
-    if (nEntries < nMinNoOfEntriesValidated) {
+    if (nEntries < fMinNoOfEntriesToValidate) {
       /* bin content not validated */
       hResult->SetBinContent(bin, 0.0);
       hResult->SetBinError(bin, 0.0);
+      if (hValid != NULL) hValid->SetBinContent(bin, 0.0);
       if (value != 0.0) {
         bErrorMessage = kTRUE;
         nNotValidatedBins++;
@@ -841,6 +846,7 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
         hResult->SetBinError(bin, serror);
         break;
       }
+      if (hValid != NULL) hValid->SetBinContent(bin, 1.0);
     }
     hResult->SetEntries(hValues->GetEntries());
   }
@@ -849,7 +855,7 @@ THnF* QnCorrectionsHistogramBase::DivideTHnF(THnF *hValues, THnI *hEntries) {
         "   Minimum number of entries to validate: %d.",
         nNotValidatedBins,
         hValues->GetName(),
-        nMinNoOfEntriesValidated));
+        fMinNoOfEntriesToValidate));
   }
   return hResult;
 }

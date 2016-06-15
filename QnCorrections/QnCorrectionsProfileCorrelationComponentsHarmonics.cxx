@@ -348,7 +348,7 @@ Long64_t QnCorrectionsProfileCorrelationComponentsHarmonics::GetBin(const Float_
 Bool_t QnCorrectionsProfileCorrelationComponentsHarmonics::BinContentValidated(Long64_t bin) {
   Int_t nEntries = Int_t(fEntries->GetBinContent(bin));
 
-  if (nEntries < nMinNoOfEntriesValidated) {
+  if (nEntries < fMinNoOfEntriesToValidate) {
     return kFALSE;
   }
   else {
