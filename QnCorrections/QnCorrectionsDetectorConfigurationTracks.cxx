@@ -69,7 +69,7 @@ QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTra
 /// the Qn vector corrections they are now attached to the framework
 /// \param manager the framework manager
 void QnCorrectionsDetectorConfigurationTracks::AttachCorrectionsManager(QnCorrectionsManager *manager) {
-  QnCorrectionsDetectorConfigurationBase::AttachCorrectionsManager(manager);
+  fCorrectionsManager = manager;
 
   if (manager != NULL) {
     for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {

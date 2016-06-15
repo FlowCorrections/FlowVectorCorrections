@@ -29,7 +29,7 @@
 
 class QnCorrectionsDetectorConfigurationsSet;
 class QnCorrectionsDetector;
-class QnCorrectionsManger;
+class QnCorrectionsManager;
 
 /// \class QnCorrectionsDetectorConfigurationBase
 /// \brief The base of a concrete detector configuration within Q vector correction framework
@@ -87,8 +87,9 @@ public:
   /// \return detector pointer
   QnCorrectionsDetector *GetDetector() { return fDetector; }
   /// Stores the framework manager pointer
+  /// Pure virtual function
   /// \param manager the framework manager
-  virtual void AttachCorrectionsManager(QnCorrectionsManager *manager) { fCorrectionsManager = manager; }
+  virtual void AttachCorrectionsManager(QnCorrectionsManager *manager) = 0;
 public:
   /// Get the input data bank.
   /// Makes it available for input corrections steps.
@@ -218,10 +219,10 @@ public:
 
 private:
   QnCorrectionsDetector *fDetector;    ///< pointer to the detector that owns the configuration
-  QnCorrectionsManager *fCorrectionsManager; /// the framework manager pointer
 protected:
   static const char *szPlainQnVectorName; ///< the name of the Qn plain, not corrected Qn vectors
   /// set of cuts that define the detector configuration
+  QnCorrectionsManager *fCorrectionsManager; /// the framework manager pointer
   QnCorrectionsCutsSet *fCuts;         //->
 /// The default initial size of data vectors banks
 #define INITIALDATAVECTORBANKSIZE 100000

@@ -49,7 +49,6 @@ using std::setw;
 ClassImp(QnCorrectionsManager);
 /// \endcond
 
-QnCorrectionsManager *QnCorrectionsManager::fTheOnlyManagerInstance = NULL;
 const Int_t QnCorrectionsManager::nMaxNoOfDetectors = 32;
 const Int_t QnCorrectionsManager::nMaxNoOfDataVariables = 2048;
 const char *QnCorrectionsManager::szCalibrationHistogramsKeyName = "CalibrationHistograms";
@@ -61,7 +60,6 @@ const char *QnCorrectionsManager::szAllProcessesListName = "all data";
 /// The class owns the detectors and will be destroyed with it
 QnCorrectionsManager::QnCorrectionsManager() :
     TObject(), fDetectorsSet(), fProcessListName(szDummyProcessListName) {
-  fTheOnlyManagerInstance = this;
 
   fDetectorsSet.SetOwner(kTRUE);
   fDetectorsIdMap = NULL;
@@ -75,8 +73,6 @@ QnCorrectionsManager::QnCorrectionsManager() :
   fFillQAHistograms = kFALSE;
   fFillQnVectorTree = kFALSE;
   fProcessesNames = NULL;
-
-  QnCorrectionsWarning("WARNING: Corrections Manager constructor should only be called by the serialization process");
 }
 
 /// Default destructor
@@ -88,19 +84,6 @@ QnCorrectionsManager::~QnCorrectionsManager() {
   if (fCalibrationHistogramsList != NULL) delete fCalibrationHistogramsList;
   if (fProcessesNames != NULL) delete fProcessesNames;
 }
-
-QnCorrectionsManager *QnCorrectionsManager::GetInstance() {
-  if (fTheOnlyManagerInstance == NULL) {
-    QnCorrectionsManager::fTheOnlyManagerInstance = new QnCorrectionsManager();
-  }
-  return fTheOnlyManagerInstance;
-}
-
-void QnCorrectionsManager::Destroy() {
-  delete QnCorrectionsManager::fTheOnlyManagerInstance;
-  QnCorrectionsManager::fTheOnlyManagerInstance = NULL;
-}
-
 
 /// Sets the base list that will own the input calibration histograms
 /// \param calibrationFile the file
@@ -134,6 +117,7 @@ void QnCorrectionsManager::AddDetector(QnCorrectionsDetector *detector) {
       return;
     }
     fDetectorsSet.Add(detector);
+    detector->AttachCorrectionsManager(this);
   }
   else {
     QnCorrectionsFatal(Form("You are trying to add %s detector with detector Id %d " \

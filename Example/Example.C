@@ -140,7 +140,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_
 void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 #endif
 
-  QnCorrectionsManager* QnMan = QnCorrectionsManager::GetInstance();
+  QnCorrectionsManager* QnMan = new QnCorrectionsManager();
 
   TFile* inputFile = TFile::Open(inputFileName,"READ");
   TFile* outputFile = TFile::Open(outputFileName,"RECREATE");

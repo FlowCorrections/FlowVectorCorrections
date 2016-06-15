@@ -73,18 +73,24 @@ QnCorrectionsQnVectorAlignment::~QnCorrectionsQnVectorAlignment() {
 /// If the step is already attached to the framework the reference detector configuration is located and stored
 /// \param name the name of the reference detector configuration
 void QnCorrectionsQnVectorAlignment::SetReferenceConfigurationForAlignment(const char *name) {
+  QnCorrectionsInfo(Form("Reference name: %s, attached to detector configuration: %s",
+      name,
+      ((fDetectorConfiguration != NULL) ? "yes" : "no")));
 
   fDetectorConfigurationForAlignmentName = name;
 
-  if (fDetectorConfiguration->GetCorrectionsManager() != NULL) {
-    /* the correction step is already attached to the framework */
-    if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(name) != NULL) {
-      fDetectorConfigurationForAlignment = QnCorrectionsManager::GetInstance()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
-    }
-    else {
-      QnCorrectionsFatal(Form("Wrong reference detector configuration %s for %s alignment correction step",
-          fDetectorConfigurationForAlignmentName.Data(),
-          fDetectorConfiguration->GetName()));
+  /* we could be in different situations of framework attachment */
+  if (fDetectorConfiguration != NULL) {
+    if (fDetectorConfiguration->GetCorrectionsManager() != NULL) {
+      /* the correction step is already attached to the framework */
+      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data()) != NULL) {
+        fDetectorConfigurationForAlignment = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
+      }
+      else {
+        QnCorrectionsFatal(Form("Wrong reference detector configuration %s for %s alignment correction step",
+            fDetectorConfigurationForAlignmentName.Data(),
+            fDetectorConfiguration->GetName()));
+      }
     }
   }
 }
@@ -93,10 +99,11 @@ void QnCorrectionsQnVectorAlignment::SetReferenceConfigurationForAlignment(const
 /// Basically this allows interaction between the different framework sections at configuration time
 /// Locates the reference detector configuration for alignment if its name has been previously stored
 void QnCorrectionsQnVectorAlignment::AttachedToFrameworkManager() {
+  QnCorrectionsInfo(Form("Attached! reference for alignment: %s", fDetectorConfigurationForAlignmentName.Data()));
 
   if (fDetectorConfigurationForAlignmentName.Length() != 0) {
     if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data()) != NULL) {
-      fDetectorConfigurationForAlignment = QnCorrectionsManager::GetInstance()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
+      fDetectorConfigurationForAlignment = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
     }
     else {
       QnCorrectionsFatal(Form("Wrong reference detector configuration %s for %s alignment correction step",
