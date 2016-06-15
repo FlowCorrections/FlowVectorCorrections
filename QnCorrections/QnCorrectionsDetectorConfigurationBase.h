@@ -122,9 +122,7 @@ public:
   /// \param store pointer to the memory for storing the harmonics map
   void GetHarmonicMap(Int_t *store) const
   { fCorrectedQnVector.GetHarmonicsMap(store); }
-protected:
   /// Get the pointer to the framework manager
-  /// In principle restricted to the corrections steps
   /// \return the stored pointer to the corrections framework
   QnCorrectionsManager *GetCorrectionsManager() const { return fCorrectionsManager; }
 public:
