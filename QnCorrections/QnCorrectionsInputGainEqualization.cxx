@@ -34,15 +34,18 @@
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileChannelizedIngress.h"
 #include "QnCorrectionsProfileChannelized.h"
+#include "QnCorrectionsHistogramChannelized.h"
 #include "QnCorrectionsDetectorConfigurationChannels.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsInputGainEqualization.h"
 
 const Float_t  QnCorrectionsInputGainEqualization::fMinimumSignificantValue = 1E-6;
+const Int_t QnCorrectionsInputGainEqualization::fDefaultMinNoOfEntries = 2;
 const char *QnCorrectionsInputGainEqualization::szCorrectionName = "Gain equalization";
 const char *QnCorrectionsInputGainEqualization::szKey = "CCCC";
 const char *QnCorrectionsInputGainEqualization::szSupportHistogramName = "Multiplicity";
 const char *QnCorrectionsInputGainEqualization::szQAHistogramName = "QA Multiplicity";
+const char *QnCorrectionsInputGainEqualization::szQANotValidatedHistogramName = "QA not validated bin";
 
 /// Default value for the shift parameter
 #define GAINEQUALIZATION_SHIFTDEFAULT 0.0
@@ -62,11 +65,13 @@ QnCorrectionsInputGainEqualization::QnCorrectionsInputGainEqualization() :
   fCalibrationHistograms = NULL;
   fQAMultiplicityBefore = NULL;
   fQAMultiplicityAfter = NULL;
+  fQANotValidatedBin = NULL;
   fEqualizationMethod = GEQUAL_noEqualization;
   fShift = GAINEQUALIZATION_SHIFTDEFAULT;
   fScale = GAINEQUALIZATION_SCALEDEFAULT;
   fUseChannelGroupsWeights = kFALSE;
   fHardCodedWeights = NULL;
+  fMinNoOfEntriesToValidate = fDefaultMinNoOfEntries;
 }
 
 /// Default destructor
@@ -80,6 +85,8 @@ QnCorrectionsInputGainEqualization::~QnCorrectionsInputGainEqualization() {
     delete fQAMultiplicityBefore;
   if (fQAMultiplicityAfter != NULL)
     delete fQAMultiplicityAfter;
+  if (fQANotValidatedBin != NULL)
+    delete fQANotValidatedBin;
 }
 
 /// Attaches the needed input information to the correction step
@@ -129,6 +136,7 @@ QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
   if (fInputHistograms != NULL) delete fInputHistograms;
   fInputHistograms = new QnCorrectionsProfileChannelizedIngress((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
+  fInputHistograms->SetNoOfEntriesThreshold(fMinNoOfEntriesToValidate);
   fCalibrationHistograms = new QnCorrectionsProfileChannelized((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels(), "s");
   fCalibrationHistograms->CreateProfileHistograms(list,
@@ -172,6 +180,12 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
   fQAMultiplicityAfter->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
+  fQANotValidatedBin = new QnCorrectionsHistogramChannelized(
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      ownerConfiguration->GetEventClassVariablesSet(),
+      ownerConfiguration->GetNoOfChannels());
+  fQANotValidatedBin->CreateChannelizedHistogram(list, ownerConfiguration->GetUsedChannelsMask());
   return kTRUE;
 }
 
@@ -222,43 +236,55 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
         QnCorrectionsDataVectorChannelized *dataVector =
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-        Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
-        /* let's handle the potential group weights usage */
-        Float_t groupweight = 1.0;
-        if (fUseChannelGroupsWeights) {
-          groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        Long64_t bin = fInputHistograms->GetBin(variableContainer, dataVector->GetId());
+        if (fInputHistograms->BinContentValidated(bin)) {
+          Float_t average = fInputHistograms->GetBinContent(bin);
+          /* let's handle the potential group weights usage */
+          Float_t groupweight = 1.0;
+          if (fUseChannelGroupsWeights) {
+            groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+          }
+          else {
+            if (fHardCodedWeights != NULL) {
+              groupweight = fHardCodedWeights[dataVector->GetId()];
+            }
+          }
+          if (fMinimumSignificantValue < average)
+            dataVector->SetEqualizedWeight((dataVector->EqualizedWeight() / average) * groupweight);
+          else
+            dataVector->SetEqualizedWeight(0.0);
         }
         else {
-          if (fHardCodedWeights != NULL) {
-            groupweight = fHardCodedWeights[dataVector->GetId()];
-          }
+          fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
         }
-        if (fMinimumSignificantValue < average)
-          dataVector->SetEqualizedWeight((dataVector->EqualizedWeight() / average) * groupweight);
-        else
-          dataVector->SetEqualizedWeight(0.0);
       }
       break;
     case GEQUAL_widthEqualization:
       for(Int_t ixData = 0; ixData < fDetectorConfiguration->GetInputDataBank()->GetEntriesFast(); ixData++){
         QnCorrectionsDataVectorChannelized *dataVector =
             static_cast<QnCorrectionsDataVectorChannelized *>(fDetectorConfiguration->GetInputDataBank()->At(ixData));
-        Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
-        Float_t width = fInputHistograms->GetBinError(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
-        /* let's handle the potential group weights usage */
-        Float_t groupweight = 1.0;
-        if (fUseChannelGroupsWeights) {
-          groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+        Long64_t bin = fInputHistograms->GetBin(variableContainer, dataVector->GetId());
+        if (fInputHistograms->BinContentValidated(bin)) {
+          Float_t average = fInputHistograms->GetBinContent(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
+          Float_t width = fInputHistograms->GetBinError(fInputHistograms->GetBin(variableContainer, dataVector->GetId()));
+          /* let's handle the potential group weights usage */
+          Float_t groupweight = 1.0;
+          if (fUseChannelGroupsWeights) {
+            groupweight = fInputHistograms->GetGrpBinContent(fInputHistograms->GetGrpBin(variableContainer, dataVector->GetId()));
+          }
+          else {
+            if (fHardCodedWeights != NULL) {
+              groupweight = fHardCodedWeights[dataVector->GetId()];
+            }
+          }
+          if (fMinimumSignificantValue < average)
+            dataVector->SetEqualizedWeight((fShift + fScale * (dataVector->EqualizedWeight() - average) / width) * groupweight);
+          else
+            dataVector->SetEqualizedWeight(0.0);
         }
         else {
-          if (fHardCodedWeights != NULL) {
-            groupweight = fHardCodedWeights[dataVector->GetId()];
-          }
+          fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
         }
-        if (fMinimumSignificantValue < average)
-          dataVector->SetEqualizedWeight((fShift + fScale * (dataVector->EqualizedWeight() - average) / width) * groupweight);
-        else
-          dataVector->SetEqualizedWeight(0.0);
       }
       break;
     }
