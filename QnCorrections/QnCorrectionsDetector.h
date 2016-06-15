@@ -84,6 +84,14 @@ private:
   QnCorrectionsDetectorConfigurationsSet fDataVectorAcceptedConfigurations; ///< the set of configurations that accepted a data vector
   QnCorrectionsManager *fCorrectionsManager; ///< the framework correction manager
 
+private:
+  /// Copy constructor
+  /// Not allowed. Forced private.
+  QnCorrectionsDetector(const QnCorrectionsDetector &);
+  /// Assignment operator
+  /// Not allowed. Forced private.
+  QnCorrectionsDetector& operator= (const QnCorrectionsDetector &);
+
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsDetector, 1);
 /// \endcond
