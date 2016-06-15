@@ -59,16 +59,9 @@
 #include "QnCorrectionsDetector.h"
 
 class QnCorrectionsManager : public TObject {
-protected:
-  static QnCorrectionsManager *fTheOnlyManagerInstance; ///< Qn correction manager is a singleton and this is its only instance
 public:
   QnCorrectionsManager();
-protected:
   virtual ~QnCorrectionsManager();
-
-public:
-  static QnCorrectionsManager *GetInstance();
-  static void Destroy();
 
   /// Establishes the list of processes names
   /// \param names an array containing the processes names
@@ -165,7 +158,7 @@ private:
   QnCorrectionsManager& operator= (const QnCorrectionsManager &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsManager, 3);
+  ClassDef(QnCorrectionsManager, 4);
 /// \endcond
 };
 
