@@ -35,6 +35,7 @@
 #pragma link C++ class QnCorrectionsDetectorConfigurationTracks+;
 #pragma link C++ class QnCorrectionsEventClassVariable+;
 #pragma link C++ class QnCorrectionsEventClassVariablesSet+;
+#pragma link C++ class QnCorrectionsHistogram+;
 #pragma link C++ class QnCorrectionsHistogramBase+;
 #pragma link C++ class QnCorrectionsHistogramChannelized+;
 #pragma link C++ class QnCorrectionsInputGainEqualization+;

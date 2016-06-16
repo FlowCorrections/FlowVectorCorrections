@@ -34,6 +34,7 @@ set (SOURCES
   QnCorrectionsDetectorConfigurationTracks.cxx
   QnCorrectionsEventClassVariable.cxx
   QnCorrectionsEventClassVariablesSet.cxx
+  QnCorrectionsHistogram.cxx
   QnCorrectionsHistogramBase.cxx
   QnCorrectionsHistogramChannelized.cxx
   QnCorrectionsInputGainEqualization.cxx

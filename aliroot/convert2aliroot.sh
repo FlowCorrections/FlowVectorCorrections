@@ -51,8 +51,7 @@ CutWithin
 DataVector
 Detector
 EventClassVariable
-HistogramBase
-HistogramChannelized
+Histogram
 InputGainEqualization
 Manager
 Profile
@@ -80,6 +79,7 @@ DetectorConfigurationsSet
 DetectorConfigurationTracks
 EventClassVariable
 EventClassVariablesSet
+Histogram
 HistogramBase
 HistogramChannelized
 InputGainEqualization
