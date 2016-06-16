@@ -33,15 +33,18 @@
 /// \brief Implementation of procedures for Qn vector alignment correction.
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileCorrelationComponents.h"
+#include "QnCorrectionsHistogram.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsQnVectorAlignment.h"
 
+const Int_t QnCorrectionsQnVectorAlignment::fDefaultMinNoOfEntries = 2;
 const char *QnCorrectionsQnVectorAlignment::szCorrectionName = "Alignment";
 const char *QnCorrectionsQnVectorAlignment::szKey = "EEEE";
 const char *QnCorrectionsQnVectorAlignment::szSupportHistogramName = "QnQn";
 const char *QnCorrectionsQnVectorAlignment::szCorrectedQnVectorName = "align";
+const char *QnCorrectionsQnVectorAlignment::szQANotValidatedHistogramName = "QA not validated bin";
 
 
 /// \cond CLASSIMP
@@ -55,8 +58,10 @@ QnCorrectionsQnVectorAlignment::QnCorrectionsQnVectorAlignment() :
     fDetectorConfigurationForAlignmentName() {
   fInputHistograms = NULL;
   fCalibrationHistograms = NULL;
+  fQANotValidatedBin = NULL;
   fHarmonicForAlignment = -1;
   fDetectorConfigurationForAlignment = NULL;
+  fMinNoOfEntriesToValidate = fDefaultMinNoOfEntries;
 }
 
 /// Default destructor
@@ -66,6 +71,8 @@ QnCorrectionsQnVectorAlignment::~QnCorrectionsQnVectorAlignment() {
     delete fInputHistograms;
   if (fCalibrationHistograms != NULL)
     delete fCalibrationHistograms;
+  if (fQANotValidatedBin != NULL)
+    delete fQANotValidatedBin;
 }
 
 /// Set the detector configuration used as reference for alignment
@@ -174,6 +181,12 @@ Bool_t QnCorrectionsQnVectorAlignment::AttachInput(TList *list) {
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorAlignment::CreateQAHistograms(TList *list) {
+
+  fQANotValidatedBin = new QnCorrectionsHistogram(
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      fDetectorConfiguration->GetEventClassVariablesSet());
+  fQANotValidatedBin->CreateHistogram(list);
   return kTRUE;
 }
 
@@ -266,7 +279,7 @@ Bool_t QnCorrectionsQnVectorAlignment::Process(const Float_t *variableContainer)
         } /* if the correction is not significant we leave the Q vector untouched */
       } /* if the correction bin is not validated we leave the Q vector untouched */
       else {
-        /* TODO: Fill QA histogram */
+        fQANotValidatedBin->Fill(variableContainer, 1.0);
       }
     }
     else {

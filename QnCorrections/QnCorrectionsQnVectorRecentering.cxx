@@ -33,15 +33,17 @@
 /// \brief Implementation of procedures for Qn vector recentering.
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileComponents.h"
+#include "QnCorrectionsHistogram.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsQnVectorRecentering.h"
 
+const Int_t QnCorrectionsQnVectorRecentering::fDefaultMinNoOfEntries = 2;
 const char *QnCorrectionsQnVectorRecentering::szCorrectionName = "Recentering and width equalization";
 const char *QnCorrectionsQnVectorRecentering::szKey = "CCCC";
 const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn";
 const char *QnCorrectionsQnVectorRecentering::szCorrectedQnVectorName = "rec";
-
+const char *QnCorrectionsQnVectorRecentering::szQANotValidatedHistogramName = "QA not validated bin";
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsQnVectorRecentering);
@@ -53,7 +55,9 @@ QnCorrectionsQnVectorRecentering::QnCorrectionsQnVectorRecentering() :
     QnCorrectionsCorrectionOnQvector(szCorrectionName, szKey) {
   fInputHistograms = NULL;
   fCalibrationHistograms = NULL;
+  fQANotValidatedBin = NULL;
   fApplyWidthEqualization = kFALSE;
+  fMinNoOfEntriesToValidate = fDefaultMinNoOfEntries;
 }
 
 /// Default destructor
@@ -63,6 +67,8 @@ QnCorrectionsQnVectorRecentering::~QnCorrectionsQnVectorRecentering() {
     delete fInputHistograms;
   if (fCalibrationHistograms != NULL)
     delete fCalibrationHistograms;
+  if (fQANotValidatedBin != NULL)
+    delete fQANotValidatedBin;
 }
 
 /// Asks for support data structures creation
@@ -128,6 +134,12 @@ Bool_t QnCorrectionsQnVectorRecentering::AttachInput(TList *list) {
 /// \param list list where the histograms should be incorporated for its persistence
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorRecentering::CreateQAHistograms(TList *list) {
+
+  fQANotValidatedBin = new QnCorrectionsHistogram(
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      fDetectorConfiguration->GetEventClassVariablesSet());
+  fQANotValidatedBin->CreateHistogram(list);
   return kTRUE;
 }
 
@@ -192,7 +204,7 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
         }
       } /* correction information not validated, we leave the Q vector untouched */
       else {
-        /* TODO: fill QA histogram */
+        fQANotValidatedBin->Fill(variableContainer, 1.0);
       }
     }
     else {

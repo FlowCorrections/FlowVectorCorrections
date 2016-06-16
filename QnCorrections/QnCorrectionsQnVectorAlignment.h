@@ -97,6 +97,9 @@ public:
   void SetHarmonicNumberForAlignment(Int_t harmonic)
   { fHarmonicForAlignment = harmonic; }
   void SetReferenceConfigurationForAlignment(const char *name);
+  /// Set the minimum number of entries for calibration histogram bin content validation
+  /// \param nNoOfEntries the number of entries threshold
+  void SetNoOfEntriesThreshold(Int_t nNoOfEntries) { fMinNoOfEntriesToValidate = nNoOfEntries; }
 
   virtual void AttachedToFrameworkManager();
   virtual Bool_t AttachInput(TList *list);
@@ -109,16 +112,20 @@ public:
   virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:
+  static const Int_t fDefaultMinNoOfEntries;         ///< the minimum number of entries for bin content validation
   static const char *szCorrectionName;               ///< the name of the correction step
   static const char *szKey;                          ///< the key of the correction step for ordering purpose
   static const char *szSupportHistogramName;         ///< the name and title for support histograms
   static const char *szCorrectedQnVectorName;        ///< the name of the Qn vector after applying the correction
+  static const char *szQANotValidatedHistogramName;  ///< the name and title for bin not validated QA histograms
   QnCorrectionsProfileCorrelationComponents *fInputHistograms; //!<! the histogram with calibration information
   QnCorrectionsProfileCorrelationComponents *fCalibrationHistograms; //!<! the histogram for building calibration information
+  QnCorrectionsHistogram *fQANotValidatedBin;    //!<! the histogram with non validated bin information
 
   Int_t  fHarmonicForAlignment;              ///< the harmonic number to be used for Qn vector alignment correction
   TString fDetectorConfigurationForAlignmentName; ///< storage for the name of the reference detector configuration for alignment correction
   QnCorrectionsDetectorConfigurationBase *fDetectorConfigurationForAlignment; ///< pointer to the detector configuration used as reference for alingment
+  Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVectorAlignment, 1);

@@ -29,6 +29,7 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCutValue.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCutWithin.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramBase.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogram.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramChannelized.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfile.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfileChannelized.cxx"+debugString);

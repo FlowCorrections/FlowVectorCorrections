@@ -46,6 +46,7 @@
 #include "../QnCorrections/QnCorrectionsCutSetBit.h"
 #include "../QnCorrections/QnCorrectionsCutValue.h"
 #include "../QnCorrections/QnCorrectionsCutWithin.h"
+#include "../QnCorrections/QnCorrectionsHistogram.h"
 #include "../QnCorrections/QnCorrectionsHistogramChannelized.h"
 #include "../QnCorrections/QnCorrectionsProfile.h"
 #include "../QnCorrections/QnCorrectionsProfileChannelized.h"
