@@ -119,7 +119,7 @@ protected:
   QnCorrectionHistogramErrorMode fErrorMode;                 //!<! The error type for the current instance
   Int_t fMinNoOfEntriesToValidate;                           ///< the minimum number of entries for validating a bin content
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsHistogramBase, 1);
+  ClassDef(QnCorrectionsHistogramBase, 2);
   /// \endcond
   static const char *szChannelAxisTitle;                 ///< The title for the channel extra axis
   static const char *szGroupAxisTitle;                   ///< The title for the channel group extra axis

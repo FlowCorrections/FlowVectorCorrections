@@ -81,7 +81,7 @@ private:
 
 
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsProfileChannelizedIngress, 1);
+  ClassDef(QnCorrectionsProfileChannelizedIngress, 2);
   /// \endcond
 };
 

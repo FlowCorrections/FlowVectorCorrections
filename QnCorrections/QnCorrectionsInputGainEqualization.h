@@ -175,7 +175,7 @@ private:
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsInputGainEqualization, 1);
+  ClassDef(QnCorrectionsInputGainEqualization, 2);
 /// \endcond
 };
 

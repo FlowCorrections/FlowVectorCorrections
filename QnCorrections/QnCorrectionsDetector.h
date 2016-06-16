@@ -93,7 +93,7 @@ private:
   QnCorrectionsDetector& operator= (const QnCorrectionsDetector &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetector, 1);
+  ClassDef(QnCorrectionsDetector, 2);
 /// \endcond
 };
 

@@ -140,7 +140,7 @@ private:
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVectorRecentering, 1);
+  ClassDef(QnCorrectionsQnVectorRecentering, 2);
 /// \endcond
 };
 

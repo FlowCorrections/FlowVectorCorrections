@@ -242,7 +242,7 @@ private:
   QnCorrectionsDetectorConfigurationBase& operator= (const QnCorrectionsDetectorConfigurationBase &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetectorConfigurationBase, 1);
+  ClassDef(QnCorrectionsDetectorConfigurationBase, 2);
 /// \endcond
 };
 
