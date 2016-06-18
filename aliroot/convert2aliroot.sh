@@ -82,6 +82,8 @@ EventClassVariablesSet
 Histogram
 HistogramBase
 HistogramChannelized
+HistogramChannelizedSparse
+HistogramSparse
 InputGainEqualization
 Manager
 Profile

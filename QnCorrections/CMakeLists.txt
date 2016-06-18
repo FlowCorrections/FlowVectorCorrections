@@ -37,6 +37,8 @@ set (SOURCES
   QnCorrectionsHistogram.cxx
   QnCorrectionsHistogramBase.cxx
   QnCorrectionsHistogramChannelized.cxx
+  QnCorrectionsHistogramChannelizedSparse.cxx
+  QnCorrectionsHistogramSparse.cxx
   QnCorrectionsInputGainEqualization.cxx
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx

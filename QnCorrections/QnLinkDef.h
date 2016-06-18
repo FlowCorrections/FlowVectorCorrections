@@ -38,6 +38,8 @@
 #pragma link C++ class QnCorrectionsHistogram+;
 #pragma link C++ class QnCorrectionsHistogramBase+;
 #pragma link C++ class QnCorrectionsHistogramChannelized+;
+#pragma link C++ class QnCorrectionsHistogramChannelizedSparse+;
+#pragma link C++ class QnCorrectionsHistogramSparse+;
 #pragma link C++ class QnCorrectionsInputGainEqualization+;
 #pragma link C++ class QnCorrectionsManager+;
 #pragma link C++ class QnCorrectionsProfile+;
