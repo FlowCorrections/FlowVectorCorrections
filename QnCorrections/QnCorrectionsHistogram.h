@@ -6,7 +6,7 @@
 
 #include "QnCorrectionsHistogramBase.h"
 
-/// \class QnCorrectionsHistogramChannelized
+/// \class QnCorrectionsHistogram
 /// \brief Single histogram class for the Q vector correction histograms
 ///
 /// Encapsulates a multi dimensional histogram. Each dimension
