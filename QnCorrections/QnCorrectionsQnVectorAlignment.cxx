@@ -156,6 +156,7 @@ Bool_t QnCorrectionsQnVectorAlignment::CreateSupportHistograms(TList *list) {
   if (fInputHistograms != NULL) delete fInputHistograms;
   fInputHistograms = new QnCorrectionsProfileCorrelationComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet());
+  fInputHistograms->SetNoOfEntriesThreshold(fMinNoOfEntriesToValidate);
   fCalibrationHistograms = new QnCorrectionsProfileCorrelationComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet());
 

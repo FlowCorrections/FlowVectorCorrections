@@ -103,6 +103,7 @@ Bool_t QnCorrectionsQnVectorRecentering::CreateSupportHistograms(TList *list) {
   if (fInputHistograms != NULL) delete fInputHistograms;
   fInputHistograms = new QnCorrectionsProfileComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet(), "s");
+  fInputHistograms->SetNoOfEntriesThreshold(fMinNoOfEntriesToValidate);
   fCalibrationHistograms = new QnCorrectionsProfileComponents((const char *) histoNameAndTitle, (const char *) histoNameAndTitle,
       fDetectorConfiguration->GetEventClassVariablesSet(), "s");
 
