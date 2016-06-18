@@ -43,7 +43,7 @@ const char *QnCorrectionsQnVectorRecentering::szCorrectionName = "Recentering an
 const char *QnCorrectionsQnVectorRecentering::szKey = "CCCC";
 const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn";
 const char *QnCorrectionsQnVectorRecentering::szCorrectedQnVectorName = "rec";
-const char *QnCorrectionsQnVectorRecentering::szQANotValidatedHistogramName = "QA not validated bin";
+const char *QnCorrectionsQnVectorRecentering::szQANotValidatedHistogramName = "Rec NvE";
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsQnVectorRecentering);
@@ -137,8 +137,8 @@ Bool_t QnCorrectionsQnVectorRecentering::AttachInput(TList *list) {
 Bool_t QnCorrectionsQnVectorRecentering::CreateQAHistograms(TList *list) {
 
   fQANotValidatedBin = new QnCorrectionsHistogram(
-      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
-      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       fDetectorConfiguration->GetEventClassVariablesSet());
   fQANotValidatedBin->CreateHistogram(list);
   return kTRUE;

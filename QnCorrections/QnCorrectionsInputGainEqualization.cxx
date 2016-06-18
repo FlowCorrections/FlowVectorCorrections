@@ -45,7 +45,7 @@ const char *QnCorrectionsInputGainEqualization::szCorrectionName = "Gain equaliz
 const char *QnCorrectionsInputGainEqualization::szKey = "CCCC";
 const char *QnCorrectionsInputGainEqualization::szSupportHistogramName = "Multiplicity";
 const char *QnCorrectionsInputGainEqualization::szQAHistogramName = "QA Multiplicity";
-const char *QnCorrectionsInputGainEqualization::szQANotValidatedHistogramName = "QA not validated bin";
+const char *QnCorrectionsInputGainEqualization::szQANotValidatedHistogramName = "GE NvE";
 
 /// Default value for the shift parameter
 #define GAINEQUALIZATION_SHIFTDEFAULT 0.0
@@ -181,8 +181,8 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
   fQAMultiplicityAfter->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
   fQANotValidatedBin = new QnCorrectionsHistogramChannelized(
-      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
-      Form("%s %s %s", szQANotValidatedHistogramName, szCorrectionName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       ownerConfiguration->GetEventClassVariablesSet(),
       ownerConfiguration->GetNoOfChannels());
   fQANotValidatedBin->CreateChannelizedHistogram(list, ownerConfiguration->GetUsedChannelsMask());
