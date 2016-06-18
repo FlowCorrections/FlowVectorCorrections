@@ -5,6 +5,7 @@
 /// \brief Single multidimensional sparse histograms with channel support
 
 #include "QnCorrectionsHistogramBase.h"
+#include <THnSparse.h>
 
 /// \class QnCorrectionsHistogramChannelizedSparse
 /// \brief Single histogram class for the Q vector correction histograms

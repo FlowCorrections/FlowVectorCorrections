@@ -34,7 +34,7 @@
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileChannelizedIngress.h"
 #include "QnCorrectionsProfileChannelized.h"
-#include "QnCorrectionsHistogramChannelized.h"
+#include "QnCorrectionsHistogramChannelizedSparse.h"
 #include "QnCorrectionsDetectorConfigurationChannels.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsInputGainEqualization.h"
@@ -180,7 +180,7 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
   fQAMultiplicityAfter->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
-  fQANotValidatedBin = new QnCorrectionsHistogramChannelized(
+  fQANotValidatedBin = new QnCorrectionsHistogramChannelizedSparse(
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       ownerConfiguration->GetEventClassVariablesSet(),

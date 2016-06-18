@@ -54,7 +54,7 @@
 
 class QnCorrectionsProfileChannelizedIngress;
 class QnCorrectionsProfileChannelized;
-class QncorrectionsHistogramChannelized;
+class QnCorrectionsHistogramChannelizedSparse;
 
 /// \class QnCorrectionsInputGainEqualization
 /// \brief Encapsulates the gain equalization on input data correction step
@@ -165,7 +165,7 @@ private:
   QnCorrectionsProfileChannelized *fCalibrationHistograms; //!<! the histogram for building calibration information
   QnCorrectionsProfileChannelized *fQAMultiplicityBefore;  //!<! the channel multiplicity histogram before gain equalization
   QnCorrectionsProfileChannelized *fQAMultiplicityAfter;   //!<! the channel multiplicity histogram after gain equalization
-  QnCorrectionsHistogramChannelized *fQANotValidatedBin;    //!<! the histogram with non validated bin information
+  QnCorrectionsHistogramChannelizedSparse *fQANotValidatedBin;    //!<! the histogram with non validated bin information
   QnGainEqualizationMethod fEqualizationMethod; ///< the selected equalization method
 
   Float_t fShift;                               ///< the shift (A) parameter for width equalization

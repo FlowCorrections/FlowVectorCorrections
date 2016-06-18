@@ -98,6 +98,7 @@
 /// Correction and data collecting during calibration is performed for all harmonics
 /// defined within the involved detector configuration
 
+class QnCorrectionsHistogramSparse;
 
 class QnCorrectionsQnVectorRecentering : public QnCorrectionsCorrectionOnQvector {
 public:
@@ -134,7 +135,7 @@ private:
   static const char *szQANotValidatedHistogramName;  ///< the name and title for bin not validated QA histograms
   QnCorrectionsProfileComponents *fInputHistograms; //!<! the histogram with calibration information
   QnCorrectionsProfileComponents *fCalibrationHistograms; //!<! the histogram for building calibration information
-  QnCorrectionsHistogram *fQANotValidatedBin;    //!<! the histogram with non validated bin information
+  QnCorrectionsHistogramSparse *fQANotValidatedBin;    //!<! the histogram with non validated bin information
 
   Bool_t fApplyWidthEqualization;              ///< apply the width equalization step
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold

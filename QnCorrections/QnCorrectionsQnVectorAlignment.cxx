@@ -33,7 +33,7 @@
 /// \brief Implementation of procedures for Qn vector alignment correction.
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileCorrelationComponents.h"
-#include "QnCorrectionsHistogram.h"
+#include "QnCorrectionsHistogramSparse.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
 #include "QnCorrectionsLog.h"
@@ -183,7 +183,7 @@ Bool_t QnCorrectionsQnVectorAlignment::AttachInput(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorAlignment::CreateQAHistograms(TList *list) {
 
-  fQANotValidatedBin = new QnCorrectionsHistogram(
+  fQANotValidatedBin = new QnCorrectionsHistogramSparse(
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       fDetectorConfiguration->GetEventClassVariablesSet());

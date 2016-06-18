@@ -33,7 +33,7 @@
 /// \brief Implementation of procedures for Qn vector recentering.
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileComponents.h"
-#include "QnCorrectionsHistogram.h"
+#include "QnCorrectionsHistogramSparse.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsLog.h"
 #include "QnCorrectionsQnVectorRecentering.h"
@@ -136,7 +136,7 @@ Bool_t QnCorrectionsQnVectorRecentering::AttachInput(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorRecentering::CreateQAHistograms(TList *list) {
 
-  fQANotValidatedBin = new QnCorrectionsHistogram(
+  fQANotValidatedBin = new QnCorrectionsHistogramSparse(
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       fDetectorConfiguration->GetEventClassVariablesSet());
