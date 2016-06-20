@@ -180,6 +180,17 @@ Bool_t QnCorrectionsInputGainEqualization::CreateQAHistograms(TList *list) {
       ownerConfiguration->GetEventClassVariablesSet(),ownerConfiguration->GetNoOfChannels());
   fQAMultiplicityAfter->CreateProfileHistograms(list,
       ownerConfiguration->GetUsedChannelsMask(), ownerConfiguration->GetChannelsGroups());
+  return kTRUE;
+}
+
+/// Asks for non validated entries QA histograms creation
+///
+/// Allocates the histogram objects and creates the non validated entries QA histograms.
+/// \param list list where the histograms should be incorporated for its persistence
+/// \return kTRUE if everything went OK
+Bool_t QnCorrectionsInputGainEqualization::CreateNveQAHistograms(TList *list) {
+  QnCorrectionsDetectorConfigurationChannels *ownerConfiguration =
+      static_cast<QnCorrectionsDetectorConfigurationChannels *>(fDetectorConfiguration);
   fQANotValidatedBin = new QnCorrectionsHistogramChannelizedSparse(
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
       Form("%s %s", szQANotValidatedHistogramName, fDetectorConfiguration->GetName()),
@@ -255,7 +266,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
             dataVector->SetEqualizedWeight(0.0);
         }
         else {
-          fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
+          if (fQANotValidatedBin != NULL) fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
         }
       }
       break;
@@ -283,7 +294,7 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
             dataVector->SetEqualizedWeight(0.0);
         }
         else {
-          fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
+          if (fQANotValidatedBin != NULL) fQANotValidatedBin->Fill(variableContainer, dataVector->GetId(), 1.0);
         }
       }
       break;

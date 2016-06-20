@@ -183,6 +183,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
   outputFile->cd();
   QnMan->GetOutputHistogramsList()->Write(QnMan->GetOutputHistogramsList()->GetName(),TObject::kSingleKey);
   QnMan->GetQAHistogramsList()->Write(QnMan->GetQAHistogramsList()->GetName(),TObject::kSingleKey);
+  QnMan->GetNveQAHistogramsList()->Write(QnMan->GetNveQAHistogramsList()->GetName(),TObject::kSingleKey);
 
   if (inputFile) inputFile->Close();
   if (outputFile) outputFile->Close();
@@ -343,6 +344,7 @@ void Setup(QnCorrectionsManager* QnMan){
 
   /* order the appropriate output */
   QnMan->SetShouldFillQAHistograms(kTRUE);
+  QnMan->SetShouldFillNveQAHistograms(kTRUE);
   QnMan->SetShouldFillOutputHistograms(kTRUE);
 
   /* initialize the corrections framework */
