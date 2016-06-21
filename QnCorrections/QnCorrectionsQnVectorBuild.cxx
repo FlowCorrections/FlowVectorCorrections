@@ -113,10 +113,19 @@ void QnCorrectionsQnVectorBuild::Set(QnCorrectionsQnVectorBuild* Qn) {
 
 /// Adds a build Q vector
 ///
-/// Warning: the possibility of a different set of harmonics for both
-/// build Q vectors is currently not considered
+/// The possibility of a different set of harmonics for both
+/// build Q vectors is considered. A run time error is
+/// raised if they do not match.
 /// \param Qn the build Q vector to add
 void QnCorrectionsQnVectorBuild::Add(QnCorrectionsQnVectorBuild* Qn) {
+
+  if ((fHighestHarmonic != Qn->fHighestHarmonic) ||
+      (fHarmonicMask != Qn->fHarmonicMask) ||
+      (fHarmonicMultiplier != Qn->fHarmonicMultiplier)) {
+    QnCorrectionsFatal("You requested to add to a Q vector the values from other Q " \
+        "vector but the harmonic structures do not match");
+    return;
+  }
 
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
     if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
@@ -182,7 +191,7 @@ void QnCorrectionsQnVectorBuild::Print(Option_t *) const {
       << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
   Int_t harmonic = GetFirstHarmonic();
   while (harmonic != -1) {
-    cout << "\t" << "\t" << "harmonic " << harmonic << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
+    cout << "\t" << "\t" << "harmonic " << harmonic*fHarmonicMultiplier << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
     harmonic = GetNextHarmonic(harmonic);
   }
 }
