@@ -112,7 +112,9 @@ inline void QnCorrectionsDetectorConfigurationTracks::ClearConfiguration() {
   }
   /* clean the own Q vectors */
   fPlainQnVector.Reset();
+  fPlainQ2nVector.Reset();
   fCorrectedQnVector.Reset();
+  fCorrectedQ2nVector.Reset();
   /* and now clear the the input data bank */
   fDataVectorBank->Clear("C");
 }
@@ -124,16 +126,22 @@ inline void QnCorrectionsDetectorConfigurationTracks::ClearConfiguration() {
 /// subsequent corrections.
 inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
   fTempQnVector.Reset();
+  fTempQ2nVector.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVector *dataVector = static_cast<QnCorrectionsDataVector *>(fDataVectorBank->At(ixData));
     fTempQnVector.Add(dataVector->Phi(), dataVector->Weight());
+    fTempQ2nVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
   /* check the quality of the Qn vector */
   fTempQnVector.CheckQuality();
+  fTempQ2nVector.CheckQuality();
   fTempQnVector.Normalize(fQnNormalizationMethod);
+  fTempQ2nVector.Normalize(fQnNormalizationMethod);
   fPlainQnVector.Set(&fTempQnVector, kFALSE);
+  fPlainQ2nVector.Set(&fTempQ2nVector, kFALSE);
   fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
+  fCorrectedQ2nVector.Set(&fTempQ2nVector, kFALSE);
 }
 
 

@@ -44,13 +44,19 @@ const char *QnCorrectionsDetectorConfigurationBase::szPlainQnVectorName = "plain
 
 /// Default constructor
 QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase() : TNamed(),
-    fPlainQnVector(), fCorrectedQnVector(), fTempQnVector(), fQnVectorCorrections() {
+    fPlainQnVector(), fPlainQ2nVector(),
+    fCorrectedQnVector(), fCorrectedQ2nVector(),
+    fTempQnVector(), fTempQ2nVector(),
+    fQnVectorCorrections() {
   fDetector = NULL;
   fCorrectionsManager = NULL;
   fCuts = NULL;
   fDataVectorBank = NULL;
   fQnNormalizationMethod = QnCorrectionsQnVector::QVNORM_noCalibration;
   fEventClassVariables = NULL;
+  fPlainQ2nVector.SetHarmonicMultiplier(2);
+  fCorrectedQ2nVector.SetHarmonicMultiplier(2);
+  fTempQ2nVector.SetHarmonicMultiplier(2);
 }
 
 /// Normal constructor
@@ -74,6 +80,9 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
   fDataVectorBank = NULL;
   fQnNormalizationMethod = QnCorrectionsQnVector::QVNORM_noCalibration;
   fEventClassVariables = eventClassesVariables;
+  fPlainQ2nVector.SetHarmonicMultiplier(2);
+  fCorrectedQ2nVector.SetHarmonicMultiplier(2);
+  fTempQ2nVector.SetHarmonicMultiplier(2);
 }
 
 /// Default destructor

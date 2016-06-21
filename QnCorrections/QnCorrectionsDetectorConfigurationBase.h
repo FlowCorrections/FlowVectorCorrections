@@ -41,9 +41,12 @@ class QnCorrectionsManager;
 /// to it for each processing request.
 ///
 /// As such, it incorporates the set of corrections to carry on the input data
-/// and the set of corrections to perform on the produced Q vector. It always stores
-/// the plain Q vector produced after potential input data corrections and the
-/// Q vector that incorporates the latest Q vector correction step.
+/// and the set of corrections to perform on the produced Qn vector. It always stores
+/// the plain Qn vector produced after potential input data corrections and the
+/// Qn vector that incorporates the latest Qn vector correction step.
+///
+/// It also incorporates the equivalent support for Q2n vectors which could be the
+/// seed for future Q(m,n) support.
 ///
 /// It receives at construction time the set of event classes variables and the
 /// detector reference. The reference of the detector should only be obtained at
@@ -107,6 +110,12 @@ public:
   /// \return pointer to the current Qn vector instance
   QnCorrectionsQnVector *GetCurrentQnVector()
   { return &fCorrectedQnVector; }
+  /// Get the current Q2n vector
+  /// Makes it available for subsequent correction steps.
+  /// It could have already supported previous correction steps
+  /// \return pointer to the current Q2n vector instance
+  QnCorrectionsQnVector *GetCurrentQ2nVector()
+  { return &fCorrectedQ2nVector; }
   /// Update the current Qn vector
   /// Update towards what is the latest values of the Qn vector after executing a
   /// correction step to make it available to further steps.
@@ -114,6 +123,13 @@ public:
   /// \param changename kTRUE by default to keep track of the subsequent Qn vector corrections
   void UpdateCurrentQnVector(QnCorrectionsQnVector *newQnVector, Bool_t changename = kTRUE)
   { fCorrectedQnVector.Set(newQnVector, changename); }
+  /// Update the current Q2n vector
+  /// Update towards what is the latest values of the Q2n vector after executing a
+  /// correction step to make it available to further steps.
+  /// \param newQ2nVector the new values for the Q2n vector
+  /// \param changename kTRUE by default to keep track of the subsequent Q2n vector corrections
+  void UpdateCurrentQ2nVector(QnCorrectionsQnVector *newQ2nVector, Bool_t changename = kTRUE)
+  { fCorrectedQ2nVector.Set(newQ2nVector, changename); }
   /// Get the number of harmonics handled by the detector configuration
   /// \return the number of handled harmonics
   Int_t GetNoOfHarmonics() const
@@ -233,9 +249,12 @@ protected:
 /// The default initial size of data vectors banks
 #define INITIALDATAVECTORBANKSIZE 100000
   TClonesArray *fDataVectorBank;        //!<! input data for the current process / event
-  QnCorrectionsQnVector fPlainQnVector;     ///< Q vector from the post processed input data
-  QnCorrectionsQnVector fCorrectedQnVector; ///< Q vector after subsequent correction steps
+  QnCorrectionsQnVector fPlainQnVector;     ///< Qn vector from the post processed input data
+  QnCorrectionsQnVector fPlainQ2nVector;     ///< Q2n vector from the post processed input data
+  QnCorrectionsQnVector fCorrectedQnVector; ///< Qn vector after subsequent correction steps
+  QnCorrectionsQnVector fCorrectedQ2nVector; ///< Q2n vector after subsequent correction steps
   QnCorrectionsQnVectorBuild fTempQnVector; ///< temporary Qn vector for efficient Q vector building
+  QnCorrectionsQnVectorBuild fTempQ2nVector; ///< temporary Qn vector for efficient Q vector building
   QnCorrectionsQnVector::QnVectorNormalizationMethod fQnNormalizationMethod; ///< the method for Q vector normalization
   QnCorrectionsCorrectionsSetOnQvector fQnVectorCorrections; ///< set of corrections to apply on Q vectors
   /// set of variables that define event classes
@@ -250,7 +269,7 @@ private:
   QnCorrectionsDetectorConfigurationBase& operator= (const QnCorrectionsDetectorConfigurationBase &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetectorConfigurationBase, 2);
+  ClassDef(QnCorrectionsDetectorConfigurationBase, 3);
 /// \endcond
 };
 

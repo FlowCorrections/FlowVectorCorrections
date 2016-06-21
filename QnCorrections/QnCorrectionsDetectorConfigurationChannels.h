@@ -192,15 +192,21 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildRawQnVector() {
 /// subsequent Q vector corrections.
 inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
   fTempQnVector.Reset();
+  fTempQ2nVector.Reset();
 
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVectorChannelized *dataVector = static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
     fTempQnVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
+    fTempQ2nVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
   }
   fTempQnVector.CheckQuality();
+  fTempQ2nVector.CheckQuality();
   fTempQnVector.Normalize(fQnNormalizationMethod);
+  fTempQ2nVector.Normalize(fQnNormalizationMethod);
   fPlainQnVector.Set(&fTempQnVector, kFALSE);
+  fPlainQ2nVector.Set(&fTempQ2nVector, kFALSE);
   fCorrectedQnVector.Set(&fTempQnVector, kFALSE);
+  fCorrectedQ2nVector.Set(&fTempQ2nVector, kFALSE);
 }
 
 
@@ -261,7 +267,9 @@ inline void QnCorrectionsDetectorConfigurationChannels::ClearConfiguration() {
   fRawQnVector.Reset();
   /* clean the own Q vector */
   fPlainQnVector.Reset();
+  fPlainQ2nVector.Reset();
   fCorrectedQnVector.Reset();
+  fCorrectedQ2nVector.Reset();
   /* and now clear the the input data bank */
   fDataVectorBank->Clear("C");
 }
