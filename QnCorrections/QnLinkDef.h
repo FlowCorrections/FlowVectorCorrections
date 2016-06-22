@@ -43,14 +43,16 @@
 #pragma link C++ class QnCorrectionsInputGainEqualization+;
 #pragma link C++ class QnCorrectionsManager+;
 #pragma link C++ class QnCorrectionsProfile+;
+#pragma link C++ class QnCorrectionsProfile3DCorrelations+;
 #pragma link C++ class QnCorrectionsProfileChannelized+;
 #pragma link C++ class QnCorrectionsProfileChannelizedIngress+;
 #pragma link C++ class QnCorrectionsProfileComponents+;
 #pragma link C++ class QnCorrectionsProfileCorrelationComponents+;
 #pragma link C++ class QnCorrectionsProfileCorrelationComponentsHarmonics+;
 #pragma link C++ class QnCorrectionsQnVector+;
+#pragma link C++ class QnCorrectionsQnVectorAlignment+;
 #pragma link C++ class QnCorrectionsQnVectorBuild+;
 #pragma link C++ class QnCorrectionsQnVectorRecentering+;
-#pragma link C++ class QnCorrectionsQnVectorAlignment+;
+#pragma link C++ class QnCorrectionsQnVectorTwistAndRescaling+;
 
 #endif
