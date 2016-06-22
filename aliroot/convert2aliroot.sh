@@ -87,6 +87,7 @@ HistogramSparse
 InputGainEqualization
 Manager
 Profile
+Profile3DCorrelations
 ProfileChannelized
 ProfileChannelizedIngress
 ProfileComponents
@@ -95,7 +96,8 @@ ProfileCorrelationComponentsHarmonics
 QnVector
 QnVectorBuild
 QnVectorRecentering
-QnVectorAlignment"
+QnVectorAlignment
+QnVectorTwistAndRescaling"
 
 for j in $listclassesfiles; do
   mv $outputfolder/QnCorrections${j}.cxx $outputfolder/AliQnCorrections${j}.cxx

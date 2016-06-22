@@ -43,6 +43,7 @@ set (SOURCES
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx
   QnCorrectionsProfile.cxx
+  QnCorrectionsProfile3DCorrelation.cxx
   QnCorrectionsProfileChannelized.cxx
   QnCorrectionsProfileChannelizedIngress.cxx
   QnCorrectionsProfileComponents.cxx
@@ -52,6 +53,7 @@ set (SOURCES
   QnCorrectionsQnVectorBuild.cxx
   QnCorrectionsQnVectorAlignment.cxx
   QnCorrectionsQnVectorRecentering.cxx
+  QnCorrectionsQnVectorTwistAndRescale.cxx
 )
 
 string(REPLACE ".cxx" ".h" HEADERS "${SRCS}")
