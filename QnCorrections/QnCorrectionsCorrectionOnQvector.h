@@ -58,7 +58,16 @@ public:
   ///
   /// Pure virtual function
   /// \return kTRUE if everything went OK
-  virtual Bool_t Process(const Float_t *variableContainer) = 0;
+  virtual Bool_t ProcessCorrections(const Float_t *variableContainer) = 0;
+  /// Processes the correction step data collection
+  ///
+  /// Pure virtual function
+  /// \return kTRUE if everything went OK
+  virtual Bool_t ProcessDataCollection(const Float_t *variableContainer) = 0;
+  /// Gets the corrected Qn vector
+  /// \return the corrected Qn vector
+  const QnCorrectionsQnVector *GetCorrectedQnVector() const
+  { return fCorrectedQnVector; }
   virtual void IncludeCorrectedQnVector(TList *list);
   /// Clean the correction to accept a new event
   /// Pure virtual function
@@ -84,8 +93,9 @@ private:
 
 protected:
   QnCorrectionsQnVector *fCorrectedQnVector;    //!<! the step corrected Qn vector
+  const QnCorrectionsQnVector *fInputQnVector;   //!<! the previous step corrected Qn vector
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsCorrectionOnQvector, 1);
+  ClassDef(QnCorrectionsCorrectionOnQvector, 2);
 /// \endcond
 };
 

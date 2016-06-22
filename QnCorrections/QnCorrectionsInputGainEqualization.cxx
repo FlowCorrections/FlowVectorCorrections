@@ -205,8 +205,11 @@ Bool_t QnCorrectionsInputGainEqualization::CreateNveQAHistograms(TList *list) {
 /// Data are always taken from the data bank from the equalized weights
 /// allowing chaining of input data corrections so, caution must be taken to be
 /// sure that, on initialising, weight and equalized weight match
+/// Due to this structure as today it is not possible to split data collection
+/// from correction processing. If so is required probably multiple equalization
+/// structures should be included.
 /// \return kTRUE if the correction step was applied
-Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContainer) {
+Bool_t QnCorrectionsInputGainEqualization::ProcessCorrections(const Float_t *variableContainer) {
   switch (fState) {
   case QCORRSTEP_calibration:
     /* collect the data needed to further produce equalization parameters */
@@ -307,6 +310,32 @@ Bool_t QnCorrectionsInputGainEqualization::Process(const Float_t *variableContai
         fQAMultiplicityAfter->Fill(variableContainer, dataVector->GetId(), dataVector->EqualizedWeight());
       }
     }
+    break;
+  }
+  return kTRUE;
+}
+
+/// Processes the correction data collection step
+///
+/// Data are always taken from the data bank from the equalized weights
+/// allowing chaining of input data corrections so, caution must be taken to be
+/// sure that, on initialising, weight and equalized weight match
+/// Due to this structure as today it is not possible to split data collection
+/// from correction processing. If so is required probably multiple equalization
+/// structures should be included.
+/// So this function only retures the proper value according to the status.
+/// \return kTRUE if the correction step was applied
+Bool_t QnCorrectionsInputGainEqualization::ProcessDataCollection(const Float_t *variableContainer) {
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    /* collect the data needed to further produce equalization parameters */
+    return kFALSE;
+    break;
+  case QCORRSTEP_applyCollect:
+    /* collect the data needed to further produce equalization parameters */
+    /* and proceed to ... */
+  case QCORRSTEP_apply: /* apply the equalization */
+    /* collect QA data if asked */
     break;
   }
   return kTRUE;

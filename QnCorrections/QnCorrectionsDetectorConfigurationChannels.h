@@ -87,6 +87,7 @@ public:
   { QnCorrectionsDetectorConfigurationBase::ActivateHarmonic(harmonic); fRawQnVector.ActivateHarmonic(harmonic); }
   virtual Bool_t AttachCorrectionInputs(TList *list);
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
+  virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
 
   virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
 
@@ -207,7 +208,7 @@ inline void QnCorrectionsDetectorConfigurationChannels::BuildQnVector() {
 /// Ask for processing corrections for the involved detector configuration
 ///
 /// The request is transmitted to the incoming data correction steps
-/// and to then to Q vector correction steps.
+/// and then to Q vector correction steps.
 /// The first not applied correction step breaks the loop and kFALSE is returned
 /// \return kTRUE if all correction steps were applied
 inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(const Float_t *variableContainer) {
@@ -217,7 +218,7 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(con
 
   /* then we transfer the request to the input data correction steps */
   for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
-    if (fInputDataCorrections.At(ixCorrection)->Process(variableContainer))
+    if (fInputDataCorrections.At(ixCorrection)->ProcessCorrections(variableContainer))
       continue;
     else
       return kFALSE;
@@ -233,7 +234,34 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(con
 
   /* now let's propagate it to Q vector corrections */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    if (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer))
+    if (fQnVectorCorrections.At(ixCorrection)->ProcessCorrections(variableContainer))
+      continue;
+    else
+      return kFALSE;
+  }
+  /* all correction steps were applied */
+  return kTRUE;
+}
+
+/// Ask for processing corrections data collection for the involved detector configuration
+///
+/// The request is transmitted to the incoming data correction steps
+/// and then to Q vector correction steps.
+/// The first not applied correction step should break the loop after collecting the data and kFALSE is returned
+/// \return kTRUE if all correction steps were applied
+inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessDataCollection(const Float_t *variableContainer) {
+
+  /* we transfer the request to the input data correction steps */
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    if (fInputDataCorrections.At(ixCorrection)->ProcessDataCollection(variableContainer))
+      continue;
+    else
+      return kFALSE;
+  }
+
+  /* now let's propagate it to Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    if (fQnVectorCorrections.At(ixCorrection)->ProcessDataCollection(variableContainer))
       continue;
     else
       return kFALSE;

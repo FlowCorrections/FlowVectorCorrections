@@ -45,6 +45,7 @@ QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector() :
     QnCorrectionsCorrectionStepBase() {
 
   fCorrectedQnVector = NULL;
+  fInputQnVector = NULL;
 }
 
 /// Normal constructor
@@ -54,6 +55,7 @@ QnCorrectionsCorrectionOnQvector::QnCorrectionsCorrectionOnQvector(const char *n
     QnCorrectionsCorrectionStepBase(name, key) {
 
   fCorrectedQnVector = NULL;
+  fInputQnVector = NULL;
 }
 
 /// Default destructor

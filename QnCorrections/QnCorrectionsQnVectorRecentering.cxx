@@ -80,6 +80,7 @@ void QnCorrectionsQnVectorRecentering::CreateSupportDataStructures() {
   Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
   fCorrectedQnVector = new QnCorrectionsQnVector(szCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
+  fInputQnVector = fDetectorConfiguration->GetPreviousCorrectedQnVector(this);
   delete [] harmonicsMap;
 }
 
@@ -158,34 +159,16 @@ Bool_t QnCorrectionsQnVectorRecentering::CreateNveQAHistograms(TList *list) {
 ///
 /// Pure virtual function
 /// \return kTRUE if the correction step was applied
-Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContainer) {
+Bool_t QnCorrectionsQnVectorRecentering::ProcessCorrections(const Float_t *variableContainer) {
   Int_t harmonic;
   switch (fState) {
   case QCORRSTEP_calibration:
-    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
     /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
-    if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
-      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-      while (harmonic != -1) {
-        fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
-        fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
-        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
-      }
-    }
     /* we have not perform any correction yet */
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
-    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
     /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
-    if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
-      harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetFirstHarmonic();
-      while (harmonic != -1) {
-        fCalibrationHistograms->FillX(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qx(harmonic));
-        fCalibrationHistograms->FillY(harmonic,variableContainer,fDetectorConfiguration->GetCurrentQnVector()->Qy(harmonic));
-        harmonic = fDetectorConfiguration->GetCurrentQnVector()->GetNextHarmonic(harmonic);
-      }
-    }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
     QnCorrectionsInfo(Form("Recentering process in detector %s: applying correction.", fDetectorConfiguration->GetName()));
@@ -224,6 +207,46 @@ Bool_t QnCorrectionsQnVectorRecentering::Process(const Float_t *variableContaine
     }
     /* and update the current Qn vector */
     fDetectorConfiguration->UpdateCurrentQnVector(fCorrectedQnVector);
+    break;
+  }
+  /* if we reached here is because we applied the correction */
+  return kTRUE;
+}
+
+/// Processes the correction step data collection
+///
+/// Pure virtual function
+/// \return kTRUE if the correction step was applied
+Bool_t QnCorrectionsQnVectorRecentering::ProcessDataCollection(const Float_t *variableContainer) {
+  Int_t harmonic;
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
+    /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
+    if (fInputQnVector->IsGoodQuality()) {
+      harmonic = fInputQnVector->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fCalibrationHistograms->FillX(harmonic,variableContainer,fInputQnVector->Qx(harmonic));
+        fCalibrationHistograms->FillY(harmonic,variableContainer,fInputQnVector->Qy(harmonic));
+        harmonic = fInputQnVector->GetNextHarmonic(harmonic);
+      }
+    }
+    /* we have not perform any correction yet */
+    return kFALSE;
+    break;
+  case QCORRSTEP_applyCollect:
+    QnCorrectionsInfo(Form("Recentering process in detector %s: collecting data.", fDetectorConfiguration->GetName()));
+    /* collect the data needed to further produce correction parameters if the current Qn vector is good enough */
+    if (fInputQnVector->IsGoodQuality()) {
+      harmonic = fInputQnVector->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fCalibrationHistograms->FillX(harmonic,variableContainer,fInputQnVector->Qx(harmonic));
+        fCalibrationHistograms->FillY(harmonic,variableContainer,fInputQnVector->Qy(harmonic));
+        harmonic = fInputQnVector->GetNextHarmonic(harmonic);
+      }
+    }
+    /* and proceed to ... */
+  case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
     break;
   }
   /* if we reached here is because we applied the correction */

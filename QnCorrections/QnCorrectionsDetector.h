@@ -59,6 +59,7 @@ public:
   Bool_t CreateNveQAHistograms(TList *list);
   Bool_t AttachCorrectionInputs(TList *list);
   Bool_t ProcessCorrections(const Float_t *variableContainer);
+  Bool_t ProcessDataCollection(const Float_t *variableContainer);
   void IncludeQnVectors(TList *list);
 
   /// Gets the name of the detector configuration at index that accepted last data vector
@@ -127,6 +128,20 @@ inline Bool_t QnCorrectionsDetector::ProcessCorrections(const Float_t *variableC
 
   for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
     Bool_t ret = fConfigurations.At(ixConfiguration)->ProcessCorrections(variableContainer);
+    retValue = retValue && ret;
+  }
+  return retValue;
+}
+
+/// Ask for processing corrections data collection for the involved detector
+///
+/// The request is transmitted to the attached detector configurations
+/// \return kTRUE if everything went OK
+inline Bool_t QnCorrectionsDetector::ProcessDataCollection(const Float_t *variableContainer) {
+  Bool_t retValue = kTRUE;
+
+  for (Int_t ixConfiguration = 0; ixConfiguration < fConfigurations.GetEntriesFast(); ixConfiguration++) {
+    Bool_t ret = fConfigurations.At(ixConfiguration)->ProcessDataCollection(variableContainer);
     retValue = retValue && ret;
   }
   return retValue;

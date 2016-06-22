@@ -51,11 +51,8 @@ public:
   virtual Bool_t CreateNveQAHistograms(TList *list);
   virtual Bool_t AttachCorrectionInputs(TList *list);
 
-  /// Ask for processing corrections for the involved detector configuration
-  ///
-  /// The request is transmitted to the Q vector correction steps
-  /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
+  virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
   virtual Bool_t AddDataVector(const Float_t *variableContainer, Double_t phi, Double_t weight = 1.0, Int_t channelId = -1);
 
   virtual void BuildQnVector();
@@ -149,7 +146,25 @@ inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessCorrections(const
   /* then we transfer the request to the Q vector correction steps */
   /* the loop is broken when a correction step has not been applied */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
-    if (fQnVectorCorrections.At(ixCorrection)->Process(variableContainer))
+    if (fQnVectorCorrections.At(ixCorrection)->ProcessCorrections(variableContainer))
+      continue;
+    else
+      return kFALSE;
+  }
+  /* all correction steps were applied */
+  return kTRUE;
+}
+
+/// Ask for processing corrections data collection for the involved detector configuration
+///
+/// The request is transmitted to the Q vector correction steps.
+/// The first not applied correction step breaks the loop and kFALSE is returned
+/// \return kTRUE if all correction steps were applied
+inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessDataCollection(const Float_t *variableContainer) {
+  /* we transfer the request to the Q vector correction steps */
+  /* the loop is broken when a correction step has not been applied */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    if (fQnVectorCorrections.At(ixCorrection)->ProcessDataCollection(variableContainer))
       continue;
     else
       return kFALSE;

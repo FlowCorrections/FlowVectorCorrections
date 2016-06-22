@@ -107,6 +107,7 @@ public:
   /// \return pointer to the current Qn vector instance
   QnCorrectionsQnVector *GetCurrentQnVector()
   { return &fCorrectedQnVector; }
+  const QnCorrectionsQnVector *GetPreviousCorrectedQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) const;
   /// Update the current Qn vector
   /// Update towards what is the latest values of the Qn vector after executing a
   /// correction step to make it available to further steps.
@@ -167,10 +168,14 @@ public:
   ///
   /// Pure virtual function.
   /// The request is transmitted to the correction steps
-  /// and to then to Q vector correction steps
   /// \return kTRUE if everything went OK
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer) = 0;
-
+  /// Ask for processing corrections data collection for the involved detector configuration
+  ///
+  /// Pure virtual function.
+  /// The request is transmitted to the correction steps
+  /// \return kTRUE if everything went OK
+  virtual Bool_t ProcessDataCollection(const Float_t *variableContainer) = 0;
   /// Activate the processing for the passed harmonic
   /// \param harmonic the desired harmonic number to activate
   virtual void ActivateHarmonic(Int_t harmonic)

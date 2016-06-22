@@ -107,3 +107,17 @@ void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *cor
   }
 }
 
+/// Gets the correction on Qn vector previous to the one passed as argument
+/// \param correction the correction to find the previous one
+/// \return the previous correction, NULL if none
+const QnCorrectionsCorrectionOnQvector *QnCorrectionsCorrectionsSetOnQvector::GetPrevious(const QnCorrectionsCorrectionOnQvector *correction) const {
+  if (IsEmpty()) return NULL;
+  if (First()->GetName() == correction->GetName()) return NULL;
+  if (GetEntries() == 1) return NULL;
+  for (Int_t ix = 0; ix < GetEntries() - 1; ix++) {
+    if (At(ix+1)->GetName() == correction->GetName())
+      return At(ix);
+  }
+  return NULL;
+}
+

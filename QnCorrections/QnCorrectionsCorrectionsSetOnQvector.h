@@ -48,6 +48,7 @@ public:
 
   void AddCorrection(QnCorrectionsCorrectionOnQvector *correction);
   void FillOverallCorrectionsList(TList *correctionlist) const;
+  const QnCorrectionsCorrectionOnQvector *GetPrevious(const QnCorrectionsCorrectionOnQvector *correction) const;
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsCorrectionsSetOnQvector, 1);
 /// \endcond

@@ -107,6 +107,19 @@ void QnCorrectionsDetectorConfigurationBase::AddCorrectionOnInputData(QnCorrecti
       "QnCorrectionsDetectorConfigurationBase::AddCorrectionOnInputData()"));
 }
 
+/// Get the corrected Qn vector from the step previous to the one given
+/// If not previous step the plain Qn vector is returned.
+/// The user is not able to modify it.
+/// \param correctionOnQn the correction to find its predecessor corrected Qn vector
+/// \return the corrected Qn vector from the correction step predecessor or the plain Qn vector
+const QnCorrectionsQnVector *QnCorrectionsDetectorConfigurationBase::GetPreviousCorrectedQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) const {
+  if (fQnVectorCorrections.GetPrevious(correctionOnQn) != NULL)
+    return fQnVectorCorrections.GetPrevious(correctionOnQn)->GetCorrectedQnVector();
+  else
+    return &fPlainQnVector;
+}
+
+
 /// Checks if the current content of the variable bank applies to
 /// the detector configuration
 ///
