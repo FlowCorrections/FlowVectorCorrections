@@ -23,10 +23,17 @@
 /// \class QnCorrectionsQnVector
 /// \brief Class that models and encapsulates a Q vector set
 ///
+/// The class incorporates an harmonic multiplier that basically
+/// makes the Qn vector behave as a Qmxn vector. By default m=1
+/// to give the Qn behavior. If m=2 we get the Q2n behavior.
+/// The harmonics are always addressed by n but the return value
+/// always consider m. For the class this behavior only has impact
+/// in the calculation of the event plane but care should be taken
+/// by its descendant classes.
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
-/// \date Jan 27, 2016
+/// \date Jun 21, 2016
 class QnCorrectionsQnVector : public TNamed {
 
 public:
@@ -67,7 +74,7 @@ public:
   /// Set the good quality flag
   /// \param good kTRUE  if the quality is good
   virtual void SetGood(Bool_t good) { fGoodQuality = good; }
-
+  virtual void SetHarmonicMultiplier(Int_t m) { fHarmonicMultiplier = m; }
 
   void Set(QnCorrectionsQnVector* Qn, Bool_t changename);
 
@@ -120,9 +127,10 @@ protected:
   UInt_t  fHarmonicMask;                       ///< the mask for the supported harmonics
   Bool_t  fGoodQuality;                        ///< Qn vector good quality flag
   Int_t fN;                                    ///< number of elements used for Qn vector building
+  Int_t fHarmonicMultiplier;                   ///< the multiplier of the different harmonics
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVector, 2);
+  ClassDef(QnCorrectionsQnVector, 3);
 /// \endcond
 };
 

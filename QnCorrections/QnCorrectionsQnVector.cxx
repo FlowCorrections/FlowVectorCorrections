@@ -57,6 +57,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() : TNamed() {
   fHarmonicMask = 0x0000;
   fGoodQuality = kFALSE;
   fN = 0;
+  fHarmonicMultiplier = 1;
 }
 
 /// Normal constructor
@@ -104,6 +105,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmon
   }
   fGoodQuality = kFALSE;
   fN = 0;
+  fHarmonicMultiplier = 1;
 }
 
 /// Copy constructor
@@ -117,6 +119,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
   fHarmonicMask = Qn.fHarmonicMask;
   fGoodQuality = Qn.fGoodQuality;
   fN = Qn.fN;
+  fHarmonicMultiplier = Qn.fHarmonicMultiplier;
 }
 
 /// Default destructor
@@ -196,7 +199,8 @@ void QnCorrectionsQnVector::GetHarmonicsMap(Int_t *harmonicMapStore) const {
 /// \param changename kTRUE if the name of the Qn vector must also be changed
 void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn, Bool_t changename) {
   if ((fHighestHarmonic != Qn->fHighestHarmonic) ||
-      (fHarmonicMask != Qn->fHarmonicMask)) {
+      (fHarmonicMask != Qn->fHarmonicMask) ||
+      (fHarmonicMultiplier != Qn->fHarmonicMultiplier)) {
     QnCorrectionsFatal("You requested set a Q vector with the values of other Q " \
         "vector but the harmonic structures do not match");
     return;
@@ -240,7 +244,7 @@ Double_t QnCorrectionsQnVector::EventPlane(Int_t harmonic) const {
   if(TMath::Abs(Qx(harmonic)) < fMinimumSignificantValue && TMath::Abs(Qy(harmonic)) < fMinimumSignificantValue) {
     return 0.0;
   }
-  return TMath::ATan2(Qy(harmonic), Qx(harmonic))/Double_t(harmonic);
+  return TMath::ATan2(Qy(harmonic), Qx(harmonic))/Double_t(harmonic*fHarmonicMultiplier);
 }
 
 /// Print the Qn vector in a readable shape
@@ -249,7 +253,7 @@ void QnCorrectionsQnVector::Print(Option_t *) const {
   cout <<"OBJ: Qn vector step: " << GetName() << "\t" << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
   Int_t harmonic = GetFirstHarmonic();
   while (harmonic != -1) {
-    cout << "\t" << "\t" << "harmonic " << harmonic << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
+    cout << "\t" << "\t" << "harmonic " << harmonic * fHarmonicMultiplier << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic) << endl;
     harmonic = GetNextHarmonic(harmonic);
   }
 }
