@@ -74,6 +74,9 @@ public:
   /// Set the good quality flag
   /// \param good kTRUE  if the quality is good
   virtual void SetGood(Bool_t good) { fGoodQuality = good; }
+  /// Set the harmonic multiplier
+  /// With it different from one Qn behaves as Qmxn.
+  /// \param m the hamonic multiplier
   virtual void SetHarmonicMultiplier(Int_t m) { fHarmonicMultiplier = m; }
 
   void Set(QnCorrectionsQnVector* Qn, Bool_t changename);
