@@ -30,6 +30,13 @@
 /// {1,2,3,4,5} as map. Requesting just support for the harmonic
 /// four will require a map {4}.
 ///
+/// Externally the harmonic number is addressed as usual. An additional
+/// harmonic multiplier field allows to handle mxn harmonics. n is always
+/// the external harmonic required internally it si handled as well as
+/// n but all the information manipulated is really associated to mxn.
+/// Only in the histograms name it appears the proper mxn harmonic to
+/// not confuse the external user which browse the histograms.
+///
 /// \author Jaap Onderwaater <jacobus.onderwaater@cern.ch>, GSI
 /// \author Ilya Selyuzhenkov <ilya.selyuzhenkov@gmail.com>, GSI
 /// \author Víctor González <victor.gonzalez@cern.ch>, UCM
@@ -47,7 +54,7 @@ public:
       Option_t *option="");
   virtual ~QnCorrectionsProfile3DCorrelations();
 
-  Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  Bool_t CreateCorrelationComponentsProfileHistograms(TList *histogramList, Int_t nNoOfHarmonics, Int_t nHarmonicMultiplier = 1, Int_t *harmonicMap = NULL);
   virtual Bool_t AttachHistograms(TList *histogramList);
   /// wrong call for this class invoke base class behavior
   virtual Bool_t AttachHistograms(TList *histogramList, const Bool_t *bUsedChannel, const Int_t *nChannelGroup)
@@ -81,6 +88,7 @@ private:
   TString fNameA;               ///< the name of the A detector
   TString fNameB;               ///< the name of the B detector
   TString fNameC;               ///< the name of the C detector
+  Int_t fHarmonicMultiplier;    ///< the multiplier for the harmonic number
   /// \cond CLASSIMP
   ClassDef(QnCorrectionsProfile3DCorrelations, 1);
   /// \endcond
