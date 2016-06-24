@@ -67,21 +67,22 @@ public:
   virtual Float_t GetYXBinError(const char *comb, Int_t harmonic, Long64_t bin);
   virtual Float_t GetYYBinError(const char *comb, Int_t harmonic, Long64_t bin);
 
-  virtual void Fill(QnCorrectionsQnVector *QnA, QnCorrectionsQnVector *QnB, QnCorrectionsQnVector *QnC, const Float_t *variableContainer);
+  virtual void Fill(QnCorrectionsQnVector *QnA,
+      QnCorrectionsQnVector *QnB,
+      QnCorrectionsQnVector *QnC,
+      const Float_t *variableContainer);
 
 private:
-  THnF **fXXValues;            //!<! XX component histogram for each requested harmonic
-  THnF **fXYValues;            //!<! XY component histogram for each requested harmonic
-  THnF **fYXValues;            //!<! YX component histogram for each requested harmonic
-  THnF **fYYValues;            //!<! YY component histogram for each requested harmonic
-  UInt_t fXXharmonicFillMask;  //!<! keeps track of harmonic XX component filled values
-  UInt_t fXYharmonicFillMask;  //!<! keeps track of harmonic XY component filled values
-  UInt_t fYXharmonicFillMask;  //!<! keeps track of harmonic YX component filled values
-  UInt_t fYYharmonicFillMask;  //!<! keeps track of harmonic YY component filled values
-  UInt_t fFullFilled;          //!<! mask for the fully filled condition
+  THnF ***fXXValues;            //!<! XX component histogram for each requested harmonic
+  THnF ***fXYValues;            //!<! XY component histogram for each requested harmonic
+  THnF ***fYXValues;            //!<! YX component histogram for each requested harmonic
+  THnF ***fYYValues;            //!<! YY component histogram for each requested harmonic
   THnI  *fEntries;             //!<! Cumulates the number on each of the event classes
+  TString fNameA;               ///< the name of the A detector
+  TString fNameB;               ///< the name of the B detector
+  TString fNameC;               ///< the name of the C detector
   /// \cond CLASSIMP
-  ClassDef(QnCorrectionsProfileCorrelationComponentsHarmonics, 1);
+  ClassDef(QnCorrectionsProfile3DCorrelations, 1);
   /// \endcond
 };
 
