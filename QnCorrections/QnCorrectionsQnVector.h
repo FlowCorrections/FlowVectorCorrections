@@ -62,6 +62,9 @@ public:
   void GetHarmonicsMap(Int_t *harmonicMap) const;
   Int_t GetFirstHarmonic() const;
   Int_t GetNextHarmonic(Int_t harmonic) const;
+  /// Get the harmonic multiplier
+  /// \return the harmonic multiplier
+  Int_t GetHarmonicMultiplier() const;
 
   /// Sets the X component for the considered harmonic
   /// \param harmonic the intended harmonic
