@@ -111,6 +111,7 @@ void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *cor
 /// \param correction the correction to find the previous one
 /// \return the previous correction, NULL if none
 const QnCorrectionsCorrectionOnQvector *QnCorrectionsCorrectionsSetOnQvector::GetPrevious(const QnCorrectionsCorrectionOnQvector *correction) const {
+  if (correction == NULL) return NULL;
   if (IsEmpty()) return NULL;
   if (First()->GetName() == correction->GetName()) return NULL;
   if (GetEntries() == 1) return NULL;
