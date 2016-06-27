@@ -169,36 +169,21 @@ void QnCorrectionsQnVectorTwistAndRescale::AttachedToFrameworkManager() {
 }
 
 /// Asks for support data structures creation
-/// Remember, we support only half of the harmonics within the detector configuration
-/// Creates the recentered Qn vector
+/// Creates the corrected Qn vectors
 void QnCorrectionsQnVectorTwistAndRescale::CreateSupportDataStructures() {
 
   Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
   Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
-  Int_t *newHarmonicsMap = new Int_t[nNoOfHarmonics];
-  Int_t nNewNoOfHarmonics = 0;
 
-  /* get the harmonics structure. Should be half of the current one assigned to the detector */
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
-  Int_t nCurrentHarmonic;
-  for (Int_t h = 0; h < nNoOfHarmonics; h++) {
-    if (harmonicsMap != NULL) {
-      nCurrentHarmonic = harmonicsMap[h];
-    }
-    else {
-      nCurrentHarmonic = h + 1;
-    }
-    if ((nCurrentHarmonic%2) != 0) continue;
-    newHarmonicsMap[nNewNoOfHarmonics] = nCurrentHarmonic / 2;
-    nNewNoOfHarmonics++;
-  }
-  fCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNewNoOfHarmonics, newHarmonicsMap);
-  fTwistCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNewNoOfHarmonics, newHarmonicsMap);
-  fRescaleCorrectedQnVector = new QnCorrectionsQnVector(szRescaleCorrectionName, nNewNoOfHarmonics, newHarmonicsMap);
+  /* now create the corrected Qn vectors */
+  fCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNoOfHarmonics, harmonicsMap);
+  fTwistCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNoOfHarmonics, harmonicsMap);
+  fRescaleCorrectedQnVector = new QnCorrectionsQnVector(szRescaleCorrectionName, nNoOfHarmonics, harmonicsMap);
+  /* get the input vectors we need */
   fInputQnVector = fDetectorConfiguration->GetPreviousCorrectedQnVector(this);
   fPlaneQnVector = fDetectorConfiguration->GetPreviousCorrectedQnVector(NULL);
   delete [] harmonicsMap;
-  delete [] newHarmonicsMap;
 }
 
 /// Asks for support histograms creation
@@ -414,8 +399,10 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
       /* TODO: UPDATE THE CURRENT Qn VECTOR */
       break;
     case TWRESCALE_correlations:
-      QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method.",
-          fDetectorConfiguration->GetName()));
+      QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method.",
+          fDetectorConfiguration->GetName(),
+          fBDetectorConfiguration->GetName(),
+          fCDetectorConfiguration->GetName()));
       if (fDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) {
         /* we cannot set them because they have different harmonic structures */
         fCorrectedQnVector->SetN(fDetectorConfiguration->GetCurrentQnVector()->GetN());
@@ -505,48 +492,74 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
   switch (fState) {
   case QCORRSTEP_calibration:
     /* logging */
-    QnCorrectionsInfo(Form("Alignment process in detector %s with reference %s: collecting data.",
-        fDetectorConfiguration->GetName(),
-        fDetectorConfigurationForAlignment->GetName()));
-    /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
-    if ((fInputQnVector->IsGoodQuality()) &&
-        (fDetectorConfigurationForAlignment->GetCurrentQnVector()->IsGoodQuality())) {
-      fCalibrationHistograms->FillXX(variableContainer,
-          fInputQnVector->Qx(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qx(fHarmonicForAlignment) );
-      fCalibrationHistograms->FillXY(variableContainer,
-          fInputQnVector->Qx(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qy(fHarmonicForAlignment));
-      fCalibrationHistograms->FillYX(variableContainer,
-          fInputQnVector->Qy(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qx(fHarmonicForAlignment) );
-      fCalibrationHistograms->FillYY(variableContainer,
-          fInputQnVector->Qy(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qy(fHarmonicForAlignment));
+    switch (fTwistAndRescaleMethod) {
+    case TWRESCALE_doubleHarmonic:
+      QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method. Collecting data",
+          fDetectorConfiguration->GetName()));
+      /* remember, we only consider the harmonics in the corrected Qn vectors, i.e. the n ones for which 2n is available */
+      Int_t harmonic2n = fCorrectedQnVector->GetFirstHarmonic();
+      if (fPlaneQnVector->IsGoodQuality()) {
+        while (harmonic2n != -1) {
+          fDoubleHarmonicCalibrationHistograms->FillX(harmonic2n,variableContainer,fPlaneQnVector->Qx(harmonic2n));
+          fDoubleHarmonicCalibrationHistograms->FillY(harmonic2n,variableContainer,fPlaneQnVector->Qy(harmonic2n));
+          harmonic2n = fCorrectedQnVector->GetNextHarmonic(harmonic2n);
+        }
+      }
+      break;
+    case TWRESCALE_correlations:
+      QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
+          fDetectorConfiguration->GetName(),
+          fBDetectorConfiguration->GetName(),
+          fCDetectorConfiguration->GetName()));
+      /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
+      if ((fInputQnVector->IsGoodQuality()) &&
+          (fBDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) &&
+          (fCDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality())) {
+        fCorrelationsCalibrationHistograms->Fill(fInputQnVector,
+            fBDetectorConfiguration->GetCurrentQnVector(),
+            fCDetectorConfiguration->GetCurrentQnVector(),
+            variableContainer);
+      }
+      break;
+    default:
+      QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
     /* we have not perform any correction yet */
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
     /* logging */
-    QnCorrectionsInfo(Form("Alignment process in detector %s with reference %s: collecting data.",
-        fDetectorConfiguration->GetName(),
-        fDetectorConfigurationForAlignment->GetName()));
-    /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
-    if ((fInputQnVector->IsGoodQuality()) &&
-        (fDetectorConfigurationForAlignment->GetCurrentQnVector()->IsGoodQuality())) {
-      fCalibrationHistograms->FillXX(variableContainer,
-          fInputQnVector->Qx(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qx(fHarmonicForAlignment) );
-      fCalibrationHistograms->FillXY(variableContainer,
-          fInputQnVector->Qx(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qy(fHarmonicForAlignment));
-      fCalibrationHistograms->FillYX(variableContainer,
-          fInputQnVector->Qy(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qx(fHarmonicForAlignment) );
-      fCalibrationHistograms->FillYY(variableContainer,
-          fInputQnVector->Qy(fHarmonicForAlignment)
-          * fDetectorConfigurationForAlignment->GetCurrentQnVector()->Qy(fHarmonicForAlignment));
+    switch (fTwistAndRescaleMethod) {
+    case TWRESCALE_doubleHarmonic:
+      QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method. Collecting data",
+          fDetectorConfiguration->GetName()));
+      /* remember, we only consider the harmonics in the corrected Qn vectors, i.e. the n ones for which 2n is available */
+      Int_t harmonic2n = fCorrectedQnVector->GetFirstHarmonic();
+      if (fPlaneQnVector->IsGoodQuality()) {
+        while (harmonic2n != -1) {
+          fDoubleHarmonicCalibrationHistograms->FillX(harmonic2n,variableContainer,fPlaneQnVector->Qx(harmonic2n));
+          fDoubleHarmonicCalibrationHistograms->FillY(harmonic2n,variableContainer,fPlaneQnVector->Qy(harmonic2n));
+          harmonic2n = fCorrectedQnVector->GetNextHarmonic(harmonic2n);
+        }
+      }
+      break;
+    case TWRESCALE_correlations:
+      QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
+          fDetectorConfiguration->GetName(),
+          fBDetectorConfiguration->GetName(),
+          fCDetectorConfiguration->GetName()));
+      /* collect the data needed to further produce correction parameters if both current Qn vectors are good enough */
+      if ((fInputQnVector->IsGoodQuality()) &&
+          (fBDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality()) &&
+          (fCDetectorConfiguration->GetCurrentQnVector()->IsGoodQuality())) {
+        fCorrelationsCalibrationHistograms->Fill(fInputQnVector,
+            fBDetectorConfiguration->GetCurrentQnVector(),
+            fCDetectorConfiguration->GetCurrentQnVector(),
+            variableContainer);
+      }
+      break;
+    default:
+      QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
