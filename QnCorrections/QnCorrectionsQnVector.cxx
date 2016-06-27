@@ -108,6 +108,49 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmon
   fHarmonicMultiplier = 1;
 }
 
+/// Normal constructor for supporting a subset of the harmonics passed
+///
+/// For each integer harmonic number after dividing by the divisor the Q vector is initialized
+/// The Q vectors are organized to support external harmonic number.
+/// Only support for the desired harmonic multiples is build.
+/// If harmonicMap = [1, 2, 3, 4, 6, 8] is passed and the divisor
+/// is two then the created Qn vector has support for
+/// the harmonics numbers 1, 2, 3 and 4.
+///
+/// A check on the asked number of harmonics is made for having it within
+/// current implementation limits.
+///
+/// \param name the name of the Qn vector. Identifies its origin
+/// \param nDivisor the divisor of the harmonic number for getting the harmonic we want to create support for
+/// \param nNoOfHarmonics the number of harmonics passed within the map
+/// \param harmonicMap ordered array with the external number of the harmonics
+QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nDivisor, Int_t nNoOfHarmonics, Int_t *harmonicMap) :
+  TNamed(name,name) {
+
+  memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+
+  /* check whether within the supported harmonic range */
+  fHighestHarmonic = Int_t (harmonicMap[nNoOfHarmonics - 1] / nDivisor);
+
+  if (MAXHARMONICNUMBERSUPPORTED < fHighestHarmonic) {
+    QnCorrectionsFatal(Form("You requested support for harmonic %d but the highest harmonic supported by the framework is currently %d",
+        fHighestHarmonic, MAXHARMONICNUMBERSUPPORTED));
+  }
+
+  fHarmonicMask = 0x0000;
+  Int_t nCurrentHarmonic;
+  for (Int_t h = 0; h < nNoOfHarmonics; h++) {
+    nCurrentHarmonic = harmonicMap[h];
+
+    if ((nCurrentHarmonic % nDivisor) != 0) continue;
+    fHarmonicMask |= harmonicNumberMask[nCurrentHarmonic / nDivisor];
+  }
+  fGoodQuality = kFALSE;
+  fN = 0;
+  fHarmonicMultiplier = 1;
+}
+
 /// Copy constructor
 /// \param Qn the Q vector object to copy after construction
 QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
@@ -120,6 +163,41 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
   fGoodQuality = Qn.fGoodQuality;
   fN = Qn.fN;
   fHarmonicMultiplier = Qn.fHarmonicMultiplier;
+}
+
+/// Copy constructor for supporting a subset of the harmonics passed
+///
+/// For each integer harmonic number after dividing by the divisor the Q vector is copied
+///
+/// \param name the name of the Qn vector. Identifies its origin
+/// \param nDivisor the divisor of the harmonic number for getting the harmonic we want to create support for
+/// \param nNoOfHarmonics the number of harmonics passed within the map
+/// \param harmonicMap ordered array with the external number of the harmonics
+QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nDivisor, const QnCorrectionsQnVector &Q)  :
+    TNamed(Q) {
+
+  memset(fQnX, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
+  fHighestHarmonic = Int_t (Q.fHighestHarmonic / nDivisor);
+
+  fHarmonicMask = 0x0000;
+  Int_t nCurrentHarmonic;
+  for (Int_t h = 0; h < Q.fHighestHarmonic; h++) {
+    nCurrentHarmonic = h+1;
+
+    /* check if integer divisor */
+    if ((nCurrentHarmonic % nDivisor) != 0) continue;
+
+    /* check if active */
+    if (Q.fHarmonicMask & harmonicNumberMask[nCurrentHarmonic] != harmonicNumberMask[nCurrentHarmonic]) continue;
+
+    /* activate harmonic */
+    fHarmonicMask |= harmonicNumberMask[nCurrentHarmonic / nDivisor];
+  }
+
+  fGoodQuality = Q.fGoodQuality;
+  fN = Q.fN;
+  fHarmonicMultiplier = Q.fHarmonicMultiplier;
 }
 
 /// Default destructor

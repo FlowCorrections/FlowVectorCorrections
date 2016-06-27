@@ -54,7 +54,9 @@ public:
 
   QnCorrectionsQnVector();
   QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap = NULL);
+  QnCorrectionsQnVector(const char *name, Int_t nExtractMultipleOf, Int_t nNoOfHarmonics, Int_t *harmonicMap);
   QnCorrectionsQnVector(const QnCorrectionsQnVector &Q);
+  QnCorrectionsQnVector(Int_t nDivisor, const QnCorrectionsQnVector &Q);
   virtual ~QnCorrectionsQnVector();
 
   void ActivateHarmonic(Int_t harmonic);
