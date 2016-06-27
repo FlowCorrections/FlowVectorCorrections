@@ -74,9 +74,9 @@ public:
   virtual Float_t GetYXBinError(const char *comb, Int_t harmonic, Long64_t bin);
   virtual Float_t GetYYBinError(const char *comb, Int_t harmonic, Long64_t bin);
 
-  virtual void Fill(QnCorrectionsQnVector *QnA,
-      QnCorrectionsQnVector *QnB,
-      QnCorrectionsQnVector *QnC,
+  virtual void Fill(const QnCorrectionsQnVector *QnA,
+      const QnCorrectionsQnVector *QnB,
+      const QnCorrectionsQnVector *QnC,
       const Float_t *variableContainer);
 
 private:
