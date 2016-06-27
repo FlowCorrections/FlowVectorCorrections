@@ -801,9 +801,9 @@ Float_t QnCorrectionsProfile3DCorrelations::GetYYBinError(const char *comb, Int_
 /// \param harmonic the interested external harmonic number
 /// \param variableContainer the current variables content addressed by var Id
 /// \param weight the increment in the bin content
-void QnCorrectionsProfile3DCorrelations::Fill(QnCorrectionsQnVector *QnA,
-    QnCorrectionsQnVector *QnB,
-    QnCorrectionsQnVector *QnC,
+void QnCorrectionsProfile3DCorrelations::Fill(const QnCorrectionsQnVector *QnA,
+    const QnCorrectionsQnVector *QnB,
+    const QnCorrectionsQnVector *QnC,
     const Float_t *variableContainer) {
 
   /* first the sanity checks */
