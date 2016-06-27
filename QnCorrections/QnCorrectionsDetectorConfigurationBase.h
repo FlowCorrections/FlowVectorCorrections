@@ -117,6 +117,16 @@ public:
   /// \return pointer to the current Q2n vector instance
   QnCorrectionsQnVector *GetCurrentQ2nVector()
   { return &fCorrectedQ2nVector; }
+  /// Get the plain Qn vector
+  /// Makes it available for correction steps which need it.
+  /// \return pointer to the plain Qn vector instance
+  QnCorrectionsQnVector *GetPlainQnVector()
+  { return &fPlainQnVector; }
+  /// Get the plain Q2n vector
+  /// Makes it available for correction steps which need it.
+  /// \return pointer to the plain Qn vector instance
+  QnCorrectionsQnVector *GetPlainQ2nVector()
+  { return &fPlainQ2nVector; }
   /// Update the current Qn vector
   /// Update towards what is the latest values of the Qn vector after executing a
   /// correction step to make it available to further steps.
@@ -192,10 +202,7 @@ public:
   /// The request is transmitted to the correction steps
   /// \return kTRUE if everything went OK
   virtual Bool_t ProcessDataCollection(const Float_t *variableContainer) = 0;
-  /// Activate the processing for the passed harmonic
-  /// \param harmonic the desired harmonic number to activate
-  virtual void ActivateHarmonic(Int_t harmonic)
-  { fPlainQnVector.ActivateHarmonic(harmonic); fCorrectedQnVector.ActivateHarmonic(harmonic); }
+  virtual void ActivateHarmonic(Int_t harmonic);
   virtual void AddCorrectionOnQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn);
   virtual void AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData);
 

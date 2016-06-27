@@ -128,6 +128,16 @@ const QnCorrectionsQnVector *QnCorrectionsDetectorConfigurationBase::GetPrevious
     return &fPlainQnVector;
 }
 
+/// Activate the processing for the passed harmonic
+/// \param harmonic the desired harmonic number to activate
+void QnCorrectionsDetectorConfigurationBase::ActivateHarmonic(Int_t harmonic) {
+  fPlainQnVector.ActivateHarmonic(harmonic);
+  fCorrectedQnVector.ActivateHarmonic(harmonic);
+  fPlainQ2nVector.ActivateHarmonic(harmonic);
+  fCorrectedQ2nVector.ActivateHarmonic(harmonic);
+  fTempQnVector.ActivateHarmonic(harmonic);
+  fTempQ2nVector.ActivateHarmonic(harmonic);
+}
 
 /// Checks if the current content of the variable bank applies to
 /// the detector configuration
