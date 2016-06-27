@@ -45,21 +45,21 @@
 /// correction will be applied. Then
 ///
 /// \f[
-/// A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{2n} X^{C}_{2n} \rangle}\langle X^{A}_{2n} X^{B}_{2n} \rangle}
-/// {\sqrt{\langle X^{A}_{2n} X^{B}_{2n} \rangle \langle X^{B}_{2n} X^{C}_{2n} \rangle + \langle X^{A}_{2n} Y^{B}_{2n} \rangle \langle X^{B}_{2n} Y^{C}_{2n} \rangle}},
+/// A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle X^{A}_{n} X^{B}_{n} \rangle}
+/// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}},
 /// \f]
 ///
 /// \f[
-/// A^{A-}_{2n} = \frac{\sqrt{2 \langle X^{A}_{2n} X^{C}_{2n} \rangle}\langle Y^{A}_{2n} Y^{B}_{2n} \rangle}
-/// {\sqrt{\langle X^{A}_{2n} X^{B}_{2n} \rangle \langle X^{B}_{2n} X^{C}_{2n} \rangle + \langle X^{A}_{2n} Y^{B}_{2n} \rangle \langle X^{B}_{2n} Y^{C}_{2n} \rangle}},
+/// A^{A-}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle Y^{A}_{n} Y^{B}_{n} \rangle}
+/// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}},
 /// \f]
 ///
 /// \f[
-///  \Lambda^{A,+}_{2n} =  \frac{\langle X^{A}_{2n} Y^{B}_{2n} \rangle}{\langle X^{A}_{2n} X^{B}_{2n} \rangle}
+///  \Lambda^{A,+}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle X^{A}_{n} X^{B}_{n} \rangle}
 /// \f]
 /// and
 /// \f[
-///  \Lambda^{A,-}_{2n} =  \frac{\langle X^{A}_{2n} Y^{B}_{2n} \rangle}{\langle Y^{A}_{2n} Y^{B}_{2n} \rangle}
+///  \Lambda^{A,-}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle Y^{A}_{n} Y^{B}_{n} \rangle}
 /// \f]
 ///
 /// Twist and rescale are only applied if the class instance
@@ -150,12 +150,12 @@ public:
    ///
    enum QnTwistAndRescaleMethod {
      TWRESCALE_doubleHarmonic,      ///< \f$ A^{\pm}_{2n} = 1 \pm \langle X_{2n} \rangle, \qquad \Lambda ^{\pm}_{2n} = \frac{\langle Y_{2n} \rangle}{A^{\pm}_{2n}} \f$
-     TWRESCALE_correlations,    ///< \f$ A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{2n} X^{C}_{2n} \rangle}\langle X^{A}_{2n} X^{B}_{2n} \rangle}
-     /// {\sqrt{\langle X^{A}_{2n} X^{B}_{2n} \rangle \langle X^{B}_{2n} X^{C}_{2n} \rangle + \langle X^{A}_{2n} Y^{B}_{2n} \rangle \langle X^{B}_{2n} Y^{C}_{2n} \rangle}}, \\
-     /// A^{A-}_{2n} = \frac{\sqrt{2 \langle X^{A}_{2n} X^{C}_{2n} \rangle}\langle Y^{A}_{2n} Y^{B}_{2n} \rangle}
-     /// {\sqrt{\langle X^{A}_{2n} X^{B}_{2n} \rangle \langle X^{B}_{2n} X^{C}_{2n} \rangle + \langle X^{A}_{2n} Y^{B}_{2n} \rangle \langle X^{B}_{2n} Y^{C}_{2n} \rangle}}, \\
-     ///  \Lambda^{A,+}_{2n} =  \frac{\langle X^{A}_{2n} Y^{B}_{2n} \rangle}{\langle X^{A}_{2n} X^{B}_{2n} \rangle}, \quad
-     ///  \Lambda^{A,-}_{2n} =  \frac{\langle X^{A}_{2n} Y^{B}_{2n} \rangle}{\langle Y^{A}_{2n} Y^{B}_{2n} \rangle} \f$
+     TWRESCALE_correlations,    ///< \f$ A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle X^{A}_{n} X^{B}_{n} \rangle}
+     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\
+     /// A^{A-}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle Y^{A}_{n} Y^{B}_{n} \rangle}
+     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\
+     ///  \Lambda^{A,+}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle X^{A}_{n} X^{B}_{n} \rangle}, \quad
+     ///  \Lambda^{A,-}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle Y^{A}_{n} Y^{B}_{n} \rangle} \f$
    };
 
    QnCorrectionsQnVectorTwistAndRescale();
@@ -191,6 +191,7 @@ public:
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
   virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
   virtual void ClearCorrectionStep();
+  virtual void IncludeCorrectedQnVector(TList *list);
   virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:
@@ -220,7 +221,6 @@ private:
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
   QnCorrectionsQnVector *fTwistCorrectedQnVector;
   QnCorrectionsQnVector *fRescaleCorrectedQnVector;
-  QnCorrectionsQnVector *fPlaneQnVector;
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVectorTwistAndRescale, 1);
