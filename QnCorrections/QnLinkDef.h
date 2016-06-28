@@ -53,6 +53,6 @@
 #pragma link C++ class QnCorrectionsQnVectorAlignment+;
 #pragma link C++ class QnCorrectionsQnVectorBuild+;
 #pragma link C++ class QnCorrectionsQnVectorRecentering+;
-#pragma link C++ class QnCorrectionsQnVectorTwistAndRescaling+;
+#pragma link C++ class QnCorrectionsQnVectorTwistAndRescale+;
 
 #endif
