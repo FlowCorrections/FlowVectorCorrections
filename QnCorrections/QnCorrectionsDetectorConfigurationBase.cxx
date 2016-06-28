@@ -70,8 +70,11 @@ QnCorrectionsDetectorConfigurationBase::QnCorrectionsDetectorConfigurationBase(c
       Int_t *harmonicMap) :
           TNamed(name,name),
           fPlainQnVector(szPlainQnVectorName,nNoOfHarmonics, harmonicMap),
+          fPlainQ2nVector(Form("%s2n",szPlainQnVectorName),nNoOfHarmonics, harmonicMap),
           fCorrectedQnVector(szPlainQnVectorName,nNoOfHarmonics, harmonicMap),
+          fCorrectedQ2nVector(Form("%s2n",szPlainQnVectorName),nNoOfHarmonics, harmonicMap),
           fTempQnVector("temp",nNoOfHarmonics, harmonicMap),
+          fTempQ2nVector("temp2n",nNoOfHarmonics, harmonicMap),
           fQnVectorCorrections() {
 
   fDetector = NULL;
