@@ -66,7 +66,8 @@ public:
   Int_t GetNextHarmonic(Int_t harmonic) const;
   /// Get the harmonic multiplier
   /// \return the harmonic multiplier
-  Int_t GetHarmonicMultiplier() const;
+  Int_t GetHarmonicMultiplier() const
+  { return fHarmonicMultiplier; }
 
   /// Sets the X component for the considered harmonic
   /// \param harmonic the intended harmonic
