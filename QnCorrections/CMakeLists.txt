@@ -43,7 +43,7 @@ set (SOURCES
   QnCorrectionsLog.cxx
   QnCorrectionsManager.cxx
   QnCorrectionsProfile.cxx
-  QnCorrectionsProfile3DCorrelation.cxx
+  QnCorrectionsProfile3DCorrelations.cxx
   QnCorrectionsProfileChannelized.cxx
   QnCorrectionsProfileChannelizedIngress.cxx
   QnCorrectionsProfileComponents.cxx

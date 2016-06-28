@@ -97,7 +97,7 @@ QnVector
 QnVectorBuild
 QnVectorRecentering
 QnVectorAlignment
-QnVectorTwistAndRescaling"
+QnVectorTwistAndRescale"
 
 for j in $listclassesfiles; do
   mv $outputfolder/QnCorrections${j}.cxx $outputfolder/AliQnCorrections${j}.cxx
@@ -106,6 +106,9 @@ done
 
 # remove the framework tracing support
 rm $outputfolder/QnCorrectionsLog.*
+
+# the markup file
+mv $outputfolder/QnCorrections.md $outputfolder/AliQnCorrections.md  
 
 listC=`find $outputfolder/ -name '*.cxx'`
 listH=`find $outputfolder/ -name '*.h'`
