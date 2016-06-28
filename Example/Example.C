@@ -49,6 +49,7 @@
 #include "../QnCorrections/QnCorrectionsHistogram.h"
 #include "../QnCorrections/QnCorrectionsHistogramChannelized.h"
 #include "../QnCorrections/QnCorrectionsProfile.h"
+#include "../QnCorrections/QnCorrectionsProfile3DCorrelations.h"
 #include "../QnCorrections/QnCorrectionsProfileChannelized.h"
 #include "../QnCorrections/QnCorrectionsProfileChannelizedIngress.h"
 #include "../QnCorrections/QnCorrectionsProfileComponents.h"
@@ -70,6 +71,7 @@
 #include "../QnCorrections/QnCorrectionsInputGainEqualization.h"
 #include "../QnCorrections/QnCorrectionsQnVectorRecentering.h"
 #include "../QnCorrections/QnCorrectionsQnVectorAlignment.h"
+#include "../QnCorrections/QnCorrectionsQnVectorTwistAndRescale.h"
 
 using std::cout;
 using std::endl;
@@ -205,7 +207,7 @@ void Setup(QnCorrectionsManager* QnMan){
 #endif
 
   /* set some logging output */
-  QnCorrectionsSetTracingLevel(kInfo);
+  QnCorrectionsSetTracingLevel(kError);
 
   /* our event classes variables: vertexZ and centrality */
   const Int_t nEventClassesDimensions = 2;
@@ -243,6 +245,11 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorOnePositive->SetCuts(myPositiveCuts);
   myDetectorOnePositive->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   myDetectorOnePositive->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  QnCorrectionsQnVectorTwistAndRescale *twScale1A = new QnCorrectionsQnVectorTwistAndRescale();
+  twScale1A->SetApplyTwist(kTRUE);
+  twScale1A->SetApplyRescale(kFALSE);
+  twScale1A->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_doubleHarmonic);
+  myDetectorOnePositive->AddCorrectionOnQnVector(twScale1A);
 
   QnCorrectionsDetectorConfigurationTracks *myDetectorOneNegative =
       new QnCorrectionsDetectorConfigurationTracks(
@@ -253,6 +260,11 @@ void Setup(QnCorrectionsManager* QnMan){
   myDetectorOneNegative->SetCuts(myNegativeCuts);
   myDetectorOneNegative->SetQVectorNormalizationMethod(QnCorrectionsQnVector::QVNORM_QoverM);
   myDetectorOneNegative->AddCorrectionOnQnVector(new QnCorrectionsQnVectorRecentering());
+  QnCorrectionsQnVectorTwistAndRescale *twScale1C = new QnCorrectionsQnVectorTwistAndRescale();
+  twScale1C->SetApplyTwist(kTRUE);
+  twScale1C->SetApplyRescale(kFALSE);
+  twScale1C->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_doubleHarmonic);
+  myDetectorOneNegative->AddCorrectionOnQnVector(twScale1C);
 
   /* add the configurations to the detector */
   myDetectorOne->AddDetectorConfiguration(myDetectorOnePositive);
@@ -308,6 +320,11 @@ void Setup(QnCorrectionsManager* QnMan){
   alignA->SetReferenceConfigurationForAlignment("Det1pos");
   alignA->SetHarmonicNumberForAlignment(2);
   myDetectorTwoA->AddCorrectionOnQnVector(alignA);
+  QnCorrectionsQnVectorTwistAndRescale *twScale2A = new QnCorrectionsQnVectorTwistAndRescale();
+  twScale2A->SetApplyTwist(kTRUE);
+  twScale2A->SetApplyRescale(kTRUE);
+  twScale2A->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  myDetectorTwoA->AddCorrectionOnQnVector(twScale2A);
 
   QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
       new QnCorrectionsDetectorConfigurationChannels(
@@ -334,6 +351,14 @@ void Setup(QnCorrectionsManager* QnMan){
   alignC->SetReferenceConfigurationForAlignment("Det1pos");
   alignC->SetHarmonicNumberForAlignment(2);
   myDetectorTwoC->AddCorrectionOnQnVector(alignC);
+  QnCorrectionsQnVectorTwistAndRescale *twScale2C = new QnCorrectionsQnVectorTwistAndRescale();
+  twScale2C->SetApplyTwist(kTRUE);
+  twScale2C->SetApplyRescale(kTRUE);
+  twScale2C->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  myDetectorTwoC->AddCorrectionOnQnVector(twScale2C);
+
+  twScale2C->SetReferenceConfigurationsForTwistAndRescale("Det1pos","Det2A");
+  twScale2A->SetReferenceConfigurationsForTwistAndRescale("Det1pos","Det2C");
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);
@@ -341,6 +366,8 @@ void Setup(QnCorrectionsManager* QnMan){
 
   /* finally add the detector to the framework */
   QnMan->AddDetector(myDetectorTwo);
+
+  printf("\n================ CONFIGURED ================\n\n");
 
   /* order the appropriate output */
   QnMan->SetShouldFillQAHistograms(kTRUE);
@@ -350,8 +377,12 @@ void Setup(QnCorrectionsManager* QnMan){
   /* initialize the corrections framework */
   QnMan->InitializeQnCorrectionsFramework();
 
+  printf("\n================ INITIALIZED ================\n\n");
+
   /* here we should be able to store produced data vectors */
   QnMan->SetCurrentProcessListName("Example");
+
+  printf("\n================ FINISH SETUP ================\n\n");
 }
 
 /// the final output and clean up routine
@@ -457,10 +488,10 @@ void Loop(QnCorrectionsManager* QnMan){
 
   QnMan->ProcessEvent();
 
-//  PrintQnVectorList(QnMan->GetQnVectorList());
+  PrintQnVectorList(QnMan->GetQnVectorList());
 }
 
-/* print the Qn vector list */
+/// print the Qn vector list
 void PrintQnVectorList(TList *list) {
   list->Print("",-1);
 }

@@ -28,12 +28,14 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCutsSet.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCutValue.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCutWithin.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVector.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramBase.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogram.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramChannelized.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramChannelizedSparse.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsHistogramSparse.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfile.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfile3DCorrelations.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfileChannelized.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfileChannelizedIngress.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfileComponents.cxx"+debugString);
@@ -41,7 +43,6 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsProfileCorrelationComponentsHarmonics.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsDataVector.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsDataVectorChannelized.cxx"+debugString);
-  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVector.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorBuild.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCorrectionStepBase.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsCorrectionsSetOnInputData.cxx"+debugString);
@@ -57,6 +58,7 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsInputGainEqualization.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorRecentering.cxx"+debugString);
   gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorAlignment.cxx"+debugString);
+  gROOT->LoadMacro(location+"QnCorrections/QnCorrectionsQnVectorTwistAndRescale.cxx"+debugString);
 
   gROOT->LoadMacro("Example.C"+debugString);
 
