@@ -5,9 +5,10 @@
 #include "TList.h"
 
 #include "QnCorrectionsEventClassVariablesSet.h"
-#include "QnCorrectionsProfile3DCorrelations.h"
 #include "QnCorrectionsQnVector.h"
 #include "QnCorrectionsLog.h"
+
+#include "QnCorrectionsProfile3DCorrelations.h"
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsProfile3DCorrelations);
@@ -18,16 +19,13 @@ ClassImp(QnCorrectionsProfile3DCorrelations);
 
 /// Default constructor
 QnCorrectionsProfile3DCorrelations::QnCorrectionsProfile3DCorrelations() :
-    QnCorrectionsHistogramBase() {
+    QnCorrectionsHistogramBase(), fNameA(""), fNameB(""), fNameC("") {
 
   fXXValues = NULL;
   fXYValues = NULL;
   fYXValues = NULL;
   fYYValues = NULL;
   fEntries = NULL;
-  fNameA();
-  fNameB();
-  fNameC();
   fHarmonicMultiplier = 1;
 }
 
@@ -53,16 +51,13 @@ QnCorrectionsProfile3DCorrelations::QnCorrectionsProfile3DCorrelations(const cha
     const char *nameC,
     QnCorrectionsEventClassVariablesSet &ecvs,
     Option_t *option) :
-        QnCorrectionsHistogramBase(name, title, ecvs, option) {
+        QnCorrectionsHistogramBase(name, title, ecvs, option), fNameA(nameA), fNameB(nameB), fNameC(nameC) {
 
   fXXValues = NULL;
   fXYValues = NULL;
   fYXValues = NULL;
   fYYValues = NULL;
   fEntries = NULL;
-  fNameA(nameA);
-  fNameB(nameB);
-  fNameC(nameC);
   fHarmonicMultiplier = 1;
 }
 
@@ -199,16 +194,16 @@ Bool_t QnCorrectionsProfile3DCorrelations::CreateCorrelationComponentsProfileHis
         currentHarmonic++;
       }
       /* let's build the histograms names and titles */
-      TString BaseName = Form("%s %s,%s,%s %sx%s", GetName(), fNameA.Data(), fNameB.Data(), fNameC.Data(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
-      TString BaseTitle = Form("%s %s,%s,%s %sx%s", GetTitle(), fNameA.Data(), fNameB.Data(), fNameC.Data(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
-      TString histoXXName = BaseName(); histoXXName += szXXCorrelationComponentSuffix;
-      TString histoXYName = BaseName(); histoXYName += szXYCorrelationComponentSuffix;
-      TString histoYXName = BaseName(); histoYXName += szYXCorrelationComponentSuffix;
-      TString histoYYName = BaseName(); histoYYName += szYYCorrelationComponentSuffix;
-      TString histoXXTitle = BaseTitle(); histoXXTitle += szXXCorrelationComponentSuffix;
-      TString histoXYTitle = BaseTitle(); histoXYTitle += szXYCorrelationComponentSuffix;
-      TString histoYXTitle = BaseTitle(); histoYXTitle += szYXCorrelationComponentSuffix;
-      TString histoYYTitle = BaseTitle(); histoYYTitle += szYYCorrelationComponentSuffix;
+      TString BaseName = Form("%s %sx%s", GetName(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
+      TString BaseTitle = Form("%s %sx%s", GetTitle(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
+      TString histoXXName = BaseName; histoXXName += szXXCorrelationComponentSuffix;
+      TString histoXYName = BaseName; histoXYName += szXYCorrelationComponentSuffix;
+      TString histoYXName = BaseName; histoYXName += szYXCorrelationComponentSuffix;
+      TString histoYYName = BaseName; histoYYName += szYYCorrelationComponentSuffix;
+      TString histoXXTitle = BaseTitle; histoXXTitle += szXXCorrelationComponentSuffix;
+      TString histoXYTitle = BaseTitle; histoXYTitle += szXYCorrelationComponentSuffix;
+      TString histoYXTitle = BaseTitle; histoYXTitle += szYXCorrelationComponentSuffix;
+      TString histoYYTitle = BaseTitle; histoYYTitle += szYYCorrelationComponentSuffix;
 
       fXXValues[ixComb][currentHarmonic] = new THnF(Form("%s_h%d", (const char *) histoXXName, currentHarmonic * fHarmonicMultiplier),
           Form("%s h%d", (const char *) histoXXTitle, currentHarmonic),
@@ -308,6 +303,7 @@ Bool_t QnCorrectionsProfile3DCorrelations::CreateCorrelationComponentsProfileHis
 /// \return true if properly attached else false
 Bool_t QnCorrectionsProfile3DCorrelations::AttachHistograms(TList *histogramList) {
   /* initialize. Remember we don't own the histograms */
+  QnCorrectionsInfo("");
   fEntries = NULL;
   if (fXXValues != NULL) {
     for (Int_t ixComb = 0; ixComb < CORRELATIONSNOOFQNVECTORS; ixComb++) {
@@ -347,7 +343,7 @@ Bool_t QnCorrectionsProfile3DCorrelations::AttachHistograms(TList *histogramList
   entriesHistoName += szYYCorrelationComponentSuffix;
   entriesHistoName += szEntriesHistoSuffix;
 
-  Bool_t bCorrectCombination;
+  UInt_t harmonicFilledMask = 0x0000;
   fEntries = (THnI *) histogramList->FindObject((const char*) entriesHistoName);
   if (fEntries != NULL && fEntries->GetEntries() != 0) {
     /* allocate enough space for the supported harmonic numbers */
@@ -363,16 +359,15 @@ Bool_t QnCorrectionsProfile3DCorrelations::AttachHistograms(TList *histogramList
     }
     /* search the multidimensional histograms for each harmonic and Qn vecto correlation combination */
     const char *combNames[CORRELATIONSNOOFQNVECTORS] = {fNameA.Data(),fNameB.Data(),fNameC.Data() };
-    bCorrectCombination = kTRUE;
     for (Int_t ixComb = 0; ixComb < CORRELATIONSNOOFQNVECTORS; ixComb++) {
       Int_t currentHarmonic = 0;
       /* let's build the histograms names */
-      TString BaseName = Form("%s %s,%s,%s %sx%s", GetName(), fNameA.Data(), fNameB.Data(), fNameC.Data(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
-      TString BaseTitle = Form("%s %s,%s,%s %sx%s", GetTitle(), fNameA.Data(), fNameB.Data(), fNameC.Data(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
-      TString histoXXName = BaseName(); histoXXName += szXXCorrelationComponentSuffix;
-      TString histoXYName = BaseName(); histoXYName += szXYCorrelationComponentSuffix;
-      TString histoYXName = BaseName(); histoYXName += szYXCorrelationComponentSuffix;
-      TString histoYYName = BaseName(); histoYYName += szYYCorrelationComponentSuffix;
+      TString BaseName = Form("%s %sx%s", GetName(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
+      TString BaseTitle = Form("%s %sx%s", GetTitle(), combNames[ixComb], combNames[(ixComb+1)%CORRELATIONSNOOFQNVECTORS]);
+      TString histoXXName = BaseName; histoXXName += szXXCorrelationComponentSuffix;
+      TString histoXYName = BaseName; histoXYName += szXYCorrelationComponentSuffix;
+      TString histoYXName = BaseName; histoYXName += szYXCorrelationComponentSuffix;
+      TString histoYYName = BaseName; histoYYName += szYYCorrelationComponentSuffix;
       for (Int_t i = 0; i < nMaxHarmonicNumberSupported; i++) {
         currentHarmonic++;
 
@@ -382,16 +377,19 @@ Bool_t QnCorrectionsProfile3DCorrelations::AttachHistograms(TList *histogramList
         fYYValues[ixComb][currentHarmonic] = (THnF *) histogramList->FindObject(Form("%s_h%d", (const char *) histoYYName, currentHarmonic * fHarmonicMultiplier));
 
         /* update the correcto condition */
-        bCorrectCombination = bCorrectCombination && (fXXValues[currentHarmonic]  != NULL) && (fXYValues[currentHarmonic] != NULL)
-            && (fYXValues[currentHarmonic] != NULL) && (fYYValues[currentHarmonic] != NULL);
+        if ((fXXValues[ixComb][currentHarmonic]  != NULL) && (fXYValues[ixComb][currentHarmonic] != NULL)
+            && (fYXValues[ixComb][currentHarmonic] != NULL) && (fYYValues[ixComb][currentHarmonic] != NULL))
+          harmonicFilledMask |= harmonicNumberMask[currentHarmonic];
       }
     }
   }
-  else
+  else {
+    QnCorrectionsInfo(Form("Calibration histogram %s NOT FOUND", (const char*) entriesHistoName));
     return kFALSE;
+  }
 
   /* check that we actually got something */
-  if (bCorrectCombination)
+  if (harmonicFilledMask != 0x0000)
     return kTRUE;
   else
     return kFALSE;
@@ -817,7 +815,7 @@ void QnCorrectionsProfile3DCorrelations::Fill(const QnCorrectionsQnVector *QnA,
   FillBinAxesValues(variableContainer);
 
   /* consider all combinations */
-  QnCorrectionsQnVector *combQn[CORRELATIONSNOOFQNVECTORS] = {QnA,QnB,QnC};
+  const QnCorrectionsQnVector *combQn[CORRELATIONSNOOFQNVECTORS] = {QnA,QnB,QnC};
   for (Int_t ixComb = 0; ixComb < CORRELATIONSNOOFQNVECTORS; ixComb++) {
     /* and all harmonics */
     Int_t nCurrentHarmonic = QnA->GetFirstHarmonic();
