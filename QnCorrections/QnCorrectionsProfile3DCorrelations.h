@@ -6,6 +6,8 @@
 
 #include "QnCorrectionsHistogramBase.h"
 
+class QnCorrectionsQnVector;
+
 /// \class QnCorrectionsProfileCorrelationComponentsHarmonics
 /// \brief Base class for the correlation components based set of profiles
 ///
