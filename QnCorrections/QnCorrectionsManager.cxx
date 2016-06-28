@@ -366,6 +366,8 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 /// in the list. If not a run time error is raised.
 /// \param name the name of the list
 void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
+  QnCorrectionsInfo(Form("New process list name: %s", name));
+
   if (fProcessListName.EqualTo(szDummyProcessListName)) {
     if (fSupportHistogramsList != NULL) {
       /* check the list of concurrent processes */
@@ -463,6 +465,7 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
         /* the list does not own the Qn vectors */
         fQnVectorList->SetOwner(kFALSE);
       }
+
       /* pass it to the detectors for Qn vector creation and attachment */
       for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->IncludeQnVectors(fQnVectorList);
@@ -484,6 +487,8 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
 
 /// Produce an understandable picture of current correction configuration
 void QnCorrectionsManager::PrintFrameworkConfiguration() const {
+  QnCorrectionsInfo("");
+
   /* first get the list of detector configurations */
   TList *detectorList = new TList();
   detectorList->SetOwner(kTRUE);
@@ -519,6 +524,7 @@ void QnCorrectionsManager::PrintFrameworkConfiguration() const {
   for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
     ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->FillOverallQnVectorCorrectionStepList(vectorCorrections);
   }
+
   /* and now we build the correction step names list */
   TList *vectorStepList = new TList();
   /* this one we own its items */
@@ -654,7 +660,7 @@ void QnCorrectionsManager::PrintFrameworkConfiguration() const {
   }
 
   /* now the calibration histograms */
-  cout << setw(correctionFieldSize) << "FILL HISTS" << setw(margin) << "-" << detectorsFieldLine << endl;
+  cout << setw(correctionFieldSize) << "FILL HISTOS" << setw(margin) << "-" << detectorsFieldLine << endl;
   /* first the input correction steps */
   for (Int_t ixInCorr = 0; ixInCorr < inputStepList->GetEntries(); ixInCorr++) {
     cout << setw(correctionFieldSize) << inputStepList->At(ixInCorr)->GetName() << setw(margin) << "|";
