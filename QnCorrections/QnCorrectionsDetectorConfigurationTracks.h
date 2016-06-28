@@ -128,7 +128,7 @@ inline void QnCorrectionsDetectorConfigurationTracks::BuildQnVector() {
   for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
     QnCorrectionsDataVector *dataVector = static_cast<QnCorrectionsDataVector *>(fDataVectorBank->At(ixData));
     fTempQnVector.Add(dataVector->Phi(), dataVector->Weight());
-    fTempQ2nVector.Add(dataVector->Phi(), dataVector->EqualizedWeight());
+    fTempQ2nVector.Add(dataVector->Phi(), dataVector->Weight());
   }
   /* check the quality of the Qn vector */
   fTempQnVector.CheckQuality();
