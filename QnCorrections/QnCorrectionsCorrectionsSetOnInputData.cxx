@@ -64,8 +64,9 @@ void QnCorrectionsCorrectionsSetOnInputData::AddCorrection(QnCorrectionsCorrecti
   }
   else {
     for (Int_t ix = 0; ix < GetEntries(); ix++) {
-      if (!correction->Before(At(ix))) {
-        AddAt(correction, ix-1);
+      if (correction->Before(At(ix))) {
+        AddAt(correction, ix);
+        break;
       }
     }
   }
@@ -91,8 +92,9 @@ void QnCorrectionsCorrectionsSetOnInputData::FillOverallCorrectionsList(TList *c
           }
           else {
             for (Int_t jx = 0; jx < correctionlist->GetEntries(); jx++) {
-              if (!At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->At(jx))) {
-                correctionlist->AddAt(At(ix), jx-1);
+              if (At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->At(jx))) {
+                correctionlist->AddAt(At(ix), jx);
+                break;
               }
             }
           }

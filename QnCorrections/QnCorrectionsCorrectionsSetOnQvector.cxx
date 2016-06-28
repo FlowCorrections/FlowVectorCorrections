@@ -33,6 +33,7 @@
 /// \brief Set of corrections on Qn vector class implementation
 
 #include "QnCorrectionsCorrectionsSetOnQvector.h"
+#include "QnCorrectionsLog.h"
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsCorrectionsSetOnQvector);
@@ -64,8 +65,9 @@ void QnCorrectionsCorrectionsSetOnQvector::AddCorrection(QnCorrectionsCorrection
   }
   else {
     for (Int_t ix = 0; ix < GetEntries(); ix++) {
-      if (!correction->Before(At(ix))) {
-        AddAt(correction, ix-1);
+      if (correction->Before(At(ix))) {
+        AddAt(correction, ix);
+        break;
       }
     }
   }
@@ -74,6 +76,7 @@ void QnCorrectionsCorrectionsSetOnQvector::AddCorrection(QnCorrectionsCorrection
 /// Fill the global list of correction steps
 /// \param correctionlist (partial) global list of corrections ordered by correction key
 void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *correctionlist) const {
+
   if (!IsEmpty()) {
     if (!correctionlist->IsEmpty()) {
       for (Int_t ix = 0; ix < GetEntries(); ix++) {
@@ -91,8 +94,9 @@ void QnCorrectionsCorrectionsSetOnQvector::FillOverallCorrectionsList(TList *cor
           }
           else {
             for (Int_t jx = 0; jx < correctionlist->GetEntries(); jx++) {
-              if (!At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->At(jx))) {
-                correctionlist->AddAt(At(ix), jx-1);
+              if (At(ix)->Before((QnCorrectionsCorrectionStepBase *) correctionlist->At(jx))) {
+                correctionlist->AddAt(At(ix), jx);
+                break;
               }
             }
           }
