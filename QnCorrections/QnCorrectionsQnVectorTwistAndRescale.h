@@ -178,10 +178,7 @@ public:
   /// \param nNoOfEntries the number of entries threshold
   void SetNoOfEntriesThreshold(Int_t nNoOfEntries) { fMinNoOfEntriesToValidate = nNoOfEntries; }
 
-  /// Informs when the detector configuration has been attached to the framework manager
-  /// Basically this allows interaction between the different framework sections at configuration time
-  /// No action for Qn vector recentering
-  virtual void AttachedToFrameworkManager() {}
+  virtual void AttachedToFrameworkManager();
   virtual Bool_t AttachInput(TList *list);
   virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
