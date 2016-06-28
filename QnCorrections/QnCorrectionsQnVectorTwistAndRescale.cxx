@@ -45,7 +45,7 @@ const Double_t QnCorrectionsQnVectorTwistAndRescale::fMaxThreshold = 99999999.0;
 const char *QnCorrectionsQnVectorTwistAndRescale::szTwistCorrectionName = "Twist";
 const char *QnCorrectionsQnVectorTwistAndRescale::szRescaleCorrectionName = "Rescale";
 const char *QnCorrectionsQnVectorTwistAndRescale::szKey = "HHHH";
-const char *QnCorrectionsQnVectorTwistAndRescale::szDoubleHarmonicSupportHistogramName = "DH Qn";
+const char *QnCorrectionsQnVectorTwistAndRescale::szDoubleHarmonicSupportHistogramName = "DH Q2n";
 const char *QnCorrectionsQnVectorTwistAndRescale::szCorrelationsSupportHistogramName = "3D QnQn";
 const char *QnCorrectionsQnVectorTwistAndRescale::szTwistCorrectedQnVectorName = "twist";
 const char *QnCorrectionsQnVectorTwistAndRescale::szRescaleCorrectedQnVectorName = "rescale";
@@ -60,7 +60,7 @@ ClassImp(QnCorrectionsQnVectorTwistAndRescale);
 /// Default constructor
 /// Passes to the base class the identity data for the recentering and width equalization correction step
 QnCorrectionsQnVectorTwistAndRescale::QnCorrectionsQnVectorTwistAndRescale() :
-    QnCorrectionsCorrectionOnQvector(Form("%sAnd%s",szTwistCorrectionName,szRescaleCorrectionName), szKey),
+    QnCorrectionsCorrectionOnQvector(Form("%s and %s",szTwistCorrectionName,szRescaleCorrectionName), szKey),
     fBDetectorConfigurationName(),
     fCDetectorConfigurationName() {
   fDoubleHarmonicInputHistograms = NULL;
@@ -141,29 +141,37 @@ void QnCorrectionsQnVectorTwistAndRescale::SetReferenceConfigurationsForTwistAnd
 /// Basically this allows interaction between the different framework sections at configuration time
 /// Locates the reference detector configurations for twist and rescaling if their names have been previously stored
 void QnCorrectionsQnVectorTwistAndRescale::AttachedToFrameworkManager() {
-  QnCorrectionsInfo(Form("Attached! B and C detector configurations for twist and rescaling: %s and %s",
-      fBDetectorConfigurationName.Data(),
-      fCDetectorConfigurationName.Data()));
+  switch (fTwistAndRescaleMethod) {
+  case TWRESCALE_doubleHarmonic:
+    break;
+  case TWRESCALE_correlations:
+    QnCorrectionsInfo(Form("Attached! B and C detector configurations for twist and rescaling: %s and %s",
+        fBDetectorConfigurationName.Data(),
+        fCDetectorConfigurationName.Data()));
 
-  if (fBDetectorConfigurationName.Length() != 0) {
-    if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
-      fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
+    if (fBDetectorConfigurationName.Length() != 0) {
+      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
+        fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
+      }
+      else {
+        QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
+            fBDetectorConfigurationName.Data(),
+            fDetectorConfiguration->GetName()));
+      }
     }
-    else {
-      QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
-          fBDetectorConfigurationName.Data(),
-          fDetectorConfiguration->GetName()));
+    if (fCDetectorConfigurationName.Length() != 0) {
+      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data()) != NULL) {
+        fCDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data());
+      }
+      else {
+        QnCorrectionsFatal(Form("Wrong C detector configuration %s for %s twist and rescaling correction step",
+            fCDetectorConfigurationName.Data(),
+            fDetectorConfiguration->GetName()));
+      }
     }
-  }
-  if (fCDetectorConfigurationName.Length() != 0) {
-    if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data()) != NULL) {
-      fCDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data());
-    }
-    else {
-      QnCorrectionsFatal(Form("Wrong C detector configuration %s for %s twist and rescaling correction step",
-          fCDetectorConfigurationName.Data(),
-          fDetectorConfiguration->GetName()));
-    }
+    break;
+  default:
+    QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
   }
 }
 
@@ -176,9 +184,9 @@ void QnCorrectionsQnVectorTwistAndRescale::CreateSupportDataStructures() {
 
   fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
   /* now create the corrected Qn vectors */
-  fCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNoOfHarmonics, harmonicsMap);
-  fTwistCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectionName, nNoOfHarmonics, harmonicsMap);
-  fRescaleCorrectedQnVector = new QnCorrectionsQnVector(szRescaleCorrectionName, nNoOfHarmonics, harmonicsMap);
+  fCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
+  fTwistCorrectedQnVector = new QnCorrectionsQnVector(szTwistCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
+  fRescaleCorrectedQnVector = new QnCorrectionsQnVector(szRescaleCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
   /* get the input vectors we need */
   fInputQnVector = fDetectorConfiguration->GetPreviousCorrectedQnVector(this);
   delete [] harmonicsMap;
@@ -199,8 +207,11 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateSupportHistograms(TList *list
       szDoubleHarmonicSupportHistogramName,
       fDetectorConfiguration->GetName());
 
-  TString histoCorrelationsNameandTitle = szCorrelationsSupportHistogramName;
+  TString histoCorrelationsNameandTitle = Form("%s %s ",
+      szCorrelationsSupportHistogramName,
+      fDetectorConfiguration->GetName());
 
+  Int_t *harmonicsMap;
   fDoubleHarmonicInputHistograms = NULL;
   fDoubleHarmonicCalibrationHistograms = NULL;
   fCorrelationsInputHistograms = NULL;
@@ -217,7 +228,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateSupportHistograms(TList *list
     fDoubleHarmonicInputHistograms->SetNoOfEntriesThreshold(fMinNoOfEntriesToValidate);
     fDoubleHarmonicCalibrationHistograms = new QnCorrectionsProfileComponents((const char *) histoDoubleHarmonicNameAndTitle, (const char *) histoDoubleHarmonicNameAndTitle,
         fDetectorConfiguration->GetEventClassVariablesSet());
-    Int_t *harmonicsMap = new Int_t[fCorrectedQnVector->GetNoOfHarmonics()];
+    harmonicsMap = new Int_t[fCorrectedQnVector->GetNoOfHarmonics()];
     fCorrectedQnVector->GetHarmonicsMap(harmonicsMap);
     /* we duplicate the harmonics used because that will be the info stored by the profiles */
     for (Int_t h = 0; h < fCorrectedQnVector->GetNoOfHarmonics(); h++) harmonicsMap[h] = 2 * harmonicsMap[h];
@@ -225,18 +236,18 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateSupportHistograms(TList *list
     delete [] harmonicsMap;
     break;
   case TWRESCALE_correlations:
-    fCorrelationsInputHistograms = new QnCorrectionsProfile3DCorrelations((const char *) histoDoubleHarmonicNameAndTitle, (const char *) histoDoubleHarmonicNameAndTitle,
+    fCorrelationsInputHistograms = new QnCorrectionsProfile3DCorrelations((const char *) histoCorrelationsNameandTitle, (const char *) histoCorrelationsNameandTitle,
         fDetectorConfiguration->GetName(),
         fBDetectorConfiguration->GetName(),
         fCDetectorConfiguration->GetName(),
         fDetectorConfiguration->GetEventClassVariablesSet());
     fCorrelationsInputHistograms->SetNoOfEntriesThreshold(fMinNoOfEntriesToValidate);
-    fCorrelationsCalibrationHistograms = new QnCorrectionsProfile3DCorrelations((const char *) histoDoubleHarmonicNameAndTitle, (const char *) histoDoubleHarmonicNameAndTitle,
+    fCorrelationsCalibrationHistograms = new QnCorrectionsProfile3DCorrelations((const char *) histoCorrelationsNameandTitle, (const char *) histoCorrelationsNameandTitle,
         fDetectorConfiguration->GetName(),
         fBDetectorConfiguration->GetName(),
         fCDetectorConfiguration->GetName(),
         fDetectorConfiguration->GetEventClassVariablesSet());
-    Int_t *harmonicsMap = new Int_t[fCorrectedQnVector->GetNoOfHarmonics()];
+    harmonicsMap = new Int_t[fCorrectedQnVector->GetNoOfHarmonics()];
     fCorrectedQnVector->GetHarmonicsMap(harmonicsMap);
     fCorrelationsCalibrationHistograms->CreateCorrelationComponentsProfileHistograms(list, fCorrectedQnVector->GetNoOfHarmonics(), 1 /* harmonic multiplier */, harmonicsMap);
     delete [] harmonicsMap;
@@ -256,12 +267,14 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::AttachInput(TList *list) {
   case TWRESCALE_doubleHarmonic:
     /* TODO: basically we are re producing half of the information already produce for recentering correction. Re use it! */
     if (fDoubleHarmonicInputHistograms->AttachHistograms(list)) {
+      QnCorrectionsInfo(Form("Twist and rescale by the double harmonic method on %s going to be applied", fDetectorConfiguration->GetName()));
       fState = QCORRSTEP_applyCollect;
       return kTRUE;
     }
     break;
   case TWRESCALE_correlations:
     if (fCorrelationsInputHistograms->AttachHistograms(list)) {
+      QnCorrectionsInfo(Form("Twist and rescale by the correlations method on %s going to be applied", fDetectorConfiguration->GetName()));
       fState = QCORRSTEP_applyCollect;
       return kTRUE;
     }
@@ -479,7 +492,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
   case QCORRSTEP_calibration:
     /* logging */
     switch (fTwistAndRescaleMethod) {
-    case TWRESCALE_doubleHarmonic:
+    case TWRESCALE_doubleHarmonic: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method. Collecting data",
           fDetectorConfiguration->GetName()));
       /* remember, we store in the profiles the double harmonic while the Q2n vector stores them single */
@@ -492,8 +505,9 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
           harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
         }
       }
-      break;
-    case TWRESCALE_correlations:
+    }
+    break;
+    case TWRESCALE_correlations: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
           fDetectorConfiguration->GetName(),
           fBDetectorConfiguration->GetName(),
@@ -507,7 +521,8 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
             fCDetectorConfiguration->GetCurrentQnVector(),
             variableContainer);
       }
-      break;
+    }
+    break;
     default:
       QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
@@ -517,7 +532,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
   case QCORRSTEP_applyCollect:
     /* logging */
     switch (fTwistAndRescaleMethod) {
-    case TWRESCALE_doubleHarmonic:
+    case TWRESCALE_doubleHarmonic: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method. Collecting data",
           fDetectorConfiguration->GetName()));
       /* remember, we store in the profiles the double harmonic while the Q2n vector stores them single */
@@ -530,8 +545,9 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
           harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
         }
       }
-      break;
-    case TWRESCALE_correlations:
+    }
+    break;
+    case TWRESCALE_correlations: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
           fDetectorConfiguration->GetName(),
           fBDetectorConfiguration->GetName(),
@@ -545,7 +561,8 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
             fCDetectorConfiguration->GetCurrentQnVector(),
             variableContainer);
       }
-      break;
+    }
+    break;
     default:
       QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
@@ -572,6 +589,7 @@ void QnCorrectionsQnVectorTwistAndRescale::ClearCorrectionStep() {
 /// \param list list where the corrected Qn vector should be added
 void QnCorrectionsQnVectorTwistAndRescale::IncludeCorrectedQnVector(TList *list) {
 
+  QnCorrectionsInfo("");
   switch (fState) {
   case QCORRSTEP_calibration:
     /* collect the data needed to further produce correction parameters */
@@ -602,16 +620,16 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ReportUsage(TList *calibrationList,
   switch (fState) {
   case QCORRSTEP_calibration:
     /* we are collecting */
-    calibrationList->Add(new TObjString(Form("%s and %s", szTwistCorrectionName, szRescaleCorrectionName)));
+    calibrationList->Add(new TObjString(GetName()));
     /* but not applying */
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
     /* we are collecting */
-    calibrationList->Add(new TObjString(Form("%s and %s", szTwistCorrectionName, szRescaleCorrectionName)));
+    calibrationList->Add(new TObjString(GetName()));
   case QCORRSTEP_apply:
     /* and applying */
-    applyList->Add(new TObjString(Form("%s and %s", szTwistCorrectionName, szRescaleCorrectionName)));
+    applyList->Add(new TObjString(GetName()));
     break;
   }
   return kTRUE;
