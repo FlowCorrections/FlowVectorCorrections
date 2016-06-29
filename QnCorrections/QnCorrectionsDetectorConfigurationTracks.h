@@ -18,6 +18,8 @@
 #include "QnCorrectionsDataVector.h"
 #include "QnCorrectionsDetectorConfigurationBase.h"
 
+class QnCorrectionsProfileComponents;
+
 /// \class QnCorrectionsDetectorConfigurationTracks
 /// \brief Track detector configuration within Q vector correction framework
 ///

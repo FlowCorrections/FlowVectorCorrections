@@ -4,9 +4,8 @@
 /// \file QnCorrectionsHistogramBase.h
 /// \brief Multidimensional profile histograms base class for the Q vector correction framework
 
-#include "THn.h"
-
-class QnCorrectionsEventClassVariablesSet;
+#include <THn.h>
+#include "QnCorrectionsEventClassVariablesSet.h"
 
 /// \class QnCorrectionsHistogramBase
 /// \brief Base class for the Q vector correction histograms

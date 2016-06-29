@@ -19,6 +19,8 @@
 #include "QnCorrectionsDataVectorChannelized.h"
 #include "QnCorrectionsDetectorConfigurationBase.h"
 
+class QnCorrectionsProfileComponents;
+
 /// \class QnCorrectionsDetectorConfigurationChannels
 /// \brief Channel detector configuration within Q vector correction framework
 ///

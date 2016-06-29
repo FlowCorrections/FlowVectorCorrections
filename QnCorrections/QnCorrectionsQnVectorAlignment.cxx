@@ -33,6 +33,7 @@
 /// \brief Implementation of procedures for Qn vector alignment correction.
 #include "QnCorrectionsEventClassVariablesSet.h"
 #include "QnCorrectionsProfileCorrelationComponents.h"
+#include "QnCorrectionsProfileComponents.h"
 #include "QnCorrectionsHistogramSparse.h"
 #include "QnCorrectionsDetector.h"
 #include "QnCorrectionsManager.h"
@@ -335,7 +336,8 @@ Bool_t QnCorrectionsQnVectorAlignment::ProcessDataCollection(const Float_t *vari
       while (harmonic != -1) {
         fQAQnAverageHistogram->FillX(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
         fQAQnAverageHistogram->FillY(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
-      }
+        harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
+     }
     }
     break;
   }

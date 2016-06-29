@@ -32,6 +32,7 @@
 /// \file QnCorrectionsDetectorConfigurationChannels.cxx
 /// \brief Implementation of the channel detector configuration class 
 
+#include "QnCorrectionsProfileComponents.h"
 #include "QnCorrectionsDetectorConfigurationChannels.h"
 #include "QnCorrectionsLog.h"
 
@@ -440,6 +441,7 @@ void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t 
     while (harmonic != -1) {
       fQAQnAverageHistogram->FillX(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
       fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+      harmonic = fPlainQnVector.GetNextHarmonic(harmonic);
     }
   }
 }

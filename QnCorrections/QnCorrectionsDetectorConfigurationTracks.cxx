@@ -32,6 +32,7 @@
 /// \file QnCorrectionsDetectorConfigurationTracks.cxx
 /// \brief Implementation of the track detector configuration class
 
+#include "QnCorrectionsProfileComponents.h"
 #include "QnCorrectionsDetectorConfigurationTracks.h"
 #include "QnCorrectionsLog.h"
 
@@ -217,6 +218,7 @@ void QnCorrectionsDetectorConfigurationTracks::FillQAHistograms(const Float_t *v
     while (harmonic != -1) {
       fQAQnAverageHistogram->FillX(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
       fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+      harmonic = fPlainQnVector.GetNextHarmonic(harmonic);
     }
   }
 }
