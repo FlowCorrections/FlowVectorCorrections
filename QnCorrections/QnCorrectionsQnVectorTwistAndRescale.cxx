@@ -99,7 +99,6 @@ QnCorrectionsQnVectorTwistAndRescale::~QnCorrectionsQnVectorTwistAndRescale() {
 
 /// Set the detector configurations used as reference for twist and rescaling
 /// The detector configurations names are stored for further use.
-/// If the step is already attached to the framework the reference detector configurations are located and stored
 /// \param nameB the name of the B detector configuration
 /// \param nameC the name of the C detector configuration
 void QnCorrectionsQnVectorTwistAndRescale::SetReferenceConfigurationsForTwistAndRescale(const char *nameB, const char *nameC) {
@@ -110,36 +109,12 @@ void QnCorrectionsQnVectorTwistAndRescale::SetReferenceConfigurationsForTwistAnd
   fBDetectorConfigurationName = nameB;
   fCDetectorConfigurationName = nameC;
 
-  /* we could be in different situations of framework attachment */
-  if (fDetectorConfiguration != NULL) {
-    if (fDetectorConfiguration->GetCorrectionsManager() != NULL) {
-      /* the correction step is already attached to the framework */
-      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
-        fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
-      }
-      else {
-        QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
-            fBDetectorConfigurationName.Data(),
-            fDetectorConfiguration->GetName()));
-      }
-      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data()) != NULL) {
-        fCDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data());
-      }
-      else {
-        QnCorrectionsFatal(Form("Wrong C detector configuration %s for %s twist and rescaling correction step",
-            fCDetectorConfigurationName.Data(),
-            fDetectorConfiguration->GetName()));
-      }
-      QnCorrectionsInfo(Form("Attached! B and C detector configurations for twist and rescaling: %s and %s",
-          fBDetectorConfigurationName.Data(),
-          fCDetectorConfigurationName.Data()));
-    }
-  }
+  /* we and the reference detector configurations could be in different situations of framework attachment */
+  /* so, we do nothing for the time being */
 }
 
 /// Informs when the detector configuration has been attached to the framework manager
 /// Basically this allows interaction between the different framework sections at configuration time
-/// Locates the reference detector configurations for twist and rescaling if their names have been previously stored
 void QnCorrectionsQnVectorTwistAndRescale::AttachedToFrameworkManager() {
   switch (fTwistAndRescaleMethod) {
   case TWRESCALE_doubleHarmonic:
@@ -148,27 +123,6 @@ void QnCorrectionsQnVectorTwistAndRescale::AttachedToFrameworkManager() {
     QnCorrectionsInfo(Form("Attached! B and C detector configurations for twist and rescaling: %s and %s",
         fBDetectorConfigurationName.Data(),
         fCDetectorConfigurationName.Data()));
-
-    if (fBDetectorConfigurationName.Length() != 0) {
-      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
-        fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
-      }
-      else {
-        QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
-            fBDetectorConfigurationName.Data(),
-            fDetectorConfiguration->GetName()));
-      }
-    }
-    if (fCDetectorConfigurationName.Length() != 0) {
-      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data()) != NULL) {
-        fCDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data());
-      }
-      else {
-        QnCorrectionsFatal(Form("Wrong C detector configuration %s for %s twist and rescaling correction step",
-            fCDetectorConfigurationName.Data(),
-            fDetectorConfiguration->GetName()));
-      }
-    }
     break;
   default:
     QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
@@ -177,6 +131,7 @@ void QnCorrectionsQnVectorTwistAndRescale::AttachedToFrameworkManager() {
 
 /// Asks for support data structures creation
 /// Creates the corrected Qn vectors
+/// Locates the reference detector configurations for twist and rescaling if their names have been previously stored
 void QnCorrectionsQnVectorTwistAndRescale::CreateSupportDataStructures() {
 
   Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
@@ -189,7 +144,49 @@ void QnCorrectionsQnVectorTwistAndRescale::CreateSupportDataStructures() {
   fRescaleCorrectedQnVector = new QnCorrectionsQnVector(szRescaleCorrectedQnVectorName, nNoOfHarmonics, harmonicsMap);
   /* get the input vectors we need */
   fInputQnVector = fDetectorConfiguration->GetPreviousCorrectedQnVector(this);
+
   delete [] harmonicsMap;
+
+  /* now, definitely, we should have the reference detector configurations */
+  switch (fTwistAndRescaleMethod) {
+  case TWRESCALE_doubleHarmonic:
+    break;
+  case TWRESCALE_correlations:
+    if (fBDetectorConfigurationName.Length() != 0) {
+      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
+        fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
+      }
+      else {
+        QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
+            fBDetectorConfigurationName.Data(),
+            fDetectorConfiguration->GetName()));
+      }
+    }
+    else {
+      QnCorrectionsFatal(Form("Missing B detector configuration for %s twist and rescaling correction step",
+          fDetectorConfiguration->GetName()));
+    }
+    if (fCDetectorConfigurationName.Length() != 0) {
+      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data()) != NULL) {
+        fCDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fCDetectorConfigurationName.Data());
+      }
+      else {
+        QnCorrectionsFatal(Form("Wrong C detector configuration %s for %s twist and rescaling correction step",
+            fCDetectorConfigurationName.Data(),
+            fDetectorConfiguration->GetName()));
+      }
+    }
+    else {
+      QnCorrectionsFatal(Form("Missing C detector configuration for %s twist and rescaling correction step",
+          fDetectorConfiguration->GetName()));
+    }
+    QnCorrectionsInfo(Form("Attached! B and C detector configurations for twist and rescaling: %s and %s",
+        fBDetectorConfigurationName.Data(),
+        fCDetectorConfigurationName.Data()));
+    break;
+  default:
+    QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
+  }
 }
 
 /// Asks for support histograms creation

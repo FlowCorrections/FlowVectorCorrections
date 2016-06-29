@@ -324,6 +324,7 @@ void Setup(QnCorrectionsManager* QnMan){
   twScale2A->SetApplyTwist(kTRUE);
   twScale2A->SetApplyRescale(kTRUE);
   twScale2A->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
+  twScale2A->SetReferenceConfigurationsForTwistAndRescale("Det1pos","Det2C");
   myDetectorTwoA->AddCorrectionOnQnVector(twScale2A);
 
   QnCorrectionsDetectorConfigurationChannels *myDetectorTwoC =
@@ -355,10 +356,8 @@ void Setup(QnCorrectionsManager* QnMan){
   twScale2C->SetApplyTwist(kTRUE);
   twScale2C->SetApplyRescale(kTRUE);
   twScale2C->SetTwistAndRescaleMethod(QnCorrectionsQnVectorTwistAndRescale::TWRESCALE_correlations);
-  myDetectorTwoC->AddCorrectionOnQnVector(twScale2C);
-
   twScale2C->SetReferenceConfigurationsForTwistAndRescale("Det1pos","Det2A");
-  twScale2A->SetReferenceConfigurationsForTwistAndRescale("Det1pos","Det2C");
+  myDetectorTwoC->AddCorrectionOnQnVector(twScale2C);
 
   /* add the configurations to the detector */
   myDetectorTwo->AddDetectorConfiguration(myDetectorTwoA);

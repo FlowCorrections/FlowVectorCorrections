@@ -77,7 +77,6 @@ QnCorrectionsQnVectorAlignment::~QnCorrectionsQnVectorAlignment() {
 
 /// Set the detector configuration used as reference for alignment
 /// The detector configuration name is stored for further use.
-/// If the step is already attached to the framework the reference detector configuration is located and stored
 /// \param name the name of the reference detector configuration
 void QnCorrectionsQnVectorAlignment::SetReferenceConfigurationForAlignment(const char *name) {
   QnCorrectionsInfo(Form("Reference name: %s, attached to detector configuration: %s",
@@ -87,27 +86,23 @@ void QnCorrectionsQnVectorAlignment::SetReferenceConfigurationForAlignment(const
   fDetectorConfigurationForAlignmentName = name;
 
   /* we could be in different situations of framework attachment */
-  if (fDetectorConfiguration != NULL) {
-    if (fDetectorConfiguration->GetCorrectionsManager() != NULL) {
-      /* the correction step is already attached to the framework */
-      if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data()) != NULL) {
-        fDetectorConfigurationForAlignment = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
-      }
-      else {
-        QnCorrectionsFatal(Form("Wrong reference detector configuration %s for %s alignment correction step",
-            fDetectorConfigurationForAlignmentName.Data(),
-            fDetectorConfiguration->GetName()));
-      }
-    }
-  }
+  /* so, we do nothing for the time being */
 }
 
 /// Informs when the detector configuration has been attached to the framework manager
 /// Basically this allows interaction between the different framework sections at configuration time
-/// Locates the reference detector configuration for alignment if its name has been previously stored
 void QnCorrectionsQnVectorAlignment::AttachedToFrameworkManager() {
   QnCorrectionsInfo(Form("Attached! reference for alignment: %s", fDetectorConfigurationForAlignmentName.Data()));
 
+}
+
+/// Asks for support data structures creation
+///
+/// Locates the reference detector configuration for alignment if its name has been previously stored
+/// Creates the recentered Qn vector
+void QnCorrectionsQnVectorAlignment::CreateSupportDataStructures() {
+
+  /* now, definitely, we should have the reference detector configurations */
   if (fDetectorConfigurationForAlignmentName.Length() != 0) {
     if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data()) != NULL) {
       fDetectorConfigurationForAlignment = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fDetectorConfigurationForAlignmentName.Data());
@@ -118,12 +113,10 @@ void QnCorrectionsQnVectorAlignment::AttachedToFrameworkManager() {
           fDetectorConfiguration->GetName()));
     }
   }
-}
-
-/// Asks for support data structures creation
-///
-/// Creates the recentered Qn vector
-void QnCorrectionsQnVectorAlignment::CreateSupportDataStructures() {
+  else {
+    QnCorrectionsFatal(Form("Missing reference detector configuration for %s alignment correction step",
+        fDetectorConfiguration->GetName()));
+  }
 
   Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
   Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
