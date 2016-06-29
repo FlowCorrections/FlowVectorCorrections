@@ -73,8 +73,14 @@ public:
 
   virtual void ClearConfiguration();
 
+private:
+  /* QA section */
+  void FillQAHistograms(const Float_t *variableContainer);
+  static const char *szQAQnAverageHistogramName; ///< name and title for plain Qn vector components average QA histograms
+  QnCorrectionsProfileComponents *fQAQnAverageHistogram; //!<! the plain average Qn components QA histogram
+
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetectorConfigurationTracks, 1);
+  ClassDef(QnCorrectionsDetectorConfigurationTracks, 2);
 /// \endcond
 };
 
@@ -164,11 +170,15 @@ inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessCorrections(const
 }
 
 /// Ask for processing corrections data collection for the involved detector configuration
-///
-/// The request is transmitted to the Q vector correction steps.
+/// Fill own QA histogram information and then
+/// the request is transmitted to the Q vector correction steps.
 /// The first not applied correction step breaks the loop and kFALSE is returned
 /// \return kTRUE if all correction steps were applied
 inline Bool_t QnCorrectionsDetectorConfigurationTracks::ProcessDataCollection(const Float_t *variableContainer) {
+
+  /* fill QA information */
+  FillQAHistograms(variableContainer);
+
   /* we transfer the request to the Q vector correction steps */
   /* the loop is broken when a correction step has not been applied */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {

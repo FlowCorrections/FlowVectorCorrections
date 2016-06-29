@@ -39,9 +39,12 @@
 ClassImp(QnCorrectionsDetectorConfigurationTracks);
 /// \endcond
 
+const char *QnCorrectionsDetectorConfigurationTracks::szQAQnAverageHistogramName = "Plain Qn avg ";
+
 /// Default constructor
 QnCorrectionsDetectorConfigurationTracks::QnCorrectionsDetectorConfigurationTracks() : QnCorrectionsDetectorConfigurationBase() {
 
+  fQAQnAverageHistogram = NULL;
 }
 
 /// Normal constructor
@@ -56,12 +59,15 @@ QnCorrectionsDetectorConfigurationTracks::QnCorrectionsDetectorConfigurationTrac
       Int_t *harmonicMap) :
           QnCorrectionsDetectorConfigurationBase(name, eventClassesVariables, nNoOfHarmonics, harmonicMap) {
 
+  fQAQnAverageHistogram = NULL;
 }
 
 /// Default destructor
 /// Memory taken is released by the parent class destructor
 QnCorrectionsDetectorConfigurationTracks::~QnCorrectionsDetectorConfigurationTracks() {
 
+  if (fQAQnAverageHistogram != NULL)
+    delete fQAQnAverageHistogram;
 }
 
 /// Stores the framework manager pointer
@@ -131,6 +137,20 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::CreateQAHistograms(TList *list)
   TList *detectorConfigurationList = new TList();
   detectorConfigurationList->SetName(this->GetName());
   detectorConfigurationList->SetOwner(kTRUE);
+
+  /* the own QA average Qn vector components histogram */
+  fQAQnAverageHistogram = new QnCorrectionsProfileComponents(
+      Form("%s %s", szQAQnAverageHistogramName, this->GetName()),
+      Form("%s %s", szQAQnAverageHistogramName, this->GetName()),
+      this->GetEventClassVariablesSet());
+
+  /* get information about the configured harmonics to pass it for histogram creation */
+  Int_t nNoOfHarmonics = this->GetNoOfHarmonics();
+  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+  this->GetHarmonicMap(harmonicsMap);
+  fQAQnAverageHistogram->CreateComponentsProfileHistograms(detectorConfigurationList,nNoOfHarmonics, harmonicsMap);
+  delete [] harmonicsMap;
+
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
     retValue = retValue && (fQnVectorCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
   }
@@ -186,6 +206,19 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
     return retValue;
   }
   return kFALSE;
+}
+
+/// Fills the QA plain Qn vector average components histogram
+/// \param variableContainer pointer to the variable content bank
+void QnCorrectionsDetectorConfigurationTracks::FillQAHistograms(const Float_t *variableContainer) {
+
+  if (fQAQnAverageHistogram != NULL) {
+    Int_t harmonic = fPlainQnVector.GetFirstHarmonic();
+    while (harmonic != -1) {
+      fQAQnAverageHistogram->FillX(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+      fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+    }
+  }
 }
 
 /// Include the the list of Qn vector associated to the detector configuration

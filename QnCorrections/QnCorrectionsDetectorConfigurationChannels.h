@@ -130,12 +130,14 @@ private:
   /* QA section */
   void FillQAHistograms(const Float_t *variableContainer);
   static const char *szQAMultiplicityHistoName; ///< QA multiplicity histograms name
+  static const char *szQAQnAverageHistogramName; ///< name and title for plain Qn vector components average QA histograms
   Int_t fQACentralityVarId;   ///< the id of the variable used for centrality in QA histograms
   Int_t fQAnBinsMultiplicity; ///< number of bins for multiplicity in QA histograms
   Float_t fQAMultiplicityMin; ///< minimum multiplicity value
   Float_t fQAMultiplicityMax; ///< maximum multiplicity value
   TH3F *fQAMultiplicityBefore3D; //!<! 3D channel multiplicity histogram before input equalization
   TH3F *fQAMultiplicityAfter3D;  //!<! 3D channel multiplicity histogram after input equalization
+  QnCorrectionsProfileComponents *fQAQnAverageHistogram; //!<! the plain average Qn components QA histogram
 
 private:
   /// Copy constructor
@@ -146,7 +148,7 @@ private:
   QnCorrectionsDetectorConfigurationChannels& operator= (const QnCorrectionsDetectorConfigurationChannels &);
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsDetectorConfigurationChannels, 1);
+  ClassDef(QnCorrectionsDetectorConfigurationChannels, 2);
 /// \endcond
 };
 
@@ -230,11 +232,6 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessCorrections(con
       return kFALSE;
   }
 
-  /* all input corrections were applied */
-  /* check whether QA histograms must be filled */
-  if (fQAMultiplicityBefore3D != NULL && fQAMultiplicityAfter3D != NULL)
-    FillQAHistograms(variableContainer);
-
   /* input corrections were applied so let's build the Q vector with the chosen calibration */
   BuildQnVector();
 
@@ -264,6 +261,9 @@ inline Bool_t QnCorrectionsDetectorConfigurationChannels::ProcessDataCollection(
     else
       return kFALSE;
   }
+
+  /* check whether QA histograms must be filled */
+  FillQAHistograms(variableContainer);
 
   /* now let's propagate it to Q vector corrections */
   for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {

@@ -191,11 +191,15 @@ private:
   static const char *szTwistCorrectedQnVectorName;        ///< the name of the Qn vector after applying the twist correction
   static const char *szRescaleCorrectedQnVectorName;        ///< the name of the Qn vector after applying the rescale correction
   static const char *szQANotValidatedHistogramName;  ///< the name and title for bin not validated QA histograms
+  static const char *szQATwistQnAverageHistogramName;     ///< the name and title for after twist Qn components average QA histograms
+  static const char *szQARescaleQnAverageHistogramName;     ///< the name and title for after rescale Qn components average QA histograms
   QnCorrectionsProfileComponents *fDoubleHarmonicInputHistograms; //!<! the histogram with calibration information for the double harmonic method
   QnCorrectionsProfileComponents *fDoubleHarmonicCalibrationHistograms; //!<! the histogram for building calibration information for the doubel harmonic method
   QnCorrectionsProfile3DCorrelations *fCorrelationsInputHistograms; //!<! the histogram with calibration information for the correlations method
   QnCorrectionsProfile3DCorrelations *fCorrelationsCalibrationHistograms; //!<! the histogram for building calibration information for the correlations method
   QnCorrectionsHistogramSparse *fQANotValidatedBin;    //!<! the histogram with non validated bin information
+  QnCorrectionsProfileComponents *fQATwistQnAverageHistogram; //!<! the after twist correction step average Qn components QA histogram
+  QnCorrectionsProfileComponents *fQARescaleQnAverageHistogram; //!<! the after rescale correction step average Qn components QA histogram
 
   QnTwistAndRescaleMethod fTwistAndRescaleMethod;  ///< the chosen method for extracting twist and rescale correction parameters
   Bool_t fApplyTwist;              ///< apply the twist step
@@ -209,7 +213,7 @@ private:
   QnCorrectionsQnVector *fRescaleCorrectedQnVector; ///< rescaled Qn vector
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVectorTwistAndRescale, 1);
+  ClassDef(QnCorrectionsQnVectorTwistAndRescale, 2);
 /// \endcond
 };
 

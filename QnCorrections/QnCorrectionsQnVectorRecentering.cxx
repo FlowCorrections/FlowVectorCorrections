@@ -44,6 +44,7 @@ const char *QnCorrectionsQnVectorRecentering::szKey = "CCCC";
 const char *QnCorrectionsQnVectorRecentering::szSupportHistogramName = "Qn";
 const char *QnCorrectionsQnVectorRecentering::szCorrectedQnVectorName = "rec";
 const char *QnCorrectionsQnVectorRecentering::szQANotValidatedHistogramName = "Rec NvE";
+const char *QnCorrectionsQnVectorRecentering::szQAQnAverageHistogramName = "Rec Qn avg ";
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsQnVectorRecentering);
@@ -56,6 +57,7 @@ QnCorrectionsQnVectorRecentering::QnCorrectionsQnVectorRecentering() :
   fInputHistograms = NULL;
   fCalibrationHistograms = NULL;
   fQANotValidatedBin = NULL;
+  fQAQnAverageHistogram = NULL;
   fApplyWidthEqualization = kFALSE;
   fMinNoOfEntriesToValidate = fDefaultMinNoOfEntries;
 }
@@ -69,6 +71,8 @@ QnCorrectionsQnVectorRecentering::~QnCorrectionsQnVectorRecentering() {
     delete fCalibrationHistograms;
   if (fQANotValidatedBin != NULL)
     delete fQANotValidatedBin;
+  if (fQAQnAverageHistogram != NULL)
+    delete fQAQnAverageHistogram;
 }
 
 /// Asks for support data structures creation
@@ -137,6 +141,17 @@ Bool_t QnCorrectionsQnVectorRecentering::AttachInput(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorRecentering::CreateQAHistograms(TList *list) {
 
+  fQAQnAverageHistogram = new QnCorrectionsProfileComponents(
+      Form("%s %s", szQAQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQAQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      fDetectorConfiguration->GetEventClassVariablesSet());
+
+  /* get information about the configured harmonics to pass it for histogram creation */
+  Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
+  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+  fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
+  fQAQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
+  delete [] harmonicsMap;
   return kTRUE;
 }
 
@@ -247,6 +262,14 @@ Bool_t QnCorrectionsQnVectorRecentering::ProcessDataCollection(const Float_t *va
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+    /* provide QA info if required */
+    if (fQAQnAverageHistogram != NULL) {
+      harmonic = fCorrectedQnVector->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fQAQnAverageHistogram->FillX(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
+        fQAQnAverageHistogram->FillY(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
+      }
+    }
     break;
   }
   /* if we reached here is because we applied the correction */

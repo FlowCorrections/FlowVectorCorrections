@@ -121,9 +121,11 @@ private:
   static const char *szSupportHistogramName;         ///< the name and title for support histograms
   static const char *szCorrectedQnVectorName;        ///< the name of the Qn vector after applying the correction
   static const char *szQANotValidatedHistogramName;  ///< the name and title for bin not validated QA histograms
+  static const char *szQAQnAverageHistogramName;     ///< the name and title for Qn components average QA histograms
   QnCorrectionsProfileCorrelationComponents *fInputHistograms; //!<! the histogram with calibration information
   QnCorrectionsProfileCorrelationComponents *fCalibrationHistograms; //!<! the histogram for building calibration information
   QnCorrectionsHistogramSparse *fQANotValidatedBin;    //!<! the histogram with non validated bin information
+  QnCorrectionsProfileComponents *fQAQnAverageHistogram; //!<! the after correction step average Qn components QA histogram
 
   Int_t  fHarmonicForAlignment;              ///< the harmonic number to be used for Qn vector alignment correction
   TString fDetectorConfigurationForAlignmentName; ///< storage for the name of the reference detector configuration for alignment correction
@@ -131,7 +133,7 @@ private:
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
 
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVectorAlignment, 2);
+  ClassDef(QnCorrectionsQnVectorAlignment, 3);
 /// \endcond
 };
 

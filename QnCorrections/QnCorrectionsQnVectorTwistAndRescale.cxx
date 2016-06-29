@@ -50,7 +50,8 @@ const char *QnCorrectionsQnVectorTwistAndRescale::szCorrelationsSupportHistogram
 const char *QnCorrectionsQnVectorTwistAndRescale::szTwistCorrectedQnVectorName = "twist";
 const char *QnCorrectionsQnVectorTwistAndRescale::szRescaleCorrectedQnVectorName = "rescale";
 const char *QnCorrectionsQnVectorTwistAndRescale::szQANotValidatedHistogramName = "TwScale NvE";
-
+const char *QnCorrectionsQnVectorTwistAndRescale::szQATwistQnAverageHistogramName = "Twist Qn avg ";
+const char *QnCorrectionsQnVectorTwistAndRescale::szQARescaleQnAverageHistogramName = "Rescale Qn avg ";
 
 /// \cond CLASSIMP
 ClassImp(QnCorrectionsQnVectorTwistAndRescale);
@@ -68,6 +69,8 @@ QnCorrectionsQnVectorTwistAndRescale::QnCorrectionsQnVectorTwistAndRescale() :
   fCorrelationsInputHistograms = NULL;
   fCorrelationsCalibrationHistograms = NULL;
   fQANotValidatedBin = NULL;
+  fQATwistQnAverageHistogram = NULL;
+  fQARescaleQnAverageHistogram = NULL;
   fTwistAndRescaleMethod = TWRESCALE_doubleHarmonic;
   fApplyTwist = kTRUE;
   fApplyRescale = kTRUE;
@@ -91,6 +94,10 @@ QnCorrectionsQnVectorTwistAndRescale::~QnCorrectionsQnVectorTwistAndRescale() {
     delete fCorrelationsCalibrationHistograms;
   if (fQANotValidatedBin != NULL)
     delete fQANotValidatedBin;
+  if (fQATwistQnAverageHistogram != NULL)
+    delete fQATwistQnAverageHistogram;
+  if (fQARescaleQnAverageHistogram != NULL)
+    delete fQARescaleQnAverageHistogram;
   if (fTwistCorrectedQnVector != NULL)
     delete fTwistCorrectedQnVector;
   if (fRescaleCorrectedQnVector != NULL)
@@ -289,6 +296,22 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::AttachInput(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateQAHistograms(TList *list) {
 
+  fQATwistQnAverageHistogram = new QnCorrectionsProfileComponents(
+      Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      fDetectorConfiguration->GetEventClassVariablesSet());
+  fQARescaleQnAverageHistogram = new QnCorrectionsProfileComponents(
+      Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
+      fDetectorConfiguration->GetEventClassVariablesSet());
+
+  /* get information about the configured harmonics to pass it for histogram creation */
+  Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
+  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+  fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
+  fQATwistQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
+  fQARescaleQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
+  delete [] harmonicsMap;
   return kTRUE;
 }
 
@@ -565,6 +588,21 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
     }
     /* and proceed to ... */
   case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+    /* provide QA info if required */
+    if (fQATwistQnAverageHistogram != NULL) {
+      Int_t harmonic = fCorrectedQnVector->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fQATwistQnAverageHistogram->FillX(harmonic, variableContainer, fTwistCorrectedQnVector->Qx(harmonic));
+        fQATwistQnAverageHistogram->FillY(harmonic, variableContainer, fTwistCorrectedQnVector->Qx(harmonic));
+      }
+    }
+    if (fQARescaleQnAverageHistogram != NULL) {
+      Int_t harmonic = fCorrectedQnVector->GetFirstHarmonic();
+      while (harmonic != -1) {
+        fQARescaleQnAverageHistogram->FillX(harmonic, variableContainer, fRescaleCorrectedQnVector->Qx(harmonic));
+        fQARescaleQnAverageHistogram->FillY(harmonic, variableContainer, fRescaleCorrectedQnVector->Qx(harmonic));
+      }
+    }
     break;
   }
   /* if we reached here is because we applied the correction */

@@ -41,6 +41,7 @@ ClassImp(QnCorrectionsDetectorConfigurationChannels);
 
 const char *QnCorrectionsDetectorConfigurationChannels::szRawQnVectorName = "raw";
 const char *QnCorrectionsDetectorConfigurationChannels::szQAMultiplicityHistoName = "Multiplicity";
+const char *QnCorrectionsDetectorConfigurationChannels::szQAQnAverageHistogramName = "Plain Qn avg ";
 
 /// Default constructor
 QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationChannels() :
@@ -58,6 +59,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
   fQAMultiplicityMax = 1000.0;
   fQAMultiplicityBefore3D = NULL;
   fQAMultiplicityAfter3D = NULL;
+  fQAQnAverageHistogram = NULL;
 }
 
 /// Normal constructor
@@ -87,6 +89,7 @@ QnCorrectionsDetectorConfigurationChannels::QnCorrectionsDetectorConfigurationCh
   fQAMultiplicityMax = 1000.0;
   fQAMultiplicityBefore3D = NULL;
   fQAMultiplicityAfter3D = NULL;
+  fQAQnAverageHistogram = NULL;
 }
 
 /// Default destructor
@@ -97,6 +100,7 @@ QnCorrectionsDetectorConfigurationChannels::~QnCorrectionsDetectorConfigurationC
   if (fChannelMap != NULL) delete [] fChannelMap;
   if (fChannelGroup != NULL) delete [] fChannelGroup;
   if (fHardCodedGroupWeights != NULL) delete [] fHardCodedGroupWeights;
+  if (fQAQnAverageHistogram != NULL) delete fQAQnAverageHistogram;
 }
 
 /// Incorporates the channels scheme to the detector configuration
@@ -327,6 +331,19 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::CreateQAHistograms(TList *lis
     retValue = retValue && (fInputDataCorrections.At(ixCorrection)->CreateQAHistograms(detectorConfigurationList));
   }
 
+  /* the own QA average Qn vector components histogram */
+  fQAQnAverageHistogram = new QnCorrectionsProfileComponents(
+      Form("%s %s", szQAQnAverageHistogramName, this->GetName()),
+      Form("%s %s", szQAQnAverageHistogramName, this->GetName()),
+      this->GetEventClassVariablesSet());
+
+  /* get information about the configured harmonics to pass it for histogram creation */
+  Int_t nNoOfHarmonics = this->GetNoOfHarmonics();
+  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+  this->GetHarmonicMap(harmonicsMap);
+  fQAQnAverageHistogram->CreateComponentsProfileHistograms(detectorConfigurationList,nNoOfHarmonics, harmonicsMap);
+  delete [] harmonicsMap;
+
   /* if everything right propagate it to Q vector corrections */
   if (retValue) {
     for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
@@ -406,14 +423,24 @@ void QnCorrectionsDetectorConfigurationChannels::AddCorrectionOnInputData(QnCorr
   fInputDataCorrections.AddCorrection(correctionOnInputData);
 }
 
-/// Fills the multiplicity histograms before and after input equalization
+/// Fills the QA multiplicity histograms before and after input equalization
+/// and the plain Qn vector average components histogram
 /// \param variableContainer pointer to the variable content bank
 void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t *variableContainer) {
-  for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
-    QnCorrectionsDataVectorChannelized *dataVector =
-        static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
-    fQAMultiplicityBefore3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->Weight());
-    fQAMultiplicityAfter3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->EqualizedWeight());
+  if (fQAMultiplicityBefore3D != NULL && fQAMultiplicityAfter3D != NULL) {
+    for(Int_t ixData = 0; ixData < fDataVectorBank->GetEntriesFast(); ixData++){
+      QnCorrectionsDataVectorChannelized *dataVector =
+          static_cast<QnCorrectionsDataVectorChannelized *>(fDataVectorBank->At(ixData));
+      fQAMultiplicityBefore3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->Weight());
+      fQAMultiplicityAfter3D->Fill(variableContainer[fQACentralityVarId], fChannelMap[dataVector->GetId()], dataVector->EqualizedWeight());
+    }
+  }
+  if (fQAQnAverageHistogram != NULL) {
+    Int_t harmonic = fPlainQnVector.GetFirstHarmonic();
+    while (harmonic != -1) {
+      fQAQnAverageHistogram->FillX(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+      fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+    }
   }
 }
 
