@@ -140,9 +140,9 @@ public:
    enum QnTwistAndRescaleMethod {
      TWRESCALE_doubleHarmonic,      ///< \f$ A^{\pm}_{2n} = 1 \pm \langle X_{2n} \rangle, \qquad \Lambda ^{\pm}_{2n} = \frac{\langle Y_{2n} \rangle}{A^{\pm}_{2n}} \f$
      TWRESCALE_correlations,    ///< \f$ A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle X^{A}_{n} X^{B}_{n} \rangle}
-     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\
+     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\ \,
      /// A^{A-}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle Y^{A}_{n} Y^{B}_{n} \rangle}
-     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\
+     /// {\sqrt{\langle X^{A}_{n} X^{B}_{n} \rangle \langle X^{B}_{n} X^{C}_{n} \rangle + \langle X^{A}_{n} Y^{B}_{n} \rangle \langle X^{B}_{n} Y^{C}_{n} \rangle}}, \\ \,
      ///  \Lambda^{A,+}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle X^{A}_{n} X^{B}_{n} \rangle}, \quad
      ///  \Lambda^{A,-}_{2n} =  \frac{\langle X^{A}_{n} Y^{B}_{n} \rangle}{\langle Y^{A}_{n} Y^{B}_{n} \rangle} \f$
    };

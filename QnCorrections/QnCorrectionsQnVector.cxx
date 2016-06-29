@@ -187,7 +187,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nDivisor, const QnCorrections
     if ((nCurrentHarmonic % nDivisor) != 0) continue;
 
     /* check if active */
-    if (Q.fHarmonicMask & harmonicNumberMask[nCurrentHarmonic] != harmonicNumberMask[nCurrentHarmonic]) continue;
+    if ((Q.fHarmonicMask & harmonicNumberMask[nCurrentHarmonic]) != harmonicNumberMask[nCurrentHarmonic]) continue;
 
     /* activate harmonic */
     fHarmonicMask |= harmonicNumberMask[nCurrentHarmonic / nDivisor];
