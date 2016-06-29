@@ -169,10 +169,8 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
 ///
 /// For each integer harmonic number after dividing by the divisor the Q vector is copied
 ///
-/// \param name the name of the Qn vector. Identifies its origin
 /// \param nDivisor the divisor of the harmonic number for getting the harmonic we want to create support for
-/// \param nNoOfHarmonics the number of harmonics passed within the map
-/// \param harmonicMap ordered array with the external number of the harmonics
+/// \param Q the Q vector object to copy after construction
 QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nDivisor, const QnCorrectionsQnVector &Q)  :
     TNamed(Q) {
 

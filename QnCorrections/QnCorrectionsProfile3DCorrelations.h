@@ -8,8 +8,8 @@
 
 class QnCorrectionsQnVector;
 
-/// \class QnCorrectionsProfileCorrelationComponentsHarmonics
-/// \brief Base class for the correlation components based set of profiles
+/// \class QnCorrectionsProfile3DCorrelations
+/// \brief Base class for three detectors correlation components based set of profiles with harmonic support
 ///
 /// Provides profile histograms for storing component, XX, XY, YX, YY, based
 /// information for a set of predefined harmonics defined at creation

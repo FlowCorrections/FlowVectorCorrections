@@ -38,6 +38,9 @@ QnCorrectionsProfile3DCorrelations::QnCorrectionsProfile3DCorrelations() :
 ///
 /// \param name base for the name of the histograms
 /// \param title base for the title of the histograms
+/// \param nameA A detector name
+/// \param nameB B detector name
+/// \param nameC C detector name
 /// \param ecvs the event classes variables set
 /// \param option option for errors computation
 ///     ' '  (Default) the bin errors are the standard error on the mean of the
@@ -795,10 +798,10 @@ Float_t QnCorrectionsProfile3DCorrelations::GetYYBinError(const char *comb, Int_
 /// It is considered that the three Qn vectors have the same harmonic
 /// structure including the harmonic multiplier. If this is not the case
 /// and that situation should be supported this member must be modified.
-///
-/// \param harmonic the interested external harmonic number
+/// \param QnA A Qn vector
+/// \param QnB B Qn vector
+/// \param QnC C Qn vector
 /// \param variableContainer the current variables content addressed by var Id
-/// \param weight the increment in the bin content
 void QnCorrectionsProfile3DCorrelations::Fill(const QnCorrectionsQnVector *QnA,
     const QnCorrectionsQnVector *QnB,
     const QnCorrectionsQnVector *QnC,

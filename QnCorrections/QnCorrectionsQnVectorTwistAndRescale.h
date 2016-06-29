@@ -21,7 +21,7 @@
 ///
 /// Twist correction is applied according to:
 /// \f[
-///        Q_{n,(x,y)}' = \frac{Q_{n,(x,y)} - \Lambda^{s(+,-)}_{2n} Q_{n,(x,y)}}{1 - \Lambda^{s-}_{2n}\Lambda^{s+}_{2n}}
+///        Q_{n,(x,y)}' = \frac{Q_{n,(x,y)} - \Lambda^{s(-,+)}_{2n} Q_{n,(y,x)}}{1 - \Lambda^{s-}_{2n}\Lambda^{s+}_{2n}}
 /// \f]
 ///
 /// The rescaling correction is applied according to:
@@ -75,8 +75,7 @@
 /// of the harmonics handled by the configuration.
 ///
 /// Data collection for twist and rescale correction parameters building in the correlations method is
-/// performed on the highest corrected Qn vector on the involved detectors. Again correction is built only
-/// for the harmonics n which double 2n lies within the range handled by the different detector configurations.
+/// performed on the highest corrected Qn vector on the involved detectors.
 ///
 /// Corrections are performed for the harmonics for which there are data collection support.
 
@@ -96,18 +95,9 @@
 /// Twist and rescale are applied on ongoing Q vector from the involved detector
 /// configuration.
 ///
-/// The recentering is applied according to:
-/// \f[
-///        Q' = Q - {\langle Q \rangle}
-/// \f]
-/// where  \f$\langle Q \rangle\f$ is an average over events in a given event class
-/// \f[
-///        \langle Q \rangle = \frac{1}{\mbox{N}_{ev}} \sum_{i}^{\mbox{N}_{ev}} Q_i
-/// \f]
-///
 /// Twist correction is applied according to:
 /// \f[
-///        Q_{n,(x,y)}' = \frac{Q_{n,(x,y)} - \Lambda^{s(+,-)}_{2n} Q_{n,(x,y)}}{1 - \Lambda^{s-}_{2n}\Lambda^{s+}_{2n}}
+///        Q_{n,(x,y)}' = \frac{Q_{n,(x,y)} - \Lambda^{s(-,+)}_{2n} Q_{n,(y,x)}}{1 - \Lambda^{s-}_{2n}\Lambda^{s+}_{2n}}
 /// \f]
 ///
 /// The rescaling correction is applied according to:
@@ -118,7 +108,7 @@
 /// method selected for the twist and rescale correction. Currently two methods are supported: the double harmonic
 /// method and the correlations method.
 ///
-/// Recentering (and width equalization) is only applied if the class instance
+/// Twist and rescale are only applied if the class instance
 /// is in the correction status. In order to be in that status the instance
 /// should have been able to get the proper correction histograms that will
 /// provide the required averages per event class.
@@ -131,8 +121,7 @@
 /// of the harmonics handled by the configuration.
 ///
 /// Data collection for twist and rescale correction parameters building in the correlations method is
-/// performed on the highest corrected Qn vector on the involved detectors. Again correction is built only
-/// for the harmonics n which double 2n lies within the range handled by the different detector configurations.
+/// performed on the highest corrected Qn vector on the involved detectors.
 ///
 /// Correction are performed for the harmonics for which there are data collection support.
 ///
@@ -216,8 +205,8 @@ private:
   TString fCDetectorConfigurationName; ///< the name of the C detector configuration
   QnCorrectionsDetectorConfigurationBase *fCDetectorConfiguration; ///< pointer to the C detector configuration
   Int_t fMinNoOfEntriesToValidate;              ///< number of entries for bin content validation threshold
-  QnCorrectionsQnVector *fTwistCorrectedQnVector;
-  QnCorrectionsQnVector *fRescaleCorrectedQnVector;
+  QnCorrectionsQnVector *fTwistCorrectedQnVector;   ///< twisted Qn vector
+  QnCorrectionsQnVector *fRescaleCorrectedQnVector; ///< rescaled Qn vector
 
 /// \cond CLASSIMP
   ClassDef(QnCorrectionsQnVectorTwistAndRescale, 1);
