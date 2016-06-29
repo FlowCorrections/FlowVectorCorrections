@@ -440,7 +440,7 @@ Bool_t QnCorrectionsProfile3DCorrelations::BinContentValidated(Long64_t bin) {
 /// \return the bin number content
 Float_t QnCorrectionsProfile3DCorrelations::GetXXBinContent(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -477,7 +477,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetXXBinContent(const char *comb, In
 /// \return the bin number content
 Float_t QnCorrectionsProfile3DCorrelations::GetXYBinContent(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -514,7 +514,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetXYBinContent(const char *comb, In
 /// \return the bin number content
 Float_t QnCorrectionsProfile3DCorrelations::GetYXBinContent(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -551,7 +551,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetYXBinContent(const char *comb, In
 /// \return the bin number content
 Float_t QnCorrectionsProfile3DCorrelations::GetYYBinContent(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -588,7 +588,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetYYBinContent(const char *comb, In
 /// \return the bin content error
 Float_t QnCorrectionsProfile3DCorrelations::GetXXBinError(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -641,7 +641,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetXXBinError(const char *comb, Int_
 /// \return the bin content error
 Float_t QnCorrectionsProfile3DCorrelations::GetXYBinError(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -694,7 +694,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetXYBinError(const char *comb, Int_
 /// \return the bin content error
 Float_t QnCorrectionsProfile3DCorrelations::GetYXBinError(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
@@ -747,7 +747,7 @@ Float_t QnCorrectionsProfile3DCorrelations::GetYXBinError(const char *comb, Int_
 /// \return the bin content error
 Float_t QnCorrectionsProfile3DCorrelations::GetYYBinError(const char *comb, Int_t harmonic, Long64_t bin) {
   TString szComb = comb;
-  Int_t ixComb;
+  Int_t ixComb = -1;
   if (szComb.EqualTo("AB"))
     ixComb = 0;
   else if (szComb.EqualTo("BC"))
