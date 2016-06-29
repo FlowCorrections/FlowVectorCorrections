@@ -76,7 +76,7 @@
 using std::cout;
 using std::endl;
 
-void Setup(QnCorrectionsManager* QnMan);
+void Setup(UInt_t tracing, QnCorrectionsManager* QnMan);
 void Loop(QnCorrectionsManager* QnMan);
 void Finish(QnCorrectionsManager* QnMan);
 
@@ -138,9 +138,9 @@ Int_t nDetectorTwoLowestDetectorTwoCChannel = 32;
 /// our functionality until its final shape.
 
 #ifdef MAKEEVENTTEXTOUTPUT
-void Example(Int_t nevents, TString inputFileName, TString outputFileName, Bool_t bTextEventFile = kFALSE){
+void Example(UInt_t tracing, Int_t nevents, TString inputFileName, TString outputFileName, Bool_t bTextEventFile = kFALSE){
 #else
-void Example(Int_t nevents, TString inputFileName, TString outputFileName){
+void Example(UInt_t tracing, Int_t nevents, TString inputFileName, TString outputFileName){
 #endif
 
   QnCorrectionsManager* QnMan = new QnCorrectionsManager();
@@ -156,7 +156,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 #endif
 
 
-  Setup(QnMan);
+  Setup(tracing, QnMan);
 
   TStopwatch stopwatch;
   stopwatch.Start();
@@ -192,7 +192,7 @@ void Example(Int_t nevents, TString inputFileName, TString outputFileName){
 }
 
 /// The routine to initialize our test framework before the events loop
-void Setup(QnCorrectionsManager* QnMan){
+void Setup(UInt_t tracing, QnCorrectionsManager* QnMan){
 
 #ifdef MAKEEVENTTEXTOUTPUT
   if (bProduceTextEventFile) {
@@ -207,7 +207,7 @@ void Setup(QnCorrectionsManager* QnMan){
 #endif
 
   /* set some logging output */
-  QnCorrectionsSetTracingLevel(kError);
+  QnCorrectionsSetTracingLevel(tracing);
 
   /* our event classes variables: vertexZ and centrality */
   const Int_t nEventClassesDimensions = 2;

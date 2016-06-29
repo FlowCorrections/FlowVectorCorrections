@@ -6,9 +6,9 @@ using std::cout;
 using std::endl;
 
 #ifdef MAKEEVENTTEXTOUTPUT
-void RunExample(Bool_t bTextEventFile = kFALSE, Int_t nevents=50, TString inputFileName="exampleOutput0.root", TString outputFileName="exampleOutput1.root"){
+void RunExample(UInt_t tracing = kError, Bool_t bTextEventFile = kFALSE, Int_t nevents=50, TString inputFileName="exampleOutput0.root", TString outputFileName="exampleOutput1.root"){
 #else
-void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", TString outputFileName="exampleOutput1.root"){
+void RunExample(UInt_t tracing = kError, Int_t nevents=50, TString inputFileName="exampleOutput0.root", TString outputFileName="exampleOutput1.root"){
 #endif
 
   TString location=gSystem->WorkingDirectory();
@@ -63,9 +63,9 @@ void RunExample(Int_t nevents=50, TString inputFileName="exampleOutput0.root", T
   gROOT->LoadMacro("Example.C"+debugString);
 
 #ifdef MAKEEVENTTEXTOUTPUT
-  Example(nevents,inputFileName,outputFileName,bTextEventFile);
+  Example(tracing, nevents,inputFileName,outputFileName,bTextEventFile);
 #else
-  Example(nevents,inputFileName,outputFileName);
+  Example(tracing, nevents,inputFileName,outputFileName);
 #endif
 
 
