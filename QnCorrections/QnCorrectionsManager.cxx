@@ -173,6 +173,9 @@ QnCorrectionsDetectorConfigurationBase *QnCorrectionsManager::FindDetectorConfig
 }
 
 /// Initializes the correction framework
+/// Basically the different list containing framework objects are built.
+/// Calibration histograms are on a per process basis while QA histograms
+/// don't.
 void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 
   /* the data bank */
@@ -197,18 +200,8 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
   fSupportHistogramsList->SetName(szCalibrationHistogramsKeyName);
   fSupportHistogramsList->SetOwner(kTRUE);
 
-  /* and the QA histograms list if needed */
-  if (GetShouldFillQAHistograms()) {
-    fQAHistogramsList = new TList();
-    fQAHistogramsList->SetName(szCalibrationQAHistogramsKeyName);
-    fQAHistogramsList->SetOwner(kTRUE);
-    fNveQAHistogramsList = new TList();
-    fNveQAHistogramsList->SetName(szCalibrationNveQAHistogramsKeyName);
-    fNveQAHistogramsList->SetOwner(kTRUE);
-  }
-
-
-  /* build the support and QA histograms lists for the list of concurrent processes */
+  /* build the support histograms lists for the list of concurrent processes */
+  /* the QA histograms are no longer rooted on a per process basis */
   if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0) {
     for (Int_t i = 0; i < fProcessesNames->GetEntries(); i++) {
       /* the support histgrams list */
@@ -217,65 +210,23 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       newList->SetOwner(kTRUE);
       fSupportHistogramsList->Add(newList);
 
-      /* the QA histograms list if needed */
-      TList *newQAList = NULL;
-      if (GetShouldFillQAHistograms()) {
-        newQAList = new TList();
-        newQAList->SetName(((TObjString *) fProcessesNames->At(i))->GetName());
-        newQAList->SetOwner(kTRUE);
-        fQAHistogramsList->Add(newQAList);
-      }
-
-      /* the non validated entries QA histograms list if needed */
-      TList *newNveQAList = NULL;
-      if (GetShouldFillNveQAHistograms()) {
-        newNveQAList = new TList();
-        newNveQAList->SetName(((TObjString *) fProcessesNames->At(i))->GetName());
-        newNveQAList->SetOwner(kTRUE);
-        fNveQAHistogramsList->Add(newNveQAList);
-      }
-
       /* leave the selected process list name for a latter time */
       if (!fProcessListName.EqualTo(fProcessesNames->At(i)->GetName())) {
         /* build the support histograms list associated to the process */
         for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
           ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(newList);
         }
-        /* the QA histograms list if needed */
-        if (GetShouldFillQAHistograms()) {
-          /* and pass it to the detectors for QA histograms creation */
-          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
-            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateQAHistograms(newQAList);
-          }
-        }
-        /* the non validated entries QA histograms list if needed */
-        if (GetShouldFillNveQAHistograms()) {
-          /* and pass it to the detectors for non validated entries QA histograms creation */
-          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
-            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateNveQAHistograms(newNveQAList);
-          }
-        }
       }
     }
   }
 
-  /* build the support and QA histograms lists associated to this process */
+  /* build the support histograms list associated to this process */
   /* and pass it to the detectors for support histograms creation */
   if (fProcessListName.Length() != 0) {
     /* let's see first whether we have the current process name within the processes names list */
     TList *processList;
-    TList *processQAList;
-    TList *processNveQAList;
     if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0 && fSupportHistogramsList->FindObject(fProcessListName) != NULL) {
       processList = (TList *) fSupportHistogramsList->FindObject(fProcessListName);
-      /* the QA histograms list if needed */
-      if (GetShouldFillQAHistograms()) {
-        processQAList = (TList *) fQAHistogramsList->FindObject(fProcessListName);
-      }
-      /* the non validated entries QA histograms list if needed */
-      if (GetShouldFillNveQAHistograms()) {
-        processNveQAList = (TList *) fNveQAHistogramsList->FindObject(fProcessListName);
-      }
     }
     else {
       processList = new TList();
@@ -283,25 +234,9 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       processList->SetOwner(kTRUE);
       /* we add it but probably temporarily */
       fSupportHistogramsList->Add(processList);
-      /* the QA histograms list if needed */
-      if (GetShouldFillQAHistograms()) {
-        processQAList = new TList();
-        processQAList->SetName((const char *) fProcessListName);
-        processQAList->SetOwner(kTRUE);
-        /* we add it but probably temporarily */
-        fQAHistogramsList->Add(processQAList);
-      }
-      /* the non validated QA histograms list if needed */
-      if (GetShouldFillNveQAHistograms()) {
-        processNveQAList = new TList();
-        processNveQAList->SetName((const char *) fProcessListName);
-        processNveQAList->SetOwner(kTRUE);
-        /* we add it but probably temporarily */
-        fNveQAHistogramsList->Add(processNveQAList);
-      }
     }
     /* now transfer the order to the defined detectors */
-    /* so, we always create the histograms to use the latest ones */
+    /* so, we always create the histograms to use the last ones */
     Bool_t retvalue = kTRUE;
     for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
       retvalue = retvalue && ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(processList);
@@ -310,20 +245,6 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
     }
     if (!retvalue) {
       QnCorrectionsFatal("Failed to build the necessary support histograms.");
-    }
-    /* the QA histograms list if needed */
-    if (GetShouldFillQAHistograms()) {
-      /* pass it to the detectors for QA histograms creation */
-      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
-        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateQAHistograms(processQAList);
-      }
-    }
-    /* the non validated QA histograms list if needed */
-    if (GetShouldFillNveQAHistograms()) {
-      /* pass it to the detectors for non validated entries QA histograms creation */
-      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
-        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateNveQAHistograms(processNveQAList);
-      }
     }
   }
   else {
@@ -343,6 +264,35 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
       }
+    }
+  }
+
+  /* now build the QA histograms list if needed */
+  /* QA histograms are no longer stored on a per run basis */
+  if (GetShouldFillQAHistograms()) {
+    fQAHistogramsList = new TList();
+    fQAHistogramsList->SetName(szCalibrationQAHistogramsKeyName);
+    fQAHistogramsList->SetOwner(kTRUE);
+    if (GetShouldFillNveQAHistograms()) {
+      fNveQAHistogramsList = new TList();
+      fNveQAHistogramsList->SetName(szCalibrationNveQAHistogramsKeyName);
+      fNveQAHistogramsList->SetOwner(kTRUE);
+    }
+  }
+
+  /* pass the list to the detectors for QA histograms creation */
+  /* the QA histograms list if needed */
+  if (GetShouldFillQAHistograms()) {
+    /* pass it to the detectors for QA histograms creation */
+    for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+      ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateQAHistograms(fQAHistogramsList);
+    }
+  }
+  /* the non validated QA histograms list if needed */
+  if (GetShouldFillNveQAHistograms()) {
+    /* pass it to the detectors for non validated entries QA histograms creation */
+    for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+      ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateNveQAHistograms(fNveQAHistogramsList);
     }
   }
 
@@ -388,58 +338,10 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
           /* nop! we raise an execution error */
           QnCorrectionsFatal(Form("The name of the process you want to run: %s, is not in the list of concurrent processes", name));
         }
-        /* the QA histograms list if needed */
-        if (GetShouldFillQAHistograms()) {
-          /* the new process name should be in the list of processes names */
-          if (fQAHistogramsList->FindObject(name) != NULL) {
-            /* now we have to substitute the provisional process name list with the temporal one but renamed */
-            TList *previousempty = (TList*) fQAHistogramsList->FindObject(name);
-            Int_t finalindex = fQAHistogramsList->IndexOf(previousempty);
-            fQAHistogramsList->RemoveAt(finalindex);
-            delete previousempty;
-            TList *previoustemp = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
-            fQAHistogramsList->Remove(previoustemp);
-            previoustemp->SetName(name);
-            fQAHistogramsList->AddAt(previoustemp, finalindex);
-          }
-          else {
-            /* nop! we raise an execution error */
-            QnCorrectionsFatal(Form("The name of the process you want to run: %s, is not in the QA list of concurrent processes", name));
-          }
-        }
-        /* the non validated entries QA histograms list if needed */
-        if (GetShouldFillNveQAHistograms()) {
-          /* the new process name should be in the list of processes names */
-          if (fNveQAHistogramsList->FindObject(name) != NULL) {
-            /* now we have to substitute the provisional process name list with the temporal one but renamed */
-            TList *previousempty = (TList*) fNveQAHistogramsList->FindObject(name);
-            Int_t finalindex = fNveQAHistogramsList->IndexOf(previousempty);
-            fNveQAHistogramsList->RemoveAt(finalindex);
-            delete previousempty;
-            TList *previoustemp = (TList *) fNveQAHistogramsList->FindObject((const char *)fProcessListName);
-            fNveQAHistogramsList->Remove(previoustemp);
-            previoustemp->SetName(name);
-            fNveQAHistogramsList->AddAt(previoustemp, finalindex);
-          }
-          else {
-            /* nop! we raise an execution error */
-            QnCorrectionsFatal(Form("The name of the process you want to run: %s, is not in the non validated entries QA list of concurrent processes", name));
-          }
-        }
       }
       else {
         TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
         processList->SetName(name);
-        /* the QA histograms list if needed */
-        if (GetShouldFillQAHistograms()) {
-          TList *processQAList = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
-          processQAList->SetName(name);
-        }
-        /* the non validated entries QA histograms list if needed */
-        if (GetShouldFillNveQAHistograms()) {
-          TList *processNveQAList = (TList *) fNveQAHistogramsList->FindObject((const char *)fProcessListName);
-          processNveQAList->SetName(name);
-        }
       }
 
       /* now get the process list on the calibration histograms list if any */
@@ -724,16 +626,6 @@ void QnCorrectionsManager::FinalizeQnCorrectionsFramework() {
 
   TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
   fSupportHistogramsList->Add(processList->Clone(szAllProcessesListName));
-  /* the QA histograms list if needed */
-  if (GetShouldFillQAHistograms()) {
-    TList *processQAList = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
-    fQAHistogramsList->Add(processQAList->Clone(szAllProcessesListName));
-  }
-  /* the non validated entries QA histograms list if needed */
-  if (GetShouldFillNveQAHistograms()) {
-    TList *processNveQAList = (TList *) fQAHistogramsList->FindObject((const char *)fProcessListName);
-    fNveQAHistogramsList->Add(processNveQAList->Clone(szAllProcessesListName));
-  }
 }
 
 
