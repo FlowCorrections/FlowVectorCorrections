@@ -440,7 +440,7 @@ void QnCorrectionsDetectorConfigurationChannels::FillQAHistograms(const Float_t 
     Int_t harmonic = fPlainQnVector.GetFirstHarmonic();
     while (harmonic != -1) {
       fQAQnAverageHistogram->FillX(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
-      fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qx(harmonic));
+      fQAQnAverageHistogram->FillY(harmonic, variableContainer, fPlainQnVector.Qy(harmonic));
       harmonic = fPlainQnVector.GetNextHarmonic(harmonic);
     }
   }

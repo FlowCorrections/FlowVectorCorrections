@@ -593,7 +593,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       Int_t harmonic = fCorrectedQnVector->GetFirstHarmonic();
       while (harmonic != -1) {
         fQATwistQnAverageHistogram->FillX(harmonic, variableContainer, fTwistCorrectedQnVector->Qx(harmonic));
-        fQATwistQnAverageHistogram->FillY(harmonic, variableContainer, fTwistCorrectedQnVector->Qx(harmonic));
+        fQATwistQnAverageHistogram->FillY(harmonic, variableContainer, fTwistCorrectedQnVector->Qy(harmonic));
         harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
       }
     }
@@ -601,7 +601,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       Int_t harmonic = fCorrectedQnVector->GetFirstHarmonic();
       while (harmonic != -1) {
         fQARescaleQnAverageHistogram->FillX(harmonic, variableContainer, fRescaleCorrectedQnVector->Qx(harmonic));
-        fQARescaleQnAverageHistogram->FillY(harmonic, variableContainer, fRescaleCorrectedQnVector->Qx(harmonic));
+        fQARescaleQnAverageHistogram->FillY(harmonic, variableContainer, fRescaleCorrectedQnVector->Qy(harmonic));
         harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
       }
     }

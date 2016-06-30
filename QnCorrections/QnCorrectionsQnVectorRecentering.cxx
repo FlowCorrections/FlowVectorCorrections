@@ -267,7 +267,7 @@ Bool_t QnCorrectionsQnVectorRecentering::ProcessDataCollection(const Float_t *va
       harmonic = fCorrectedQnVector->GetFirstHarmonic();
       while (harmonic != -1) {
         fQAQnAverageHistogram->FillX(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
-        fQAQnAverageHistogram->FillY(harmonic, variableContainer, fCorrectedQnVector->Qx(harmonic));
+        fQAQnAverageHistogram->FillY(harmonic, variableContainer, fCorrectedQnVector->Qy(harmonic));
         harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
       }
     }
