@@ -93,6 +93,13 @@ QnCorrectionsManager::~QnCorrectionsManager() {
 void QnCorrectionsManager::SetCalibrationHistogramsList(TFile *calibrationFile) {
   if (calibrationFile) {
     if (calibrationFile->GetListOfKeys()->GetEntries() > 0) {
+      /* let's see if we already had a previous calibration histograms list */
+      if (fCalibrationHistogramsList != NULL){
+        QnCorrectionsInfo("Changed the calibration file. Deleting the current calibration histograms list");
+        /* we delete it. WARNING: at this point the whole framework got orphan of input histograms this MUST be a transient situation */
+        delete fCalibrationHistogramsList;
+        fCalibrationHistogramsList = NULL;
+      }
       fCalibrationHistogramsList = (TList*)((TKey*)calibrationFile->GetListOfKeys()->FindObject(szCalibrationHistogramsKeyName))->ReadObj()->Clone();
       if (fCalibrationHistogramsList != NULL) {
         QnCorrectionsInfo(Form("Stored calibration list %s from file %s",
@@ -253,8 +260,6 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
 
   /* now get the process list on the calibration histograms list if any */
   /* and pass it to the detectors for input calibration histograms attachment, */
-  /* we accept no calibration histograms list and no process list in case we */
-  /* are in calibrating phase. We should TODO this. */
   if (fCalibrationHistogramsList != NULL) {
     TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
     if (processList != NULL) {
@@ -346,8 +351,6 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
 
       /* now get the process list on the calibration histograms list if any */
       /* and pass it to the detectors for input calibration histograms attachment, */
-      /* we accept no calibration histograms list and no process list in case we */
-      /* are in calibrating phase. We should TODO this. */
       fProcessListName = name;
       if (fCalibrationHistogramsList != NULL) {
         TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
@@ -379,8 +382,69 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
     }
   }
   else {
-    QnCorrectionsFatal(Form("Changing process list name on the fly is not supported." \
-        " Current name: %s, new name: %s", (const char *)fProcessListName, name));
+    QnCorrectionsInfo(Form("Changing process on the fly from %s to %s", fProcessListName.Data(), name));
+
+    if (fSupportHistogramsList != NULL) {
+      /* check the list of concurrent processes */
+      if (fProcessesNames != NULL && fProcessesNames->GetEntries() != 0) {
+        /* the new process name should be in the list of processes names */
+        if (fSupportHistogramsList->FindObject(name) != NULL) {
+          /* now we have to destroy the previous list associated to the new process */
+          TList *previous = (TList*) fSupportHistogramsList->FindObject(name);
+          Int_t finalindex = fSupportHistogramsList->IndexOf(previous);
+          fSupportHistogramsList->RemoveAt(finalindex);
+          delete previous;
+          /* and build a new one in its place */
+          TList *newList = new TList();
+          newList->SetName(name);
+          newList->SetOwner(kTRUE);
+          /* build the support histograms list associated to the new process passing the new list to the detectors */
+          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->CreateSupportHistograms(newList);
+          }
+          fSupportHistogramsList->AddAt(newList,finalindex);
+        }
+        else {
+          /* nop! we raise an execution error */
+          QnCorrectionsFatal(Form("The name of the process you want to run: %s, is not in the list of concurrent processes", name));
+        }
+      }
+      else {
+        TList *processList = (TList *) fSupportHistogramsList->FindObject((const char *)fProcessListName);
+        processList->SetName(name);
+      }
+
+      /* now get the process list on the calibration histograms list if any */
+      /* and pass it to the detectors for input calibration histograms attachment, */
+      fProcessListName = name;
+      if (fCalibrationHistogramsList != NULL) {
+        TList *processList = (TList *)fCalibrationHistogramsList->FindObject((const char *)fProcessListName);
+        if (processList != NULL) {
+          QnCorrectionsInfo(Form("Assigned process list %s as the calibration histograms list",
+              processList->GetName()));
+          /* now transfer the order to the defined detectors */
+          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
+          }
+        }
+      }
+      /* build the Qn vectors list  now that all histograms are loaded */
+      if (fQnVectorList == NULL) {
+        /* first we build it if it isn't already there */
+        fQnVectorList = new TList();
+        /* the list does not own the Qn vectors */
+        fQnVectorList->SetOwner(kFALSE);
+      }
+
+      /* pass it to the detectors for Qn vector creation and attachment */
+      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->IncludeQnVectors(fQnVectorList);
+      }
+    }
+    else {
+      /* histograms list not yet created so, we just change the name */
+      fProcessListName = name;
+    }
   }
 
   /* now that we have everything let's print the configuration before we start */
