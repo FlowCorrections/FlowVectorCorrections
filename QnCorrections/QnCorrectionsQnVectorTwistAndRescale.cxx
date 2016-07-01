@@ -296,22 +296,30 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::AttachInput(TList *list) {
 /// \return kTRUE if everything went OK
 Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateQAHistograms(TList *list) {
 
-  fQATwistQnAverageHistogram = new QnCorrectionsProfileComponents(
-      Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
-      Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
-      fDetectorConfiguration->GetEventClassVariablesSet());
-  fQARescaleQnAverageHistogram = new QnCorrectionsProfileComponents(
-      Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
-      Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
-      fDetectorConfiguration->GetEventClassVariablesSet());
+  if (fApplyTwist) {
+    fQATwistQnAverageHistogram = new QnCorrectionsProfileComponents(
+        Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
+        Form("%s %s", szQATwistQnAverageHistogramName, fDetectorConfiguration->GetName()),
+        fDetectorConfiguration->GetEventClassVariablesSet());
+  }
+  if (fApplyRescale) {
+    fQARescaleQnAverageHistogram = new QnCorrectionsProfileComponents(
+        Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
+        Form("%s %s", szQARescaleQnAverageHistogramName, fDetectorConfiguration->GetName()),
+        fDetectorConfiguration->GetEventClassVariablesSet());
+  }
 
-  /* get information about the configured harmonics to pass it for histogram creation */
-  Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
-  Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
-  fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
-  fQATwistQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
-  fQARescaleQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
-  delete [] harmonicsMap;
+  if (fApplyTwist || fApplyRescale) {
+    /* get information about the configured harmonics to pass it for histogram creation */
+    Int_t nNoOfHarmonics = fDetectorConfiguration->GetNoOfHarmonics();
+    Int_t *harmonicsMap = new Int_t[nNoOfHarmonics];
+    fDetectorConfiguration->GetHarmonicMap(harmonicsMap);
+    if (fApplyTwist)
+      fQATwistQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
+    if (fApplyRescale)
+      fQARescaleQnAverageHistogram->CreateComponentsProfileHistograms(list,nNoOfHarmonics, harmonicsMap);
+    delete [] harmonicsMap;
+  }
   return kTRUE;
 }
 
