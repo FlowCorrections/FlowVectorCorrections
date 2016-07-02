@@ -178,6 +178,7 @@ public:
   virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
   virtual void ClearCorrectionStep();
   virtual void IncludeCorrectedQnVector(TList *list);
+  virtual Bool_t IsBeingApplied() const;
   virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:

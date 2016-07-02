@@ -126,6 +126,7 @@ public:
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
   virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
   virtual void ClearCorrectionStep();
+  virtual Bool_t IsBeingApplied() const;
   virtual Bool_t ReportUsage(TList *calibrationList, TList *applyList);
 
 private:

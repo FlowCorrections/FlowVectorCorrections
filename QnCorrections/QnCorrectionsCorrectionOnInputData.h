@@ -73,6 +73,10 @@ public:
   /// Clean the correction to accept a new event
   /// Pure virtual function
   virtual void ClearCorrectionStep() = 0;
+  /// Reports if the correction step is being applied
+  /// \return FALSE, input data correction step dont make use of this service, yet
+  virtual Bool_t IsBeingApplied() const
+  { return kFALSE; }
   /// Report on correction usage
   /// Pure virtual function
   /// Correction step should incorporate its name in calibration

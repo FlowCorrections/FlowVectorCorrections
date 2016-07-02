@@ -126,3 +126,21 @@ const QnCorrectionsCorrectionOnQvector *QnCorrectionsCorrectionsSetOnQvector::Ge
   return NULL;
 }
 
+/// Check if a concrete correction step is bein applied on this detector configuration
+/// It is not enough having the correction step configured or collecting data. To
+/// get an affirmative answer the correction step must be being applied.
+/// Transfer the order to each of the Qn correction steps.
+/// \param step the name of the correction step
+/// \return TRUE if the correction step is being applied
+Bool_t QnCorrectionsCorrectionsSetOnQvector::IsCorrectionStepBeingApplied(const char *step) const {
+
+  TString szStepName = step;
+
+  for (Int_t ix = 0; ix < GetEntries(); ix++) {
+    if (szStepName.Contains(At(ix)->GetName())) {
+      return At(ix)->IsBeingApplied();
+    }
+  }
+  return kFALSE;
+}
+

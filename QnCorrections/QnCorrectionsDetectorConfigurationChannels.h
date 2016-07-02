@@ -61,6 +61,11 @@ public:
   /// Gets the hard coded group weights
   /// \return the groups hard coded weights
   const Float_t *GetHardCodedGroupWeights() const { return fHardCodedGroupWeights; }
+  /// Get if the detector configuration is own by a tracking detector
+  /// \return FALSE, this is a hit / channel detector configuration
+  virtual Bool_t GetIsTrackingDetector() const
+  { return kFALSE; }
+
 
   void SetChannelsScheme(Bool_t *bUsedChannel, Int_t *nChannelGroup, Float_t *hardCodedGroupWeights = NULL);
 

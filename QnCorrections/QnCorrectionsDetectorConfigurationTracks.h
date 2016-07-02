@@ -45,6 +45,11 @@ public:
       Int_t *harmonicMap = NULL);
   virtual ~QnCorrectionsDetectorConfigurationTracks();
 
+  /// Get if the detector configuration is own by a tracking detector
+  /// \return TRUE, this is tracking detector configuration
+  virtual Bool_t GetIsTrackingDetector() const
+  { return kTRUE; }
+
   virtual void AttachCorrectionsManager(QnCorrectionsManager *manager);
 
   virtual void CreateSupportDataStructures();

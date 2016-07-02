@@ -131,6 +131,18 @@ const QnCorrectionsQnVector *QnCorrectionsDetectorConfigurationBase::GetPrevious
     return &fPlainQnVector;
 }
 
+/// Check if a concrete correction step is bein applied on this detector configuration
+/// It is not enough having the correction step configured or collecting data. To
+/// get an affirmative answer the correction step must be being applied.
+/// Transfers the request to the set of Qn vector corrections.
+/// \param step the name of the correction step
+/// \return TRUE if the correction step is being applied
+Bool_t QnCorrectionsDetectorConfigurationBase::IsCorrectionStepBeingApplied(const char *step) const {
+
+  return fQnVectorCorrections.IsCorrectionStepBeingApplied(step);
+}
+
+
 /// Activate the processing for the passed harmonic
 /// \param harmonic the desired harmonic number to activate
 void QnCorrectionsDetectorConfigurationBase::ActivateHarmonic(Int_t harmonic) {

@@ -162,6 +162,11 @@ void QnCorrectionsQnVectorTwistAndRescale::CreateSupportDataStructures() {
     if (fBDetectorConfigurationName.Length() != 0) {
       if (fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data()) != NULL) {
         fBDetectorConfiguration = fDetectorConfiguration->GetCorrectionsManager()->FindDetectorConfiguration(fBDetectorConfigurationName.Data());
+        if (!fBDetectorConfiguration->GetIsTrackingDetector()) {
+          QnCorrectionsFatal(Form("B detector configuration %s for %s twist and rescaling correction step must be a tracking detector",
+              fBDetectorConfigurationName.Data(),
+              fDetectorConfiguration->GetName()));
+        }
       }
       else {
         QnCorrectionsFatal(Form("Wrong B detector configuration %s for %s twist and rescaling correction step",
@@ -361,6 +366,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
   case QCORRSTEP_calibration:
     /* collect the data needed to further produce correction parameters if Qn vectors are good enough */
     /* we have not perform any correction yet */
+    /* we check if detector B is in its proper correction step */
     return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
@@ -653,6 +659,26 @@ void QnCorrectionsQnVectorTwistAndRescale::IncludeCorrectedQnVector(TList *list)
 
 
 
+/// Reports if the correction step is being applied
+/// Returns TRUE if in the proper state for applying the correction step
+/// \return TRUE if the correction step is being applied
+virtual Bool_t QnCorrectionsQnVectorRecentering::IsBeingApplied() const {
+  switch (fState) {
+  case QCORRSTEP_calibration:
+    /* we are collecting */
+    /* but not applying */
+    return kFALSE;
+    break;
+  case QCORRSTEP_applyCollect:
+    /* we are collecting */
+  case QCORRSTEP_apply:
+    /* and applying */
+    return kTRUE;
+    break;
+  }
+  return kFALSE;
+}
+
 /// Report on correction usage
 /// Correction step should incorporate its name in calibration
 /// list if it is producing information calibration in the ongoing
@@ -675,8 +701,9 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ReportUsage(TList *calibrationList,
   case QCORRSTEP_apply:
     /* and applying */
     applyList->Add(new TObjString(GetName()));
+    return kTRUE;
     break;
   }
-  return kTRUE;
+  return kFALSE;
 }
 

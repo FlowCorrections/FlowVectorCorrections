@@ -111,6 +111,7 @@ public:
   QnCorrectionsQnVector *GetCurrentQnVector()
   { return &fCorrectedQnVector; }
   const QnCorrectionsQnVector *GetPreviousCorrectedQnVector(QnCorrectionsCorrectionOnQvector *correctionOnQn) const;
+  Bool_t IsCorrectionStepBeingApplied(const char *step) const;
   /// Get the current Q2n vector
   /// Makes it available for subsequent correction steps.
   /// It could have already supported previous correction steps
@@ -152,6 +153,10 @@ public:
   /// Get the pointer to the framework manager
   /// \return the stored pointer to the corrections framework
   QnCorrectionsManager *GetCorrectionsManager() const { return fCorrectionsManager; }
+  /// Get if the detector configuration is own by a tracking detector
+  /// Pure virtual function
+  /// \return TRUE if it is a tracking detector configuration
+  virtual Bool_t GetIsTrackingDetector() const = 0;
 public:
   /// Asks for support data structures creation
   ///
