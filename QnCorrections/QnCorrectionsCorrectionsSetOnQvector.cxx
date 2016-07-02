@@ -134,10 +134,8 @@ const QnCorrectionsCorrectionOnQvector *QnCorrectionsCorrectionsSetOnQvector::Ge
 /// \return TRUE if the correction step is being applied
 Bool_t QnCorrectionsCorrectionsSetOnQvector::IsCorrectionStepBeingApplied(const char *step) const {
 
-  TString szStepName = step;
-
   for (Int_t ix = 0; ix < GetEntries(); ix++) {
-    if (szStepName.Contains(At(ix)->GetName())) {
+    if (TString(At(ix)->GetName()).Contains(step)) {
       return At(ix)->IsBeingApplied();
     }
   }

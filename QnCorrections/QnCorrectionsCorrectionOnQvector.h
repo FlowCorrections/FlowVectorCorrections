@@ -44,6 +44,13 @@ public:
   /// \param list list where the inputs should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachInput(TList *list) = 0;
+  /// Perform after calibration histograms attach actions
+  /// It is used to inform the different correction step that
+  /// all conditions for running the network are in place so
+  /// it is time to check if their requirements are satisfied
+  ///
+  /// Pure virtual function
+  virtual void AfterInputsAttachActions() = 0;
   /// Asks for support data structures creation
   ///
   /// Pure virtual function

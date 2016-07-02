@@ -104,6 +104,13 @@ public:
 
   virtual void AttachedToFrameworkManager();
   virtual Bool_t AttachInput(TList *list);
+  /// Perform after calibration histograms attach actions
+  /// It is used to inform the different correction step that
+  /// all conditions for running the network are in place so
+  /// it is time to check if their requirements are satisfied
+  ///
+  /// Does nothing for the time being
+  virtual void AfterInputsAttachActions() {}
   virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);

@@ -209,6 +209,20 @@ Bool_t QnCorrectionsDetectorConfigurationTracks::AttachCorrectionInputs(TList *l
   return kFALSE;
 }
 
+/// Perform after calibration histograms attach actions
+/// It is used to inform the different correction step that
+/// all conditions for running the network are in place so
+/// it is time to check if their requirements are satisfied
+///
+/// The request is transmitted to the Q vector corrections
+void QnCorrectionsDetectorConfigurationTracks::AfterInputsAttachActions() {
+
+  /* now propagate it to Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->AfterInputsAttachActions();
+  }
+}
+
 /// Fills the QA plain Qn vector average components histogram
 /// \param variableContainer pointer to the variable content bank
 void QnCorrectionsDetectorConfigurationTracks::FillQAHistograms(const Float_t *variableContainer) {

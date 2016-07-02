@@ -195,6 +195,13 @@ public:
   /// \param list list where the input information should be found
   /// \return kTRUE if everything went OK
   virtual Bool_t AttachCorrectionInputs(TList *list) = 0;
+  /// Perform after calibration histograms attach actions
+  /// It is used to inform the different correction step that
+  /// all conditions for running the network are in place so
+  /// it is time to check if their requirements are satisfied
+  ///
+  /// Pure virtual function
+  virtual void AfterInputsAttachActions() = 0;
   /// Ask for processing corrections for the involved detector configuration
   ///
   /// Pure virtual function.

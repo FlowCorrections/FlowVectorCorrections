@@ -294,6 +294,34 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::AttachInput(TList *list) {
   return kFALSE;
 }
 
+/// Perform after calibration histograms attach actions
+/// It is used to inform the different correction step that
+/// all conditions for running the network are in place so
+/// it is time to check if their requirements are satisfied
+///
+/// A check is done to confirm that \f$ B \f$ is applying
+/// twist to correct its Qn vectors. If not the correction
+/// step is set to passive
+void QnCorrectionsQnVectorTwistAndRescale::AfterInputsAttachActions() {
+
+  switch (fTwistAndRescaleMethod) {
+  case TWRESCALE_doubleHarmonic:
+    /* nothing required */
+    break;
+  case TWRESCALE_correlations:
+    /* require B be applying twist corrections */
+    if (!fBDetectorConfiguration->IsCorrectionStepBeingApplied(szTwistCorrectionName)) {
+      QnCorrectionsWarning(Form("Twist and rescale on %s requires %s be twist corrected which is not the case. CORRECTION STEP PASSIVE!!!",
+          fDetectorConfiguration->GetName(), fBDetectorConfiguration->GetName()));
+      fState = QCORRSTEP_passive;
+    }
+    break;
+  default:
+    /* nothing required */
+    break;
+  }
+}
+
 /// Asks for QA histograms creation
 ///
 /// Allocates the histogram objects and creates the QA histograms.
@@ -662,20 +690,22 @@ void QnCorrectionsQnVectorTwistAndRescale::IncludeCorrectedQnVector(TList *list)
 /// Reports if the correction step is being applied
 /// Returns TRUE if in the proper state for applying the correction step
 /// \return TRUE if the correction step is being applied
-virtual Bool_t QnCorrectionsQnVectorRecentering::IsBeingApplied() const {
+Bool_t QnCorrectionsQnVectorTwistAndRescale::IsBeingApplied() const {
+
   switch (fState) {
   case QCORRSTEP_calibration:
     /* we are collecting */
     /* but not applying */
-    return kFALSE;
     break;
   case QCORRSTEP_applyCollect:
     /* we are collecting */
   case QCORRSTEP_apply:
     /* and applying */
+    QnCorrectionsInfo(Form("Correction step %s being applied on detector configuration %s", GetName(), fDetectorConfiguration->GetName()));
     return kTRUE;
     break;
   }
+  QnCorrectionsInfo(Form("Correction step %s NOT being applied on detector configuration %s", GetName(), fDetectorConfiguration->GetName()));
   return kFALSE;
 }
 

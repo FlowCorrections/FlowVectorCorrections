@@ -58,6 +58,7 @@ public:
   Bool_t CreateQAHistograms(TList *list);
   Bool_t CreateNveQAHistograms(TList *list);
   Bool_t AttachCorrectionInputs(TList *list);
+  virtual void AfterInputsAttachActions();
   Bool_t ProcessCorrections(const Float_t *variableContainer);
   Bool_t ProcessDataCollection(const Float_t *variableContainer);
   void IncludeQnVectors(TList *list);

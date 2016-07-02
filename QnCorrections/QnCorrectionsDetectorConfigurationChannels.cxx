@@ -417,6 +417,24 @@ Bool_t QnCorrectionsDetectorConfigurationChannels::AttachCorrectionInputs(TList 
   return kFALSE;
 }
 
+/// Perform after calibration histograms attach actions
+/// It is used to inform the different correction step that
+/// all conditions for running the network are in place so
+/// it is time to check if their requirements are satisfied
+///
+/// The request is transmitted to the input data corrections
+/// and then propagated to the Q vector corrections
+void QnCorrectionsDetectorConfigurationChannels::AfterInputsAttachActions() {
+  for (Int_t ixCorrection = 0; ixCorrection < fInputDataCorrections.GetEntries(); ixCorrection++) {
+    fInputDataCorrections.At(ixCorrection)->AfterInputsAttachActions();
+  }
+
+  /* now propagate it to Q vector corrections */
+  for (Int_t ixCorrection = 0; ixCorrection < fQnVectorCorrections.GetEntries(); ixCorrection++) {
+    fQnVectorCorrections.At(ixCorrection)->AfterInputsAttachActions();
+  }
+}
+
 /// Incorporates the passed correction to the set of input data corrections
 /// \param correctionOnInputData the correction to add
 void QnCorrectionsDetectorConfigurationChannels::AddCorrectionOnInputData(QnCorrectionsCorrectionOnInputData *correctionOnInputData) {

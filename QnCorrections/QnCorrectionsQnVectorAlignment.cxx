@@ -354,7 +354,7 @@ void QnCorrectionsQnVectorAlignment::ClearCorrectionStep() {
 /// Reports if the correction step is being applied
 /// Returns TRUE if in the proper state for applying the correction step
 /// \return TRUE if the correction step is being applied
-virtual Bool_t QnCorrectionsQnVectorAlignment::IsBeingApplied() const {
+Bool_t QnCorrectionsQnVectorAlignment::IsBeingApplied() const {
   switch (fState) {
   case QCORRSTEP_calibration:
     /* we are collecting */

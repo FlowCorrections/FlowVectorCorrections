@@ -286,7 +286,7 @@ void QnCorrectionsQnVectorRecentering::ClearCorrectionStep() {
 /// Reports if the correction step is being applied
 /// Returns TRUE if in the proper state for applying the correction step
 /// \return TRUE if the correction step is being applied
-virtual Bool_t QnCorrectionsQnVectorRecentering::IsBeingApplied() const {
+Bool_t QnCorrectionsQnVectorRecentering::IsBeingApplied() const {
   switch (fState) {
   case QCORRSTEP_calibration:
     /* we are collecting */

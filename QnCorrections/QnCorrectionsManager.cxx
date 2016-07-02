@@ -269,6 +269,10 @@ void QnCorrectionsManager::InitializeQnCorrectionsFramework() {
       for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
         ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
       }
+      /* now inform to the defined detectors the framework conditions are complete */
+      for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+        ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AfterInputsAttachActions();
+      }
     }
   }
 
@@ -361,6 +365,10 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
           for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
             ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
           }
+          /* now inform to the defined detectors the framework conditions are complete */
+          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AfterInputsAttachActions();
+          }
         }
       }
       /* build the Qn vectors list  now that all histograms are loaded */
@@ -425,6 +433,10 @@ void QnCorrectionsManager::SetCurrentProcessListName(const char *name) {
           /* now transfer the order to the defined detectors */
           for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
             ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AttachCorrectionInputs(processList);
+          }
+          /* now inform to the defined detectors the framework conditions are complete */
+          for (Int_t ixDetector = 0; ixDetector < fDetectorsSet.GetEntries(); ixDetector++) {
+            ((QnCorrectionsDetector *) fDetectorsSet.At(ixDetector))->AfterInputsAttachActions();
           }
         }
       }

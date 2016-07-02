@@ -93,6 +93,7 @@ public:
   virtual void ActivateHarmonic(Int_t harmonic)
   { QnCorrectionsDetectorConfigurationBase::ActivateHarmonic(harmonic); fRawQnVector.ActivateHarmonic(harmonic); }
   virtual Bool_t AttachCorrectionInputs(TList *list);
+  virtual void AfterInputsAttachActions();
   virtual Bool_t ProcessCorrections(const Float_t *variableContainer);
   virtual Bool_t ProcessDataCollection(const Float_t *variableContainer);
 

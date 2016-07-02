@@ -42,7 +42,8 @@
 /// \f]
 /// For the correlations method two additional subdetectors need to be configured. Let these two subdetectors be
 /// denominated \f$ B \f$ and \f$ C \f$ being \f$ A \f$ the current subdetector on which the twist and rescaling
-/// correction will be applied. Then
+/// correction will be applied. \f$ B \f$ must be a tracking subdetector and must have been twist corrected for the
+/// method to work properly. Then
 ///
 /// \f[
 /// A^{A+}_{2n} = \frac{\sqrt{2 \langle X^{A}_{n} X^{C}_{n} \rangle}\langle X^{A}_{n} X^{B}_{n} \rangle}
@@ -169,7 +170,8 @@ public:
 
   virtual void AttachedToFrameworkManager();
   virtual Bool_t AttachInput(TList *list);
-  virtual void CreateSupportDataStructures();
+  virtual void AfterInputsAttachActions();
+virtual void CreateSupportDataStructures();
   virtual Bool_t CreateSupportHistograms(TList *list);
   virtual Bool_t CreateQAHistograms(TList *list);
   virtual Bool_t CreateNveQAHistograms(TList *list);
