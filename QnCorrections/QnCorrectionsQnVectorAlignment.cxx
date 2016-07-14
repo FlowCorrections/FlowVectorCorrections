@@ -272,6 +272,9 @@ Bool_t QnCorrectionsQnVectorAlignment::ProcessCorrections(const Float_t *variabl
     /* and update the current Qn vector */
     fDetectorConfiguration->UpdateCurrentQnVector(fCorrectedQnVector);
     break;
+  default:
+    /* we are in passive state waiting for proper conditions, no corrections applied */
+    return kFALSE;
   }
   /* if we reached here is because we applied the correction */
   return kTRUE;
@@ -340,6 +343,9 @@ Bool_t QnCorrectionsQnVectorAlignment::ProcessDataCollection(const Float_t *vari
      }
     }
     break;
+  default:
+    /* we are in passive state waiting for proper conditions, no corrections applied */
+    return kFALSE;
   }
   /* if we reached here is because we applied the correction */
   return kTRUE;
@@ -367,6 +373,8 @@ Bool_t QnCorrectionsQnVectorAlignment::IsBeingApplied() const {
     /* and applying */
     return kTRUE;
     break;
+  default:
+    break;
   }
   return kFALSE;
 }
@@ -393,6 +401,9 @@ Bool_t QnCorrectionsQnVectorAlignment::ReportUsage(TList *calibrationList, TList
   case QCORRSTEP_apply:
     /* and applying */
     applyList->Add(new TObjString(szCorrectionName));
+    break;
+  default:
+    return kFALSE;
     break;
   }
   return kTRUE;

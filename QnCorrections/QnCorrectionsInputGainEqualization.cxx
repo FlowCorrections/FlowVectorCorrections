@@ -311,6 +311,9 @@ Bool_t QnCorrectionsInputGainEqualization::ProcessCorrections(const Float_t *var
       }
     }
     break;
+  default:
+    /* we are in passive state waiting for proper conditions, no corrections applied */
+    return kFALSE;
   }
   return kTRUE;
 }
@@ -337,6 +340,8 @@ Bool_t QnCorrectionsInputGainEqualization::ProcessDataCollection(const Float_t *
   case QCORRSTEP_apply: /* apply the equalization */
     /* collect QA data if asked */
     break;
+  default:
+    return kFALSE;
   }
   return kTRUE;
 }
@@ -364,6 +369,8 @@ Bool_t QnCorrectionsInputGainEqualization::ReportUsage(TList *calibrationList, T
     /* and applying */
     applyList->Add(new TObjString(szCorrectionName));
     break;
+  default:
+    return kFALSE;
   }
   return kTRUE;
 }

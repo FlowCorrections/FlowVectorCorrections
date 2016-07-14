@@ -391,19 +391,20 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::CreateNveQAHistograms(TList *list) 
 Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *variableContainer) {
   Int_t harmonic;
   switch (fState) {
-  case QCORRSTEP_calibration:
+  case QCORRSTEP_calibration: {
     /* collect the data needed to further produce correction parameters if Qn vectors are good enough */
     /* we have not perform any correction yet */
     /* we check if detector B is in its proper correction step */
     return kFALSE;
-    break;
+  }
+  break;
   case QCORRSTEP_applyCollect:
     /* collect the data needed to further produce correction parameters if Qn vectors are good enough */
     /* and proceed to ... */
-  case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+  case QCORRSTEP_apply: { /* apply the correction if the current Qn vector is good enough */
     /* logging */
     switch (fTwistAndRescaleMethod) {
-    case TWRESCALE_doubleHarmonic:
+    case TWRESCALE_doubleHarmonic: {
       /* TODO: basically we are re producing half of the information already produce for recentering correction. Re use it! */
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with double harmonic method.",
           fDetectorConfiguration->GetName()));
@@ -463,8 +464,10 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
         /* not done! input Q vector with bad quality */
         fCorrectedQnVector->SetGood(kFALSE);
       }
-      break;
-    case TWRESCALE_correlations:
+    }
+    break;
+
+    case TWRESCALE_correlations: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method.",
           fDetectorConfiguration->GetName(),
           fBDetectorConfiguration->GetName(),
@@ -486,8 +489,8 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
             Double_t XAYB = fCorrelationsInputHistograms->GetXYBinContent("AB",harmonic,bin);
             Double_t XBYC = fCorrelationsInputHistograms->GetXYBinContent("BC",harmonic,bin);
 
-            Double_t Aplus = TMath::Sqrt(2.0*XAXC) * XAXB / TMath::Sqrt(XAXB * XBXC + XAYB * XBYC);
-            Double_t Aminus = TMath::Sqrt(2.0*XAXC) * YAYB / TMath::Sqrt(XAXB * XBXC + XAYB * XBYC);
+            Double_t Aplus = TMath::Sqrt(TMath::Abs(2.0*XAXC)) * XAXB / TMath::Sqrt(TMath::Abs(XAXB * XBXC + XAYB * XBYC));
+            Double_t Aminus = TMath::Sqrt(TMath::Abs(2.0*XAXC)) * YAYB / TMath::Sqrt(TMath::Abs(XAXB * XBXC + XAYB * XBYC));
             Double_t LambdaPlus = XAYB / XAXB;
             Double_t LambdaMinus = XAYB / YAYB;
 
@@ -528,7 +531,9 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
         /* not done! input Q vector with bad quality */
         fCorrectedQnVector->SetGood(kFALSE);
       }
-      break;
+    }
+    break;
+
     default:
       QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
@@ -539,7 +544,12 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
     if (fApplyRescale) {
       fDetectorConfiguration->UpdateCurrentQnVector(fRescaleCorrectedQnVector);
     }
-    break;
+  }
+  break;
+
+  default:
+    /* we are in passive state waiting for proper conditions, no corrections applied */
+    return kFALSE;
   }
   /* if we reached here is because we applied the correction */
   return kTRUE;
@@ -551,7 +561,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessCorrections(const Float_t *v
 /// \return kTRUE if the correction step was applied
 Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t *variableContainer) {
   switch (fState) {
-  case QCORRSTEP_calibration:
+  case QCORRSTEP_calibration: {
     /* logging */
     switch (fTwistAndRescaleMethod) {
     case TWRESCALE_doubleHarmonic: {
@@ -569,6 +579,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       }
     }
     break;
+
     case TWRESCALE_correlations: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
           fDetectorConfiguration->GetName(),
@@ -585,13 +596,16 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       }
     }
     break;
+
     default:
       QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
     /* we have not perform any correction yet */
     return kFALSE;
-    break;
-  case QCORRSTEP_applyCollect:
+  }
+  break;
+
+  case QCORRSTEP_applyCollect: {
     /* logging */
     switch (fTwistAndRescaleMethod) {
     case TWRESCALE_doubleHarmonic: {
@@ -609,6 +623,7 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       }
     }
     break;
+
     case TWRESCALE_correlations: {
       QnCorrectionsInfo(Form("Twist and rescale in detector %s with correlations with %s and %s method. Collecting data",
           fDetectorConfiguration->GetName(),
@@ -625,11 +640,13 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
       }
     }
     break;
+
     default:
       QnCorrectionsFatal(Form("Wrong stored twist and rescale method: %d. FIX IT, PLEASE", fTwistAndRescaleMethod));
     }
-    /* and proceed to ... */
-  case QCORRSTEP_apply: /* apply the correction if the current Qn vector is good enough */
+  }
+  /* and proceed to ... */
+  case QCORRSTEP_apply: { /* apply the correction if the current Qn vector is good enough */
     /* provide QA info if required */
     if (fQATwistQnAverageHistogram != NULL) {
       Int_t harmonic = fCorrectedQnVector->GetFirstHarmonic();
@@ -647,7 +664,12 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ProcessDataCollection(const Float_t
         harmonic = fCorrectedQnVector->GetNextHarmonic(harmonic);
       }
     }
-    break;
+  }
+  break;
+
+  default:
+    /* we are in passive state waiting for proper conditions, no corrections applied */
+    return kFALSE;
   }
   /* if we reached here is because we applied the correction */
   return kTRUE;
@@ -682,6 +704,8 @@ void QnCorrectionsQnVectorTwistAndRescale::IncludeCorrectedQnVector(TList *list)
     if (fApplyRescale)
       list->Add(fRescaleCorrectedQnVector);
     break;
+  default:
+    break;
   }
 }
 
@@ -703,6 +727,8 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::IsBeingApplied() const {
     /* and applying */
     QnCorrectionsInfo(Form("Correction step %s being applied on detector configuration %s", GetName(), fDetectorConfiguration->GetName()));
     return kTRUE;
+    break;
+  default:
     break;
   }
   QnCorrectionsInfo(Form("Correction step %s NOT being applied on detector configuration %s", GetName(), fDetectorConfiguration->GetName()));
@@ -732,6 +758,8 @@ Bool_t QnCorrectionsQnVectorTwistAndRescale::ReportUsage(TList *calibrationList,
     /* and applying */
     applyList->Add(new TObjString(GetName()));
     return kTRUE;
+    break;
+  default:
     break;
   }
   return kFALSE;
