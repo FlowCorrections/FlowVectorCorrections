@@ -56,7 +56,7 @@ set (SOURCES
   QnCorrectionsQnVectorTwistAndRescale.cxx
 )
 
-string(REPLACE ".cxx" ".h" HEADERS "${SRCS}")
+string(REPLACE ".cxx" ".h" HEADERS "${SOURCES}")
 
 ROOT_GENERATE_DICTIONARY(G__FlowVector ${HEADERS} LINKDEF QnLinkDef.h)
 
