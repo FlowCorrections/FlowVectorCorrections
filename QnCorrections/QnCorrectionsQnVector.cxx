@@ -294,13 +294,10 @@ void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn, Bool_t changename) {
 /// Normalize the Q vector to unit length
 ///
 void QnCorrectionsQnVector::Normalize() {
-  Double_t qx,qy;
   for(Int_t h = 1; h < fHighestHarmonic + 1; h++){
     if ((fHarmonicMask & harmonicNumberMask[h]) == harmonicNumberMask[h]) {
-      qx = QxNorm(h);
-      qy = QyNorm(h);
-      fQnX[h] = qx;
-      fQnY[h] = qy;
+      fQnX[h] = QxNorm(h);
+      fQnY[h] = QyNorm(h);
     }
   }
 }
