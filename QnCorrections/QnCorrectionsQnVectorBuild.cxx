@@ -47,7 +47,6 @@ ClassImp(QnCorrectionsQnVectorBuild);
 /// Default constructor
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector() {
 
-  fSumW = 0.0;
 }
 
 /// Normal constructor
@@ -60,7 +59,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild() : QnCorrectionsQnVector
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const char *name, Int_t nNoOfHarmonics, Int_t *harmonicMap) :
     QnCorrectionsQnVector(name, nNoOfHarmonics, harmonicMap) {
 
-  fSumW = 0.0;
 }
 
 /// Copy constructor from a Q vector
@@ -68,7 +66,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const char *name, Int_t n
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVector &Qn) :
     QnCorrectionsQnVector(Qn) {
 
-  fSumW = 0.0;
 }
 
 /// Copy constructor
@@ -76,7 +73,6 @@ QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVect
 QnCorrectionsQnVectorBuild::QnCorrectionsQnVectorBuild(const QnCorrectionsQnVectorBuild &Qn) :
     QnCorrectionsQnVector(Qn) {
 
-  fSumW = Qn.fSumW;
 }
 
 /// Default destructor
@@ -108,7 +104,6 @@ void QnCorrectionsQnVectorBuild::Set(QnCorrectionsQnVectorBuild* Qn) {
 
   /* the name is not copied from building Qn vectors */
   QnCorrectionsQnVector::Set(Qn,kFALSE);
-  fSumW = Qn->fSumW;
 }
 
 /// Adds a build Q vector
@@ -181,7 +176,6 @@ void QnCorrectionsQnVectorBuild::NormalizeQoverSquareRootOfM() {
 void QnCorrectionsQnVectorBuild::Reset() {
 
   QnCorrectionsQnVector::Reset();
-  fSumW = 0.0;
 }
 
 /// Print the Qn vector in a readable shape

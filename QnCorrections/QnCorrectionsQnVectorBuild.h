@@ -54,10 +54,6 @@ public:
 
   virtual void Reset();
 
-  /// Gets the sum of weights.
-  /// \return sum of weights
-  Float_t GetSumOfWeights() const { return fSumW; }
-
   virtual void Print(Option_t *) const;
 
 private:
@@ -69,12 +65,8 @@ private:
   /// \param Qn the Q vector to assign
   QnCorrectionsQnVectorBuild& operator= (const QnCorrectionsQnVectorBuild &Qn);
 
-protected:
-
-  Float_t fSumW;   ///< the sum of weights
-
 /// \cond CLASSIMP
-  ClassDef(QnCorrectionsQnVectorBuild, 1);
+  ClassDef(QnCorrectionsQnVectorBuild, 2);
 /// \endcond
 };
 

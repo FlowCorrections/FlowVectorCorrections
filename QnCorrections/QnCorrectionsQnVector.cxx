@@ -57,6 +57,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector() : TNamed() {
   fHarmonicMask = 0x0000;
   fGoodQuality = kFALSE;
   fN = 0;
+  fSumW = 0.0;
   fHarmonicMultiplier = 1;
 }
 
@@ -105,6 +106,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nNoOfHarmon
   }
   fGoodQuality = kFALSE;
   fN = 0;
+  fSumW = 0.0;
   fHarmonicMultiplier = 1;
 }
 
@@ -148,6 +150,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const char *name, Int_t nDivisor, I
   }
   fGoodQuality = kFALSE;
   fN = 0;
+  fSumW = 0.0;
   fHarmonicMultiplier = 1;
 }
 
@@ -162,6 +165,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(const QnCorrectionsQnVector &Qn) :
   fHarmonicMask = Qn.fHarmonicMask;
   fGoodQuality = Qn.fGoodQuality;
   fN = Qn.fN;
+  fSumW = Qn.fSumW;
   fHarmonicMultiplier = Qn.fHarmonicMultiplier;
 }
 
@@ -195,6 +199,7 @@ QnCorrectionsQnVector::QnCorrectionsQnVector(Int_t nDivisor, const QnCorrections
 
   fGoodQuality = Q.fGoodQuality;
   fN = Q.fN;
+  fSumW = Q.fSumW;
   fHarmonicMultiplier = Q.fHarmonicMultiplier;
 }
 
@@ -285,6 +290,7 @@ void QnCorrectionsQnVector::Set(QnCorrectionsQnVector* Qn, Bool_t changename) {
   memcpy(fQnY, Qn->fQnY, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fGoodQuality = Qn->fGoodQuality;
   fN = Qn->fN;
+  fSumW = Qn->fSumW;
   if (changename) {
     SetName(Qn->GetName());
     SetTitle(Qn->GetTitle());
@@ -310,6 +316,7 @@ void QnCorrectionsQnVector::Reset() {
   memset(fQnY, 0, (MAXHARMONICNUMBERSUPPORTED + 1)*sizeof(Float_t));
   fGoodQuality = kFALSE;
   fN = 0;
+  fSumW = 0.0;
 }
 
 /// Gets the event plane for the asked harmonic
@@ -328,7 +335,8 @@ Double_t QnCorrectionsQnVector::EventPlane(Int_t harmonic) const {
 /// Print the Qn vector in a readable shape
 ///
 void QnCorrectionsQnVector::Print(Option_t *) const {
-  cout <<"OBJ: Qn vector step: " << GetName() << "\t" << "N: " << fN << "\t" << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
+  cout <<"OBJ: Qn vector step: " << GetName() << "\t" << "N: " << fN << "\t" << "Sum w: " << fSumW << "\t"
+      << "quality: " << ((fGoodQuality) ? "good" : "bad") << endl;
   Int_t harmonic = GetFirstHarmonic();
   while (harmonic != -1) {
     cout << "\t" << "\t" << "harmonic " << harmonic * fHarmonicMultiplier << "\t" << "QX: " << Qx(harmonic) << "\t" << "QY: " << Qy(harmonic)
