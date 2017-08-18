@@ -82,6 +82,8 @@ void QnCorrectionsCorrectionOnQvector::IncludeCorrectedQnVector(TList *list) {
   case QCORRSTEP_apply: /* apply the correction */
     list->Add(fCorrectedQnVector);
     break;
+  default:
+    break;
   }
 }
 
