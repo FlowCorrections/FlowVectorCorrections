@@ -98,13 +98,13 @@ public:
   { return QnCorrectionsHistogramBase::FillXX(variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillXY(const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillXY(variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillYX(const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillYX(variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillYY(const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillYY(variableContainer, weight); }
 
 
 

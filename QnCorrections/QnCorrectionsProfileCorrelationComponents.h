@@ -88,13 +88,13 @@ public:
   { return QnCorrectionsHistogramBase::FillXX(harmonic, variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillXY(Int_t harmonic, const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(harmonic, variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillXY(harmonic, variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillYX(Int_t harmonic, const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(harmonic, variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillYX(harmonic, variableContainer, weight); }
   /// wrong call for this class invoke base class behavior
   virtual void FillYY(Int_t harmonic, const Float_t *variableContainer, Float_t weight)
-  { return QnCorrectionsHistogramBase::FillXX(harmonic, variableContainer, weight); }
+  { return QnCorrectionsHistogramBase::FillYY(harmonic, variableContainer, weight); }
 
 private:
   THnF *fXXValues;            //!<! XX component histogram
